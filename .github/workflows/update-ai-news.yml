@@ -1,0 +1,37 @@
+name: Update AI News Snapshot
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: news-snapshot
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 7.33.7
+      - run: pnpm install --frozen-lockfile
+      - name: Update public snapshots
+        run: pnpm run fetch
+      - name: Commit updated snapshots
+        run: |
+          git add data/latest-24h.json data/latest-7d.json data/source-status.json data/waytoagi-7d.json
+          if git diff --cached --quiet; then
+            echo "No snapshot changes"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Update public AI news snapshots"
+            git push
+          fi

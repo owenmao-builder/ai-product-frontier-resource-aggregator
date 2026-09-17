@@ -1,0 +1,2346 @@
+{
+  "github": [
+    {
+      "repository": "ayghri/i-have-adhd",
+      "weeklyStars": 13737
+    },
+    {
+      "repository": "bilawalsidhu/gods-eye-view",
+      "weeklyStars": 14777
+    },
+    {
+      "repository": "alibaba/open-code-review",
+      "weeklyStars": 8594
+    },
+    {
+      "repository": "affaan-m/ECC",
+      "weeklyStars": 5292
+    },
+    {
+      "repository": "openai/plugins",
+      "weeklyStars": 771
+    },
+    {
+      "repository": "mksglu/context-mode",
+      "weeklyStars": 1612
+    },
+    {
+      "repository": "Tencent/WeKnora",
+      "weeklyStars": 3034
+    },
+    {
+      "repository": "obra/superpowers",
+      "weeklyStars": 4023
+    },
+    {
+      "repository": "DietrichGebert/ponytail",
+      "weeklyStars": 7218
+    },
+    {
+      "repository": "max-sixty/worktrunk",
+      "weeklyStars": 998
+    },
+    {
+      "repository": "blader/humanizer",
+      "weeklyStars": 3266
+    },
+    {
+      "repository": "kunchenguid/firstmate",
+      "weeklyStars": 873
+    },
+    {
+      "repository": "petergyang/no-ai-slop",
+      "weeklyStars": 2320
+    },
+    {
+      "repository": "microsoft/markitdown",
+      "weeklyStars": 2733
+    },
+    {
+      "repository": "addyosmani/agent-skills",
+      "weeklyStars": 2119
+    },
+    {
+      "repository": "home-assistant/core",
+      "weeklyStars": 236
+    },
+    {
+      "repository": "THU-MAIC/OpenMAIC",
+      "weeklyStars": 3214
+    },
+    {
+      "repository": "danny-avila/LibreChat",
+      "weeklyStars": 1173
+    },
+    {
+      "repository": "openai/skills",
+      "weeklyStars": 632
+    },
+    {
+      "repository": "github/spec-kit",
+      "weeklyStars": 3019
+    },
+    {
+      "repository": "heygen-com/hyperframes",
+      "weeklyStars": 2413
+    },
+    {
+      "repository": "TauricResearch/TradingAgents",
+      "weeklyStars": 3350
+    }
+  ],
+  "discussions": [
+    {
+      "id": "49711544",
+      "title": "Show HN: An e-ink frame that hears birds and draws them as 1800s illustrations",
+      "url": "https://github.com/arnegiacomo/fugleramme",
+      "points": 2153,
+      "comments": 243,
+      "publishedAt": "2026-09-15T12:31:10Z"
+    },
+    {
+      "id": "49717558",
+      "title": "Introducing System One Models and Jev",
+      "url": "https://typesafe.ai/blog/introducing-system-one-models-and-jev",
+      "points": 1818,
+      "comments": 479,
+      "publishedAt": "2026-09-15T19:25:03Z"
+    },
+    {
+      "id": "49643982",
+      "title": "Shopify is moving from React Native back to Swift and Kotlin",
+      "url": "https://shopify.engineering/back-to-native",
+      "points": 1272,
+      "comments": 958,
+      "publishedAt": "2026-09-10T14:09:31Z"
+    },
+    {
+      "id": "49662371",
+      "title": "A misalignment of AI in mathematics",
+      "url": "https://mathandai.org/",
+      "points": 1239,
+      "comments": 1210,
+      "publishedAt": "2026-09-11T17:45:12Z"
+    },
+    {
+      "id": "49688695",
+      "title": "Fable 5.1 Solves the Cyphral Distich, a 370-year-old cipher",
+      "url": "https://www.vals.ai/blogs/fable-solves-cyphral-distich",
+      "points": 1212,
+      "comments": 568,
+      "publishedAt": "2026-09-13T21:06:13Z"
+    },
+    {
+      "id": "49708431",
+      "title": "I can't stop thinking about Papua New Guinea",
+      "url": "https://notnottalmud.substack.com/p/why-i-cant-stop-thinking-about-papua",
+      "points": 1124,
+      "comments": 471,
+      "publishedAt": "2026-09-15T06:16:24Z"
+    },
+    {
+      "id": "49666735",
+      "title": "OpenAI agents carried out an undisclosed attack on RubyGems",
+      "url": "https://www.rubyhack.ai/",
+      "points": 968,
+      "comments": 610,
+      "publishedAt": "2026-09-11T23:17:42Z"
+    },
+    {
+      "id": "49686445",
+      "title": "Why is Google still serving dodgy ads?",
+      "url": "https://www.atomic14.com/2026/09/13/why-is-google-still-serving-dodgy-ads",
+      "points": 956,
+      "comments": 404,
+      "publishedAt": "2026-09-13T17:37:44Z"
+    },
+    {
+      "id": "49710883",
+      "title": "25 years of mass surveillance is enough",
+      "url": "https://www.schneier.com/blog/archives/2026/09/25-years-of-mass-surveillance-is-enough.html",
+      "points": 924,
+      "comments": 347,
+      "publishedAt": "2026-09-15T11:26:48Z"
+    },
+    {
+      "id": "49678683",
+      "title": "Everyone should slow down AI development except for me",
+      "url": "https://xeiaso.net/notes/2026/everyone-slowdown-but-me/",
+      "points": 811,
+      "comments": 455,
+      "publishedAt": "2026-09-13T00:30:44Z"
+    },
+    {
+      "id": "49645393",
+      "title": "Don't let anyone take away your big box of cables",
+      "url": "https://blog.jim-nielsen.com/2026/hands-off-my-cables/",
+      "points": 780,
+      "comments": 464,
+      "publishedAt": "2026-09-10T15:27:22Z"
+    },
+    {
+      "id": "49662990",
+      "title": "I spent $220 on Google app ads and 60% of the installs were robots",
+      "url": "https://dayzlegame.com/blog/google-ads-bot-farm/",
+      "points": 761,
+      "comments": 433,
+      "publishedAt": "2026-09-11T18:24:55Z"
+    },
+    {
+      "id": "49694296",
+      "title": "XCancel service is suspended until further notice",
+      "url": "https://xcancel.com/#",
+      "points": 760,
+      "comments": 1042,
+      "publishedAt": "2026-09-14T09:51:50Z"
+    },
+    {
+      "id": "49672510",
+      "title": "We must pace the frontier",
+      "url": "https://darioamodei.com/post/we-must-pace-the-frontier",
+      "points": 748,
+      "comments": 1048,
+      "publishedAt": "2026-09-12T14:10:49Z"
+    },
+    {
+      "id": "49700661",
+      "title": "Steam Frame starts at $1059",
+      "url": "https://store.steampowered.com/hardware/steamframe",
+      "points": 735,
+      "comments": 640,
+      "publishedAt": "2026-09-14T17:27:55Z"
+    },
+    {
+      "id": "49643546",
+      "title": "Rust is tier-1 language at Microsoft",
+      "url": "https://rustfoundation.org/media/guest-post-rust-is-tier-1-language-at-microsoft/",
+      "points": 726,
+      "comments": 518,
+      "publishedAt": "2026-09-10T13:39:16Z"
+    },
+    {
+      "id": "49701004",
+      "title": "iOS 27, iPadOS 27, and macOS 27",
+      "url": "https://www.apple.com/newsroom/2026/09/major-updates-for-apples-software-platforms-are-now-available/",
+      "points": 711,
+      "comments": 850,
+      "publishedAt": "2026-09-14T17:50:29Z"
+    },
+    {
+      "id": "49668386",
+      "title": "google.com/goto: Google's anti-scraping update",
+      "url": "https://www.autom.dev/blog/google-search-goto-links",
+      "points": 679,
+      "comments": 553,
+      "publishedAt": "2026-09-12T03:14:20Z"
+    },
+    {
+      "id": "49656225",
+      "title": "Claude is only available to people over 18 years",
+      "url": "https://support.claude.com/en/articles/15171100-age-assurance-on-claude",
+      "points": 674,
+      "comments": 670,
+      "publishedAt": "2026-09-11T10:48:00Z"
+    },
+    {
+      "id": "49704132",
+      "title": "A single firm is behind OpenAI, Anthropic, and Meta hacking scandals",
+      "url": "https://www.effort.news/irregular",
+      "points": 672,
+      "comments": 239,
+      "publishedAt": "2026-09-14T21:15:01Z"
+    },
+    {
+      "id": "49716176",
+      "title": "An update on Wayback Machine access",
+      "url": "https://blog.archive.org/2026/09/15/an-update-on-wayback-machine-access/",
+      "points": 667,
+      "comments": 352,
+      "publishedAt": "2026-09-15T17:52:18Z"
+    },
+    {
+      "id": "49724141",
+      "title": "EU chief opens door for Canada to become 'associate member'",
+      "url": "https://www.bbc.com/news/articles/cjwyzrr9d3dko",
+      "points": 660,
+      "comments": 845,
+      "publishedAt": "2026-09-16T09:54:05Z"
+    },
+    {
+      "id": "49678969",
+      "title": "Why are AI agents lying, cheating and coordinating?",
+      "url": "https://yoshuabengio.org/en/publication/why-are-ai-agents-lying-cheating-and-coordinating",
+      "points": 656,
+      "comments": 691,
+      "publishedAt": "2026-09-13T01:22:31Z"
+    },
+    {
+      "id": "49724881",
+      "title": "Nvidia announces native GPU programming in Rust",
+      "url": "https://developer.nvidia.com/blog/introducing-cuda-rust-two-tracks-for-writing-gpu-kernels/",
+      "points": 650,
+      "comments": 248,
+      "publishedAt": "2026-09-16T11:15:53Z"
+    },
+    {
+      "id": "49697893",
+      "title": "Dario, Please",
+      "url": "https://pop.rdi.sh/dario-please/",
+      "points": 646,
+      "comments": 309,
+      "publishedAt": "2026-09-14T14:50:32Z"
+    },
+    {
+      "id": "49681545",
+      "title": "Homebrew 7.0.0",
+      "url": "https://brew.sh/2026/09/13/homebrew-7.0.0/",
+      "points": 635,
+      "comments": 253,
+      "publishedAt": "2026-09-13T08:41:17Z"
+    },
+    {
+      "id": "49645480",
+      "title": "LG denies TV spying claims, says tracking and snooping concerns 'not true'",
+      "url": "https://www.tomshardware.com/tech-industry/big-tech/lg-strongly-denies-tv-security-claims-says-tracking-and-snooping-concerns-not-true-online-investigation-claims-216-000-000-spy-tvs-record-audio",
+      "points": 632,
+      "comments": 493,
+      "publishedAt": "2026-09-10T15:31:37Z"
+    },
+    {
+      "id": "49674050",
+      "title": "Make your first edit to OpenStreetMap",
+      "url": "https://high5apps.github.io/josm-plugin-website-wizard/",
+      "points": 620,
+      "comments": 150,
+      "publishedAt": "2026-09-12T16:25:08Z"
+    },
+    {
+      "id": "49671329",
+      "title": "Fuck it, make it anyway",
+      "url": "https://www.joelotter.com/posts/2026/09/make-it-anyway/",
+      "points": 604,
+      "comments": 615,
+      "publishedAt": "2026-09-12T11:42:32Z"
+    },
+    {
+      "id": "49673098",
+      "title": "Nvidia is the central bank of AI",
+      "url": "https://www.economist.com/interactive/briefing/2026/09/03/nvidia-is-the-central-bank-of-ai",
+      "points": 582,
+      "comments": 400,
+      "publishedAt": "2026-09-12T15:08:27Z"
+    },
+    {
+      "id": "49681152",
+      "title": "JetKVM Mini",
+      "url": "https://jetkvm.com/blog/introducing-jetkvm-mini",
+      "points": 570,
+      "comments": 232,
+      "publishedAt": "2026-09-13T07:49:46Z"
+    },
+    {
+      "id": "49723408",
+      "title": "Mistral X Mozilla: Private, Multilingual AI Browsing",
+      "url": "https://mistral.ai/news/mistral-x-mozilla/",
+      "points": 563,
+      "comments": 192,
+      "publishedAt": "2026-09-16T08:08:57Z"
+    },
+    {
+      "id": "49731285",
+      "title": "Training a 4B model to produce 81% faster query plans than Postgres",
+      "url": "https://rohanbansal.com/qorl",
+      "points": 533,
+      "comments": 110,
+      "publishedAt": "2026-09-16T18:50:00Z"
+    },
+    {
+      "id": "49726586",
+      "title": "Hackers Got Inside a Flock Camera",
+      "url": "https://www.wired.com/story/hackers-flock-camera-data-shows-how-system-works/",
+      "points": 526,
+      "comments": 239,
+      "publishedAt": "2026-09-16T13:18:47Z"
+    },
+    {
+      "id": "49710253",
+      "title": "Suspected sabotage causes major Netherlands rail disruption",
+      "url": "https://www.bbc.com/news/articles/c8ly49w9g1edo",
+      "points": 520,
+      "comments": 472,
+      "publishedAt": "2026-09-15T10:22:46Z"
+    },
+    {
+      "id": "49729000",
+      "title": "Small programming tricks",
+      "url": "https://will-keleher.com/posts/small-programming-tricks-matter/",
+      "points": 511,
+      "comments": 228,
+      "publishedAt": "2026-09-16T15:56:47Z"
+    },
+    {
+      "id": "49695876",
+      "title": "OpenAI bots knew about the RubyGems caching vulnerability",
+      "url": "https://tenderlovemaking.com/2026/09/11/what-a-time-to-be-alive/",
+      "points": 509,
+      "comments": 418,
+      "publishedAt": "2026-09-14T12:40:57Z"
+    },
+    {
+      "id": "49721322",
+      "title": "Apple Reference Image: A New Approach for Verified Photography",
+      "url": "https://security.apple.com/blog/apple-reference-image/",
+      "points": 508,
+      "comments": 341,
+      "publishedAt": "2026-09-16T02:07:31Z"
+    },
+    {
+      "id": "49662672",
+      "title": "The EPA is planning to scrap public review rules for data center pollution",
+      "url": "https://capitalbnews.org/data-centers-permit-rules-epa/",
+      "points": 507,
+      "comments": 402,
+      "publishedAt": "2026-09-11T18:05:21Z"
+    },
+    {
+      "id": "49700477",
+      "title": "Pion, an agent designed to run any company autonomously",
+      "url": "https://andonlabs.com/blog/why-we-built-pion",
+      "points": 488,
+      "comments": 610,
+      "publishedAt": "2026-09-14T17:16:06Z"
+    },
+    {
+      "id": "49715947",
+      "title": "Gemini 3.8 Live and 3.8 Live Extended Thinking",
+      "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-8-live-gemini-3-8-live-extended-thinking/",
+      "points": 482,
+      "comments": 322,
+      "publishedAt": "2026-09-15T17:38:18Z"
+    },
+    {
+      "id": "49683953",
+      "title": "Data collected by cars and sold to third parties",
+      "url": "https://www.theverge.com/column/994172/your-car-is-selling-your-data",
+      "points": 480,
+      "comments": 257,
+      "publishedAt": "2026-09-13T13:45:08Z"
+    },
+    {
+      "id": "49684393",
+      "title": "Astra and Fable still hack on simple variants of alignment evals from 2025",
+      "url": "https://www.lesswrong.com/posts/munJKF7iWMsWJLAH2/astra-and-fable-still-hack-on-simple-variants-of-alignment",
+      "points": 478,
+      "comments": 232,
+      "publishedAt": "2026-09-13T14:28:36Z"
+    },
+    {
+      "id": "49707473",
+      "title": "US confirms for first time it has deployed space weapons",
+      "url": "https://www.bbc.com/news/articles/ck790xg41ygro",
+      "points": 473,
+      "comments": 362,
+      "publishedAt": "2026-09-15T03:47:56Z"
+    },
+    {
+      "id": "49715927",
+      "title": "Why I'm still bearish on LLMs after Navier-Stokes",
+      "url": "https://dank.systems/posts/2026-09-15-ai-bear.html",
+      "points": 472,
+      "comments": 615,
+      "publishedAt": "2026-09-15T17:37:12Z"
+    },
+    {
+      "id": "49646181",
+      "title": "I have a theory that software drives people insane",
+      "url": "https://graybeard.ing/software-drives-people-insane/",
+      "points": 469,
+      "comments": 199,
+      "publishedAt": "2026-09-10T16:13:42Z"
+    },
+    {
+      "id": "49686766",
+      "title": "I'm being cyberattacked by Tesla, Inc",
+      "url": "https://dreamstation.systems/personal/tesla.html",
+      "points": 458,
+      "comments": 119,
+      "publishedAt": "2026-09-13T18:03:09Z"
+    },
+    {
+      "id": "49710109",
+      "title": "Let's make quality the norm again",
+      "url": "https://www.forbrukerradet.no/short-life/",
+      "points": 453,
+      "comments": 486,
+      "publishedAt": "2026-09-15T10:00:16Z"
+    },
+    {
+      "id": "49654229",
+      "title": "Astra for Coding: Why Are We Doing This Again?",
+      "url": "https://lucumr.pocoo.org/2026/9/7/astra-why/",
+      "points": 453,
+      "comments": 340,
+      "publishedAt": "2026-09-11T06:23:06Z"
+    },
+    {
+      "id": "49642531",
+      "title": "List of references on Sony websites to players \"owning\" their digital games",
+      "url": "https://consumerrights.wiki/w/Sony_PlayStation_digital_game_ownership_lawsuit",
+      "points": 453,
+      "comments": 163,
+      "publishedAt": "2026-09-10T12:18:06Z"
+    },
+    {
+      "id": "49645443",
+      "title": "Cognition launches new SWE-2 model, Rivaling Fable 5.1 and GPT-Astra",
+      "url": "https://cognition.com/blog/swe-2",
+      "points": 446,
+      "comments": 194,
+      "publishedAt": "2026-09-10T15:29:47Z"
+    },
+    {
+      "id": "49693971",
+      "title": "Show HN: I made a flight simulator, except you're just a passenger",
+      "url": "https://inflightsimulator.com",
+      "points": 430,
+      "comments": 202,
+      "publishedAt": "2026-09-14T09:08:56Z"
+    },
+    {
+      "id": "49675902",
+      "title": "Linux Zoom client proactively reading everything written to X11 clipboard",
+      "url": "https://hachyderm.io/@simontatham/117201594980991062",
+      "points": 429,
+      "comments": 167,
+      "publishedAt": "2026-09-12T18:58:57Z"
+    },
+    {
+      "id": "49732270",
+      "title": "Xiaomi Mimo 2.6 live post-training dashboard",
+      "url": "https://mimo.xiaomi.com/rl/",
+      "points": 421,
+      "comments": 102,
+      "publishedAt": "2026-09-16T20:09:18Z"
+    },
+    {
+      "id": "49685253",
+      "title": "Garry Tan wants US open-weight AI labs to 'distill' frontier models, too",
+      "url": "https://techcrunch.com/2026/09/11/y-combinators-garry-tan-wants-u-s-open-weight-ai-labs-to-distill-frontier-models-too/",
+      "points": 415,
+      "comments": 238,
+      "publishedAt": "2026-09-13T15:44:38Z"
+    },
+    {
+      "id": "49690174",
+      "title": "Apple's Dimensional Drawings",
+      "url": "https://developer.apple.com/accessories/dimensional-drawings/",
+      "points": 415,
+      "comments": 133,
+      "publishedAt": "2026-09-14T00:11:21Z"
+    },
+    {
+      "id": "49676324",
+      "title": "LG says we're fake news [video]",
+      "url": "https://www.youtube.com/watch?v=ToP9xfLDSME",
+      "points": 413,
+      "comments": 214,
+      "publishedAt": "2026-09-12T19:35:36Z"
+    },
+    {
+      "id": "49717638",
+      "title": "Building a Linux GPU Driver for the M4 Mac Mini in One Month",
+      "url": "https://codyho.dev/blog/gpu-driver/",
+      "points": 412,
+      "comments": 268,
+      "publishedAt": "2026-09-15T19:30:03Z"
+    },
+    {
+      "id": "49658299",
+      "title": "Houthis 'take control' of key island in global shipping route",
+      "url": "https://www.bbc.com/news/live/cmd683p01eljt",
+      "points": 393,
+      "comments": 707,
+      "publishedAt": "2026-09-11T13:41:38Z"
+    },
+    {
+      "id": "49689048",
+      "title": "Registration without a phone number on Signal will use zero-knowledge proofs",
+      "url": "https://community.signalusers.org/t/registration-without-a-phone-number/2222?page=10",
+      "points": 392,
+      "comments": 214,
+      "publishedAt": "2026-09-13T21:47:04Z"
+    },
+    {
+      "id": "49652237",
+      "title": "Mexican student creates an acoustic fire extinguisher to put out fire in seconds",
+      "url": "https://www.upsocl.com/en/16-year-old-mexican-student-creates-an-acoustic-fire-extinguisher-that-uses-sound-waves-to-put-out-fires-in-seconds/",
+      "points": 387,
+      "comments": 139,
+      "publishedAt": "2026-09-11T01:00:56Z"
+    },
+    {
+      "id": "49641215",
+      "title": "The same nine streaming subscriptions cost $702/year more than in 2021",
+      "url": "https://honestlyranked.com/guides/streaming-price-increases/",
+      "points": 386,
+      "comments": 381,
+      "publishedAt": "2026-09-10T10:13:59Z"
+    },
+    {
+      "id": "49719249",
+      "title": "AWS says it can't restore some data from mideast facilities struck by Iran",
+      "url": "https://www.wsj.com/world/middle-east/aws-says-it-cant-restore-some-data-from-mideast-facilities-struck-by-iran-ddcb7e5d",
+      "points": 385,
+      "comments": 328,
+      "publishedAt": "2026-09-15T21:41:42Z"
+    },
+    {
+      "id": "49707627",
+      "title": "Linux from Scratch",
+      "url": "https://www.linuxfromscratch.org/",
+      "points": 379,
+      "comments": 112,
+      "publishedAt": "2026-09-15T04:15:23Z"
+    },
+    {
+      "id": "49645437",
+      "title": "Technique for Manipulating Satellite Photos Now Reveals Ancient Images (2025)",
+      "url": "https://spinoff.nasa.gov/Manipulating_Satellite_Photos_Now_Reveals_Ancient_Images",
+      "points": 378,
+      "comments": 71,
+      "publishedAt": "2026-09-10T15:29:30Z"
+    },
+    {
+      "id": "49652105",
+      "title": "Google will buy half the electricity from one of Finland's nuclear power plants",
+      "url": "https://www.bbc.com/news/articles/c8r6y4me2g6o",
+      "points": 376,
+      "comments": 360,
+      "publishedAt": "2026-09-11T00:42:41Z"
+    },
+    {
+      "id": "49712278",
+      "title": "Show HN: Capsule – Single-file web apps that save their data into SQLite",
+      "url": "https://withcapsule.app/",
+      "points": 368,
+      "comments": 158,
+      "publishedAt": "2026-09-15T13:31:40Z"
+    },
+    {
+      "id": "49670852",
+      "title": "An atlas of periodic solutions to the three-body problem",
+      "url": "https://www.threebodyorbits.com/",
+      "points": 368,
+      "comments": 90,
+      "publishedAt": "2026-09-12T10:13:24Z"
+    },
+    {
+      "id": "49640646",
+      "title": "What algorithm did Windows XP use to choose your initial user picture?",
+      "url": "https://devblogs.microsoft.com/oldnewthing/20260909-00/?p=112683",
+      "points": 362,
+      "comments": 178,
+      "publishedAt": "2026-09-10T09:04:14Z"
+    },
+    {
+      "id": "49697496",
+      "title": "Most people prefer traditional architecture",
+      "url": "https://www.worksinprogress.news/p/do-people-prefer-traditional-architecture",
+      "points": 360,
+      "comments": 374,
+      "publishedAt": "2026-09-14T14:30:17Z"
+    },
+    {
+      "id": "49683853",
+      "title": "Flock worker calls police on reporter filming public camera installation",
+      "url": "https://www.investigatetv.com/2026/09/08/flock-worker-calls-police-investigatetv-reporter-filming-public-camera-installation/",
+      "points": 355,
+      "comments": 267,
+      "publishedAt": "2026-09-13T13:35:31Z"
+    },
+    {
+      "id": "49724927",
+      "title": "The Google Play app review process now regularly takes longer than a week",
+      "url": "https://gultsch.social/@daniel/117280438824908947",
+      "points": 349,
+      "comments": 335,
+      "publishedAt": "2026-09-16T11:19:11Z"
+    },
+    {
+      "id": "49696125",
+      "title": "How to write an effective software design document",
+      "url": "https://refactoringenglish.com/excerpts/write-an-effective-design-doc/",
+      "points": 348,
+      "comments": 141,
+      "publishedAt": "2026-09-14T13:00:46Z"
+    },
+    {
+      "id": "49649213",
+      "title": "OpenAI Agents API",
+      "url": "https://developers.openai.com/api/docs/guides/agents-api/overview",
+      "points": 347,
+      "comments": 187,
+      "publishedAt": "2026-09-10T19:43:22Z"
+    },
+    {
+      "id": "49699158",
+      "title": "Distributed Systems Classics (2017)",
+      "url": "https://nvartolomei.com/dist-sys-classics/",
+      "points": 347,
+      "comments": 75,
+      "publishedAt": "2026-09-14T16:02:01Z"
+    },
+    {
+      "id": "49712041",
+      "title": "Java 27",
+      "url": "https://mail.openjdk.org/archives/list/announce@openjdk.org/thread/ORGGLMN75HFEWP7YL3ZLGHLYHVIBJDYT/",
+      "points": 346,
+      "comments": 422,
+      "publishedAt": "2026-09-15T13:13:43Z"
+    },
+    {
+      "id": "49649789",
+      "title": "Show HN: Bodily Oddities",
+      "url": "https://vester.si/bodily-oddities/",
+      "points": 341,
+      "comments": 216,
+      "publishedAt": "2026-09-10T20:33:11Z"
+    },
+    {
+      "id": "49668706",
+      "title": "Navier-Stokes Announcement",
+      "url": "https://www.claymath.org/news/navier-stokes-announcement/",
+      "points": 338,
+      "comments": 290,
+      "publishedAt": "2026-09-12T04:09:43Z"
+    },
+    {
+      "id": "49656496",
+      "title": "The Waymo effect: how AI is quietly making research less collaborative",
+      "url": "https://www.researchagenda.news/articles/the-waymo-effect.html",
+      "points": 335,
+      "comments": 302,
+      "publishedAt": "2026-09-11T11:17:50Z"
+    },
+    {
+      "id": "49685991",
+      "title": "David Sacks: OpenAI and Anthropic Don't Need Regulations to Pace Frontier Models",
+      "url": "https://twitter.com/DavidSacks/status/2098973625252708460",
+      "points": 330,
+      "comments": 260,
+      "publishedAt": "2026-09-13T16:52:33Z"
+    },
+    {
+      "id": "49663373",
+      "title": "GrapheneOS' rewritten Messages app is released",
+      "url": "https://github.com/GrapheneOS/Messaging/releases/tag/13",
+      "points": 327,
+      "comments": 256,
+      "publishedAt": "2026-09-11T18:50:36Z"
+    },
+    {
+      "id": "49713468",
+      "title": "Israeli Minister Threatens Filmmakers' Citizenship over Gaza Documentary",
+      "url": "https://www.reutersconnect.com/item/israeli-minister-threatens-filmmakers-citizenship-over-gaza-documentary/dGFnOnJldXRlcnMuY29tLDIwMjY6bmV3c21sX09XQ1ZNQzQ0NjcxMC1WSURFTw",
+      "points": 322,
+      "comments": 86,
+      "publishedAt": "2026-09-15T14:52:14Z"
+    },
+    {
+      "id": "49716476",
+      "title": "We got admin access to Baseten's production GitHub",
+      "url": "https://www.strix.ai/blog/baseten-harbor-github-pat-takeover",
+      "points": 321,
+      "comments": 184,
+      "publishedAt": "2026-09-15T18:11:24Z"
+    },
+    {
+      "id": "49714547",
+      "title": "America's Driver's License Breach Is a National Security Disaster",
+      "url": "https://www.lawfaremedia.org/article/america%27s-drivers-licence-breach-is-a-national-security-disaster",
+      "points": 315,
+      "comments": 201,
+      "publishedAt": "2026-09-15T15:58:48Z"
+    },
+    {
+      "id": "49691343",
+      "title": "Nike exits the S&P 100 after 18 years and a $200B market-cap wipeout",
+      "url": "https://fortune.com/2026/09/08/nike-stock-plummets-sp500-market-cap-index/",
+      "points": 314,
+      "comments": 437,
+      "publishedAt": "2026-09-14T02:50:40Z"
+    },
+    {
+      "id": "49688157",
+      "title": "Mark Zuckerberg: \"Cambridge Analytica\" (2017)",
+      "url": "https://twitter.com/TechEmails/status/2099214399840059428",
+      "points": 314,
+      "comments": 146,
+      "publishedAt": "2026-09-13T20:08:45Z"
+    },
+    {
+      "id": "49727627",
+      "title": "PS5 Linux lead quits: \"a bunch of noobs using LLMs\" that \"they don't understand\"",
+      "url": "https://frvr.com/blog/news/ps5-linux-lead-quits-as-open-source-projects-have-become-a-bunch-of-noobs-using-llms-that-they-dont-even-understand/",
+      "points": 313,
+      "comments": 216,
+      "publishedAt": "2026-09-16T14:30:36Z"
+    },
+    {
+      "id": "49676085",
+      "title": "An open letter to Dario: if you mean it, open the weights",
+      "url": "https://jacob.gold/posts/open-letter-to-dario-amodei-about-open-weights/",
+      "points": 307,
+      "comments": 100,
+      "publishedAt": "2026-09-12T19:15:32Z"
+    },
+    {
+      "id": "49647134",
+      "title": "Music Theory for the 21st-Century Classroom",
+      "url": "https://musictheory.pugetsound.edu/mt21c/MusicTheory.html",
+      "points": 305,
+      "comments": 151,
+      "publishedAt": "2026-09-10T17:14:12Z"
+    },
+    {
+      "id": "49704246",
+      "title": "Charts built for Chat",
+      "url": "https://dbtcharts.com/blog/charts-built-for-chat/",
+      "points": 302,
+      "comments": 89,
+      "publishedAt": "2026-09-14T21:22:54Z"
+    },
+    {
+      "id": "49696697",
+      "title": "Ubuntu 26.10 completes transition to Rust-based coreutils",
+      "url": "https://www.omgubuntu.co.uk/2026/09/ubuntu-2610-rust-coreutils-complete",
+      "points": 293,
+      "comments": 322,
+      "publishedAt": "2026-09-14T13:38:58Z"
+    },
+    {
+      "id": "49658311",
+      "title": "Measuring the sloppiness of code",
+      "url": "https://earendil.com/posts/measuring-code-sloppiness/",
+      "points": 293,
+      "comments": 236,
+      "publishedAt": "2026-09-11T13:42:28Z"
+    },
+    {
+      "id": "49710903",
+      "title": "Tell the speakers that you liked their talks",
+      "url": "https://ohhelloana.blog/tell-the-speakers/",
+      "points": 290,
+      "comments": 80,
+      "publishedAt": "2026-09-15T11:28:19Z"
+    },
+    {
+      "id": "49645686",
+      "title": "Neki – Sharded Postgres",
+      "url": "https://planetscale.com/blog/introducing-neki",
+      "points": 280,
+      "comments": 153,
+      "publishedAt": "2026-09-10T15:43:49Z"
+    },
+    {
+      "id": "49711424",
+      "title": "Performance Improvements in .NET 11",
+      "url": "https://devblogs.microsoft.com/dotnet/performance-improvements-in-net-11/",
+      "points": 279,
+      "comments": 58,
+      "publishedAt": "2026-09-15T12:18:16Z"
+    },
+    {
+      "id": "49718928",
+      "title": "German Rheinmetall open-sources its Battlesuite connected weapon system protcol",
+      "url": "https://rheinmetall.github.io/onboardapi-documentation/9.10.0/index.html",
+      "points": 278,
+      "comments": 107,
+      "publishedAt": "2026-09-15T21:07:47Z"
+    },
+    {
+      "id": "49690554",
+      "title": "The case against JPEG XL",
+      "url": "https://giannirosato.com/blog/post/case-against-jxl/",
+      "points": 276,
+      "comments": 382,
+      "publishedAt": "2026-09-14T01:02:37Z"
+    },
+    {
+      "id": "49659245",
+      "title": "HuggingFace: Security.txt",
+      "url": "https://huggingface.co/security.txt",
+      "points": 276,
+      "comments": 72,
+      "publishedAt": "2026-09-11T14:38:13Z"
+    },
+    {
+      "id": "49676820",
+      "title": "Real-SWE: Benchmarking AI models on private, real-world, enterprise codebases",
+      "url": "https://withspecific.com/benchmarks/real-swe",
+      "points": 275,
+      "comments": 157,
+      "publishedAt": "2026-09-12T20:25:48Z"
+    },
+    {
+      "id": "49725356",
+      "title": "Original Sony PlayStation 2 security chip 'broken wide open' after 26 years",
+      "url": "https://www.tomshardware.com/video-games/playstation/26-year-old-sony-ps2-security-chip-broken-wide-open-after-four-years-of-effort-reverse-engineering-enthusiast-successfully-unlocks-cxp102064-mechacon-chip",
+      "points": 275,
+      "comments": 80,
+      "publishedAt": "2026-09-16T11:49:40Z"
+    },
+    {
+      "id": "49688259",
+      "title": "Mullenweg has returned as CEO after attempted board ouster",
+      "url": "https://techcrunch.com/2026/09/12/automattic-confirms-mullenweg-has-returned-as-ceo-after-attempted-ouster-by-board/",
+      "points": 274,
+      "comments": 385,
+      "publishedAt": "2026-09-13T20:19:06Z"
+    },
+    {
+      "id": "49649124",
+      "title": "The Deathray: A simple way for an untrusted site to freeze a Mac",
+      "url": "https://auberon.xyz/blog/posts/deathray/",
+      "points": 273,
+      "comments": 194,
+      "publishedAt": "2026-09-10T19:34:20Z"
+    },
+    {
+      "id": "49695459",
+      "title": "XCancel suspended \"due to a new development in the ongoing legal proceedings\"",
+      "url": "https://xcancel.com/twitter",
+      "points": 273,
+      "comments": 1,
+      "publishedAt": "2026-09-14T12:05:52Z"
+    },
+    {
+      "id": "49698699",
+      "title": "A beginning for mathematics",
+      "url": "https://www.daniellitt.com/blog/2026/9/13/a-beginning-for-mathematics/",
+      "points": 271,
+      "comments": 147,
+      "publishedAt": "2026-09-14T15:33:07Z"
+    },
+    {
+      "id": "49642645",
+      "title": "Julia 1.13 highlights",
+      "url": "https://julialang.org/blog/2026/09/julia-1.13-highlights/",
+      "points": 271,
+      "comments": 48,
+      "publishedAt": "2026-09-10T12:27:25Z"
+    },
+    {
+      "id": "49724488",
+      "title": "Salesforce Global Outage",
+      "url": "https://status.salesforce.com/products/all",
+      "points": 270,
+      "comments": 177,
+      "publishedAt": "2026-09-16T10:37:08Z"
+    },
+    {
+      "id": "49709381",
+      "title": "Alternatives to MinIO for single-node local S3",
+      "url": "https://rmoff.net/2026/01/14/alternatives-to-minio-for-single-node-local-s3/",
+      "points": 269,
+      "comments": 106,
+      "publishedAt": "2026-09-15T08:21:27Z"
+    },
+    {
+      "id": "49689460",
+      "title": "The contagion of fear",
+      "url": "https://bcantrill.dtrace.org/2026/09/13/the-contagion-of-fear/",
+      "points": 268,
+      "comments": 192,
+      "publishedAt": "2026-09-13T22:38:18Z"
+    },
+    {
+      "id": "49677577",
+      "title": "Don't be the out of touch Kung Fu master",
+      "url": "https://twitter.com/ID_AA_Carmack/status/2098443262214230095",
+      "points": 266,
+      "comments": 421,
+      "publishedAt": "2026-09-12T21:51:43Z"
+    },
+    {
+      "id": "49708993",
+      "title": "CSS-Tricks in Limbo",
+      "url": "https://vale.rocks/micros/20260915-0135",
+      "points": 266,
+      "comments": 133,
+      "publishedAt": "2026-09-15T07:27:46Z"
+    },
+    {
+      "id": "49683262",
+      "title": "Why is the x86 undefined instruction called ud2? Why 2?",
+      "url": "https://devblogs.microsoft.com/oldnewthing/20260910-00/?p=112689",
+      "points": 264,
+      "comments": 66,
+      "publishedAt": "2026-09-13T12:30:15Z"
+    },
+    {
+      "id": "49643112",
+      "title": "Another researcher says OpenAI trained on conversations, then claimed breakthrou",
+      "url": "https://bsky.app/profile/did:plc:ckaz32jwl6t2cno6fmuw2nhn/post/3mv4mt4ikss2d",
+      "points": 263,
+      "comments": 15,
+      "publishedAt": "2026-09-10T13:07:14Z"
+    },
+    {
+      "id": "49699297",
+      "title": "Microsoft patches Windows and Excel – breaks audio, remote access, and paste",
+      "url": "https://www.theregister.com/os-platforms/2026/09/14/microsoft-patches-windows-and-excel-breaks-audio-remote-access-and-paste/5296085",
+      "points": 259,
+      "comments": 180,
+      "publishedAt": "2026-09-14T16:09:45Z"
+    },
+    {
+      "id": "49698607",
+      "title": "Principles for Fast Tokio Applications",
+      "url": "https://dial9-rs.github.io/blog/principles-for-fast-tokio-applications/",
+      "points": 246,
+      "comments": 66,
+      "publishedAt": "2026-09-14T15:27:56Z"
+    },
+    {
+      "id": "49723873",
+      "title": "Learning Programming in an Age of LLMs",
+      "url": "https://blog.ploeh.dk/2026/09/16/on-learning-programming-in-an-age-of-llms/",
+      "points": 238,
+      "comments": 182,
+      "publishedAt": "2026-09-16T09:12:34Z"
+    },
+    {
+      "id": "49670032",
+      "title": "Retrospectively Reverse-Engineering Apple's Neural Engine",
+      "url": "https://eiln.github.io/posts/ane.html",
+      "points": 238,
+      "comments": 36,
+      "publishedAt": "2026-09-12T07:54:03Z"
+    },
+    {
+      "id": "49655286",
+      "title": "Cherenkov Radiation",
+      "url": "http://www.iaea.org/newscenter/news/what-is-cherenkov-radiation",
+      "points": 234,
+      "comments": 111,
+      "publishedAt": "2026-09-11T08:42:04Z"
+    },
+    {
+      "id": "49715113",
+      "title": "There's a 100% Chance AI Agents Are Ruining the Internet",
+      "url": "https://www.404media.co/theres-a-100-chance-ai-agents-are-already-ruining-the-internet/",
+      "points": 229,
+      "comments": 168,
+      "publishedAt": "2026-09-15T16:38:45Z"
+    },
+    {
+      "id": "49706223",
+      "title": "Ex-FTC boss Khan: break out the handcuffs for AI CEOs, citing 1934 precedent",
+      "url": "https://www.theregister.com/ai-and-ml/2026/09/14/ex-ftc-boss-khan-urges-uncle-sam-to-break-out-the-handcuffs-for-ai-ceos-citing-1934-precedent/5296325",
+      "points": 229,
+      "comments": 142,
+      "publishedAt": "2026-09-15T00:40:14Z"
+    },
+    {
+      "id": "49693610",
+      "title": "EuroBirdPortal – Live bird movements across Europe",
+      "url": "https://www.eurobirdportal.org/ebp/en/",
+      "points": 228,
+      "comments": 64,
+      "publishedAt": "2026-09-14T08:25:47Z"
+    },
+    {
+      "id": "49686697",
+      "title": "Global shortage has led to motor oil rationing at Costco",
+      "url": "https://guessingheadlights.com/global-shortage-has-led-to-motor-oil-rationing-at-costco/",
+      "points": 225,
+      "comments": 215,
+      "publishedAt": "2026-09-13T17:57:59Z"
+    },
+    {
+      "id": "49695409",
+      "title": "Apple's Siri AI Can Be Swapped Out for Claude, ChatGPT, Code Shows",
+      "url": "https://www.macrumors.com/2026/09/14/siri-can-be-swapped-out-for-chatgpt-claude/",
+      "points": 225,
+      "comments": 161,
+      "publishedAt": "2026-09-14T12:01:32Z"
+    },
+    {
+      "id": "49732513",
+      "title": "Backups Aren't Simple",
+      "url": "https://filipovski.net/2026/09/16/backups-arent-simple.html",
+      "points": 225,
+      "comments": 132,
+      "publishedAt": "2026-09-16T20:27:16Z"
+    },
+    {
+      "id": "49699489",
+      "title": "How my e-reader lost its stripes",
+      "url": "https://www.serpentine.com/posts/2026/x3-stripes/",
+      "points": 224,
+      "comments": 47,
+      "publishedAt": "2026-09-14T16:23:16Z"
+    },
+    {
+      "id": "49684196",
+      "title": "Making Startups Powerful",
+      "url": "https://paulgraham.com/powerful.html",
+      "points": 222,
+      "comments": 132,
+      "publishedAt": "2026-09-13T14:09:53Z"
+    },
+    {
+      "id": "49660149",
+      "title": "Rune is now open source",
+      "url": "https://rune.build/blog/rune-is-now-open-source",
+      "points": 220,
+      "comments": 70,
+      "publishedAt": "2026-09-11T15:31:47Z"
+    },
+    {
+      "id": "49693613",
+      "title": "A 386 PC for Your RP2350",
+      "url": "https://github.com/rh1tech/frank-386",
+      "points": 219,
+      "comments": 80,
+      "publishedAt": "2026-09-14T08:25:57Z"
+    },
+    {
+      "id": "49696453",
+      "title": "People who can't picture anything are rewriting the science of imagination",
+      "url": "https://dailyneuron.com/aphantasia-mental-imagery-brain-network/",
+      "points": 218,
+      "comments": 311,
+      "publishedAt": "2026-09-14T13:23:53Z"
+    },
+    {
+      "id": "49729412",
+      "title": "Claude Cowork and chat are now one Claude",
+      "url": "https://claude.com/blog/cowork-is-now-claude",
+      "points": 218,
+      "comments": 221,
+      "publishedAt": "2026-09-16T16:26:25Z"
+    },
+    {
+      "id": "49662020",
+      "title": "Psychoactive substances helped spur Andean civilization",
+      "url": "https://www.science.org/content/article/mind-altering-drugs-played-key-role-rise-andean-civilization",
+      "points": 218,
+      "comments": 153,
+      "publishedAt": "2026-09-11T17:25:23Z"
+    },
+    {
+      "id": "49704008",
+      "title": "Amazon vs. Perplexity – U.S. Court of Appeals for the Ninth Circuit",
+      "url": "https://law.justia.com/cases/federal/appellate-courts/ca9/26-1444/26-1444-2026-08-04.html",
+      "points": 216,
+      "comments": 217,
+      "publishedAt": "2026-09-14T21:05:22Z"
+    },
+    {
+      "id": "49734171",
+      "title": "Australia says it could follow Canada in forging deeper ties with EU",
+      "url": "https://www.independent.co.uk/news/world/australasia/canda-eu-membership-australia-us-trade-b3050227.html",
+      "points": 216,
+      "comments": 175,
+      "publishedAt": "2026-09-16T22:56:48Z"
+    },
+    {
+      "id": "49727580",
+      "title": "A warning about 'model welfare'",
+      "url": "https://mustafa-suleyman.ai/a-warning-about-model-welfare",
+      "points": 214,
+      "comments": 594,
+      "publishedAt": "2026-09-16T14:27:47Z"
+    },
+    {
+      "id": "49716953",
+      "title": "Chopping up books when they're physically too big",
+      "url": "https://attainablefelicity.mattkirkland.com/20260915/cut-up-your-books.html",
+      "points": 213,
+      "comments": 208,
+      "publishedAt": "2026-09-15T18:45:31Z"
+    },
+    {
+      "id": "49684289",
+      "title": "OpenArm: An open-source 7DOF humanoid arm",
+      "url": "https://github.com/enactic/OpenArm",
+      "points": 213,
+      "comments": 57,
+      "publishedAt": "2026-09-13T14:17:49Z"
+    },
+    {
+      "id": "49665502",
+      "title": "Android NAT-T keepalive offload bypasses VPN lockdown",
+      "url": "https://supuk.ch/papers/android-natt-keepalive-vpn-bypass",
+      "points": 211,
+      "comments": 57,
+      "publishedAt": "2026-09-11T21:16:48Z"
+    },
+    {
+      "id": "49645907",
+      "title": "Forgejo <=16.0.3 Critical RCE",
+      "url": "https://codeberg.org/forgejo/forgejo/src/branch/forgejo/release-notes-published/16.0.4.md",
+      "points": 207,
+      "comments": 90,
+      "publishedAt": "2026-09-10T15:57:40Z"
+    },
+    {
+      "id": "49659647",
+      "title": "Show HN: Hacker News, without AI",
+      "url": "https://hcker.news/?ai=exclude",
+      "points": 207,
+      "comments": 88,
+      "publishedAt": "2026-09-11T15:01:19Z"
+    },
+    {
+      "id": "49705944",
+      "title": "Doing Everyone Else's Job",
+      "url": "https://yosefk.com/blog/doing-everyone-elses-job.html",
+      "points": 203,
+      "comments": 98,
+      "publishedAt": "2026-09-15T00:01:31Z"
+    },
+    {
+      "id": "49726955",
+      "title": "Dream-RSI: Recursive Self-Improvement through Evolving Worlds",
+      "url": "https://arxiv.org/abs/2609.14858",
+      "points": 203,
+      "comments": 49,
+      "publishedAt": "2026-09-16T13:44:40Z"
+    },
+    {
+      "id": "49712102",
+      "title": "Show HN: Hacking a $20 4G wireless hotspot into a texting device",
+      "url": "https://bkovac.github.io/modem-thing/",
+      "points": 202,
+      "comments": 36,
+      "publishedAt": "2026-09-15T13:20:24Z"
+    },
+    {
+      "id": "49675817",
+      "title": "4,400-Year-Old Tomb of Egyptian Judge Found at Saqqara with Colors on Walls",
+      "url": "https://arkeonews.net/4400-year-old-tomb-of-an-egyptian-judge-found-at-saqqara-with-colors-still-on-the-walls/",
+      "points": 201,
+      "comments": 59,
+      "publishedAt": "2026-09-12T18:51:40Z"
+    },
+    {
+      "id": "49674451",
+      "title": "Reversing Factorio's RNG",
+      "url": "https://gegell.github.io/posts/factorio-rng/",
+      "points": 201,
+      "comments": 29,
+      "publishedAt": "2026-09-12T17:02:19Z"
+    },
+    {
+      "id": "49702239",
+      "title": "Oracle’s 6am layoff emails hit staff amid new wave of cuts",
+      "url": "https://www.techtimes.co.uk/oracle-new-layoffs-restructuring-costs-2-8-billion-1808676",
+      "points": 200,
+      "comments": 189,
+      "publishedAt": "2026-09-14T19:05:15Z"
+    },
+    {
+      "id": "49732931",
+      "title": "Breaking the 1.58-bit Barrier for Ternary LLMs",
+      "url": "https://arxiv.org/abs/2609.16338",
+      "points": 200,
+      "comments": 31,
+      "publishedAt": "2026-09-16T20:59:24Z"
+    },
+    {
+      "id": "49640913",
+      "title": "I added a non-wi-fi Mitsubishi AC to Home Assistant",
+      "url": "https://medium.com/@ivangomezarnedo/how-i-added-a-non-wi-fi-mitsubishi-ac-to-home-assistant-22770661dd77",
+      "points": 199,
+      "comments": 105,
+      "publishedAt": "2026-09-10T09:32:17Z"
+    },
+    {
+      "id": "49660783",
+      "title": "Show HN: Hacker News, Without AI",
+      "url": "https://www.unslop.news/",
+      "points": 197,
+      "comments": 82,
+      "publishedAt": "2026-09-11T16:08:50Z"
+    },
+    {
+      "id": "49719596",
+      "title": "The engineering behind the US Strategic Petroleum Reserve",
+      "url": "https://johnjwang.com/post/2026/09/15/engineering-behind-us-strategic-petroleum-reserve",
+      "points": 197,
+      "comments": 77,
+      "publishedAt": "2026-09-15T22:15:25Z"
+    },
+    {
+      "id": "49647300",
+      "title": "Detecting and countering misuse of AI: September 2026",
+      "url": "https://www.anthropic.com/threat-intelligence-report-september-2026",
+      "points": 189,
+      "comments": 243,
+      "publishedAt": "2026-09-10T17:23:42Z"
+    },
+    {
+      "id": "49668198",
+      "title": "Pandas Should Go Extinct",
+      "url": "https://eddie.codes/posts/pandas-should-go-extinct/",
+      "points": 189,
+      "comments": 101,
+      "publishedAt": "2026-09-12T02:42:08Z"
+    },
+    {
+      "id": "49682087",
+      "title": "Revolut confirms customer data breach through fake government requests",
+      "url": "https://techcrunch.com/2026/09/12/revolut-confirms-customer-data-breach-through-fake-government-requests/",
+      "points": 188,
+      "comments": 132,
+      "publishedAt": "2026-09-13T09:59:58Z"
+    },
+    {
+      "id": "49719938",
+      "title": "Recreating Voodoo Graphics and a Late-1990s Gaming PC on an FPGA",
+      "url": "https://nand2mario.github.io/posts/2026/zsst-voodoo/",
+      "points": 188,
+      "comments": 56,
+      "publishedAt": "2026-09-15T22:50:55Z"
+    },
+    {
+      "id": "49715934",
+      "title": "Dystopian Surveillance Is Becoming a Reality",
+      "url": "https://dallincrump.com/dystopian-surveillance-is-becoming-a-reality",
+      "points": 185,
+      "comments": 100,
+      "publishedAt": "2026-09-15T17:37:36Z"
+    },
+    {
+      "id": "49651221",
+      "title": "Nine coding harnesses vs. your laptop",
+      "url": "https://nasutton.notion.site/Nine-coding-harnesses-vs-your-laptop-3d139990182b80d59fa3cf500f0450ba?pvs=74",
+      "points": 185,
+      "comments": 71,
+      "publishedAt": "2026-09-10T22:54:01Z"
+    },
+    {
+      "id": "49662214",
+      "title": "λ Snap – An inviting programming language for kids and adults for CS study",
+      "url": "https://snap.berkeley.edu/",
+      "points": 184,
+      "comments": 109,
+      "publishedAt": "2026-09-11T17:36:11Z"
+    },
+    {
+      "id": "49645754",
+      "title": "Silicon Valley is transforming the military-industrial complex? (2024)",
+      "url": "https://costsofwar.watson.brown.edu/paper/how-big-tech-and-silicon-valley-are-transforming-military-industrial-complex",
+      "points": 182,
+      "comments": 384,
+      "publishedAt": "2026-09-10T15:47:50Z"
+    },
+    {
+      "id": "49662367",
+      "title": "Room 641A",
+      "url": "https://en.wikipedia.org/wiki/Room_641A",
+      "points": 182,
+      "comments": 78,
+      "publishedAt": "2026-09-11T17:45:03Z"
+    },
+    {
+      "id": "49677916",
+      "title": "Japan's book scene is moving from bookstores to libraries",
+      "url": "https://untranslatedjp.substack.com/p/japans-book-scene-is-quietly-moving",
+      "points": 182,
+      "comments": 75,
+      "publishedAt": "2026-09-12T22:35:25Z"
+    },
+    {
+      "id": "49679643",
+      "title": "Aligned to whom?",
+      "url": "https://hyperbo.la/w/aligned-to-whom/",
+      "points": 181,
+      "comments": 124,
+      "publishedAt": "2026-09-13T03:17:18Z"
+    },
+    {
+      "id": "49673689",
+      "title": "Compressing a flag to 11 bits",
+      "url": "https://read.vantezzen.io/miniflags",
+      "points": 181,
+      "comments": 73,
+      "publishedAt": "2026-09-12T15:57:43Z"
+    },
+    {
+      "id": "49676425",
+      "title": "Show HN: Redis City – Explore how Redis works in an interactive 3D model",
+      "url": "https://poltora.dev/redis",
+      "points": 180,
+      "comments": 27,
+      "publishedAt": "2026-09-12T19:43:34Z"
+    },
+    {
+      "id": "49661506",
+      "title": "Feeling Sad about AI",
+      "url": "https://artificialworlds.net/blog/2026/09/11/feeling-sad-about-ai/",
+      "points": 179,
+      "comments": 308,
+      "publishedAt": "2026-09-11T16:50:51Z"
+    },
+    {
+      "id": "49650326",
+      "title": "OpenAI’s Navier-Stokes release included a Lean 4 formal proof",
+      "url": "https://www.johndcook.com/blog/2026/09/09/formal-method-revolution/",
+      "points": 179,
+      "comments": 178,
+      "publishedAt": "2026-09-10T21:22:59Z"
+    },
+    {
+      "id": "49717605",
+      "title": "WangNet – 1.8 MB, zero-dependency Numberwang adjudication in 11 languages",
+      "url": "https://github.com/GraafHenk/numberwang",
+      "points": 178,
+      "comments": 62,
+      "publishedAt": "2026-09-15T19:27:35Z"
+    },
+    {
+      "id": "49662767",
+      "title": "Litelm: LiteLLM Without the Bloat",
+      "url": "https://github.com/kennethwolters/litelm",
+      "points": 176,
+      "comments": 63,
+      "publishedAt": "2026-09-11T18:10:20Z"
+    },
+    {
+      "id": "49684356",
+      "title": "CUDA for AMD on Windows",
+      "url": "https://github.com/Speedstu/CUDA-for-AMD-Windows",
+      "points": 174,
+      "comments": 108,
+      "publishedAt": "2026-09-13T14:25:13Z"
+    },
+    {
+      "id": "49672842",
+      "title": "I made a build visualizer to understand Bun's compile times",
+      "url": "https://lalitm.com/post/buildprof/",
+      "points": 173,
+      "comments": 32,
+      "publishedAt": "2026-09-12T14:45:28Z"
+    },
+    {
+      "id": "49656471",
+      "title": "RTK reports token savings, but our cost benchmarks disagree",
+      "url": "https://quesma.com/blog/does-rtk-make-ai-coding-cheaper/",
+      "points": 170,
+      "comments": 84,
+      "publishedAt": "2026-09-11T11:15:13Z"
+    },
+    {
+      "id": "49727659",
+      "title": "The DeepMind Institute",
+      "url": "https://institute.deepmind.com/",
+      "points": 170,
+      "comments": 61,
+      "publishedAt": "2026-09-16T14:32:11Z"
+    },
+    {
+      "id": "49668181",
+      "title": "Google stole open source code without crediting the authors (Artemis/Minitap)",
+      "url": "https://www.minitap.ai/blog/i-expected-better-from-google",
+      "points": 170,
+      "comments": 32,
+      "publishedAt": "2026-09-12T02:39:39Z"
+    },
+    {
+      "id": "49641401",
+      "title": "Thanks to Siri Recaps, your Apple Watch is always listening",
+      "url": "https://www.techradar.com/health-fitness/smartwatches/thanks-to-siri-recaps-your-apple-watch-is-always-listening-as-you-go-about-your-day-but-apple-may-be-risking-a-meta-glasses-style-backlash",
+      "points": 169,
+      "comments": 147,
+      "publishedAt": "2026-09-10T10:36:00Z"
+    },
+    {
+      "id": "49648732",
+      "title": "Creativity is the new moat",
+      "url": "https://www.inventbuild.studio/blog/genuine-creativity-is-your-new-moat",
+      "points": 169,
+      "comments": 101,
+      "publishedAt": "2026-09-10T19:03:34Z"
+    },
+    {
+      "id": "49731054",
+      "title": "Vectorized and performance-portable Quicksort (2022)",
+      "url": "https://opensource.googleblog.com/2022/06/Vectorized%20and%20performance%20portable%20Quicksort.html",
+      "points": 169,
+      "comments": 27,
+      "publishedAt": "2026-09-16T18:31:35Z"
+    },
+    {
+      "id": "49731356",
+      "title": "Fed hikes rates as inflation worries push up bond yields",
+      "url": "https://www.reuters.com/live/live-fed-rate-hike-expected-inflation-worries-push-up-bond-yields-2026-09-16/",
+      "points": 168,
+      "comments": 207,
+      "publishedAt": "2026-09-16T18:55:21Z"
+    },
+    {
+      "id": "49697171",
+      "title": "New $100k H-1B visa fee pushes tech jobs offshore",
+      "url": "https://spectrum.ieee.org/h-1b-visa-us-government",
+      "points": 167,
+      "comments": 378,
+      "publishedAt": "2026-09-14T14:09:10Z"
+    },
+    {
+      "id": "49712746",
+      "title": "Global bond yields hit 2008 highs, raising stakes for big borrowers",
+      "url": "https://www.reuters.com/world/asia-pacific/bond-selloff-drives-us-benchmark-beyond-5-stocks-rattled-2026-09-15/",
+      "points": 165,
+      "comments": 178,
+      "publishedAt": "2026-09-15T14:07:01Z"
+    },
+    {
+      "id": "49703003",
+      "title": "GPT-5.6 Luna vs. GPT-6 Astra: Is a $1.20 Model Good Enough for Code Review?",
+      "url": "https://entelligence.ai/blogs/gpt-5.6-luna-vs-gpt-6-astra-is-a-1.20-model-good-enough-for-code-review",
+      "points": 165,
+      "comments": 153,
+      "publishedAt": "2026-09-14T19:56:20Z"
+    },
+    {
+      "id": "49699159",
+      "title": "Show HN: Neobrutalism.dev – Just added Base UI support and added new color theme",
+      "url": "https://www.neobrutalism.dev/",
+      "points": 165,
+      "comments": 77,
+      "publishedAt": "2026-09-14T16:02:02Z"
+    },
+    {
+      "id": "49725800",
+      "title": "DeepSeek v4.1 Flash Is Now Our Best Hacking Model",
+      "url": "https://enclave.ai/blog/deepseek-v41-flash-is-now-our-best-hacking-model",
+      "points": 165,
+      "comments": 66,
+      "publishedAt": "2026-09-16T12:19:55Z"
+    },
+    {
+      "id": "49694035",
+      "title": "Intelligence per Watt: Measuring Intelligence Efficiency of Local AI",
+      "url": "https://arxiv.org/abs/2511.07885",
+      "points": 165,
+      "comments": 62,
+      "publishedAt": "2026-09-14T09:16:39Z"
+    },
+    {
+      "id": "49679459",
+      "title": "The Interim Computer Museum",
+      "url": "https://icm.museum/",
+      "points": 164,
+      "comments": 27,
+      "publishedAt": "2026-09-13T02:43:57Z"
+    },
+    {
+      "id": "49713024",
+      "title": "The Inference Hardware Revolution of 2026",
+      "url": "https://spectrum.ieee.org/inference-hardware-revolution",
+      "points": 159,
+      "comments": 21,
+      "publishedAt": "2026-09-15T14:24:08Z"
+    },
+    {
+      "id": "49677450",
+      "title": "P(doom)",
+      "url": "https://lucumr.pocoo.org/2026/9/12/pdoom/",
+      "points": 158,
+      "comments": 133,
+      "publishedAt": "2026-09-12T21:35:38Z"
+    },
+    {
+      "id": "49660576",
+      "title": "Global Glacier Extinction Explorer",
+      "url": "https://glacierextinction.com",
+      "points": 158,
+      "comments": 64,
+      "publishedAt": "2026-09-11T15:58:06Z"
+    },
+    {
+      "id": "49690260",
+      "title": "Open-source AI and open models reading list",
+      "url": "https://www.interconnects.ai/p/open-source-ai-reading-list",
+      "points": 158,
+      "comments": 30,
+      "publishedAt": "2026-09-14T00:22:51Z"
+    },
+    {
+      "id": "49711309",
+      "title": "25 Years of Mass Surveillance Is Enough [Auth: Cindy Cohn; Bruce Schneier]",
+      "url": "https://www.lawfaremedia.org/article/25-years-of-mass-surveillance-is-enough",
+      "points": 158,
+      "comments": 9,
+      "publishedAt": "2026-09-15T12:08:26Z"
+    },
+    {
+      "id": "49695829",
+      "title": "Texas judge rules TikTok misled users on child safety feature",
+      "url": "https://www.reuters.com/legal/litigation/texas-judge-rules-tiktok-misled-users-child-safety-feature-2026-09-11/",
+      "points": 157,
+      "comments": 99,
+      "publishedAt": "2026-09-14T12:37:42Z"
+    },
+    {
+      "id": "49730239",
+      "title": "ER visits for gambling disorders doubled after expanded online gambling market",
+      "url": "https://temertymedicine.utoronto.ca/news/emergency-room-visits-gambling-disorders-nearly-doubled-after-expanded-online-gambling-market",
+      "points": 156,
+      "comments": 148,
+      "publishedAt": "2026-09-16T17:27:37Z"
+    },
+    {
+      "id": "49679637",
+      "title": "After Math",
+      "url": "https://terrytao.wordpress.com/2026/09/12/after-math/",
+      "points": 155,
+      "comments": 169,
+      "publishedAt": "2026-09-13T03:16:41Z"
+    },
+    {
+      "id": "49663054",
+      "title": "CIA Releases President's Daily Briefs in Commemoration of 9/11",
+      "url": "https://www.cia.gov/stories/story/cia-releases-presidents-daily-briefs-in-commemoration-of-the-25th-anniversary-of-9-11/",
+      "points": 155,
+      "comments": 81,
+      "publishedAt": "2026-09-11T18:30:07Z"
+    },
+    {
+      "id": "49727041",
+      "title": "OpenAI expands ChatGPT ads with Sponsored Agents",
+      "url": "https://openai.com/index/reimagining-advertising-with-ai/",
+      "points": 154,
+      "comments": 173,
+      "publishedAt": "2026-09-16T13:51:15Z"
+    },
+    {
+      "id": "49713262",
+      "title": "The CSS Zen Garden dream, finally shipped",
+      "url": "https://josprague.com/blog/the-css-zen-garden-dream-finally-shipped/",
+      "points": 154,
+      "comments": 112,
+      "publishedAt": "2026-09-15T14:40:08Z"
+    },
+    {
+      "id": "49735930",
+      "title": "Keys Not Included: recovering the signing keys for US driver's license barcodes",
+      "url": "https://ryan.science/blog/keys-not-included",
+      "points": 154,
+      "comments": 55,
+      "publishedAt": "2026-09-17T03:03:23Z"
+    },
+    {
+      "id": "49697477",
+      "title": "Dropping eBPF CPU Cost by About 90% with Memoization (Not AI Gen)",
+      "url": "https://nathannaveen.dev/posts/dropping-ebpf-cpu-cost-by-90/",
+      "points": 153,
+      "comments": 29,
+      "publishedAt": "2026-09-14T14:29:23Z"
+    },
+    {
+      "id": "49650418",
+      "title": "NTSB issues investigative update on B-767 runway excursion accident in Miami",
+      "url": "https://www.ntsb.gov:443/news/press-releases/Pages/NR20260909.aspx",
+      "points": 150,
+      "comments": 284,
+      "publishedAt": "2026-09-10T21:30:55Z"
+    },
+    {
+      "id": "49662116",
+      "title": "A Misalignment of AI in Mathematics",
+      "url": "https://terrytao.wordpress.com/2026/09/11/a-severe-misalignment-of-ai-in-mathematics/",
+      "points": 150,
+      "comments": 10,
+      "publishedAt": "2026-09-11T17:30:26Z"
+    },
+    {
+      "id": "49718822",
+      "title": "Jean-Pierre Serre turns 100",
+      "url": "https://mathshistory.st-andrews.ac.uk/Biographies/Serre/",
+      "points": 149,
+      "comments": 26,
+      "publishedAt": "2026-09-15T20:57:18Z"
+    },
+    {
+      "id": "49692844",
+      "title": "Anecdotally, programmers dislike \"reduce\"",
+      "url": "https://evanhahn.com/posts/2026-09-13-programmers-dislike-reduce/",
+      "points": 148,
+      "comments": 223,
+      "publishedAt": "2026-09-14T06:46:26Z"
+    },
+    {
+      "id": "49660104",
+      "title": "Matt Mullenweg tells Automattic staff in Slack he's back in control after ouster",
+      "url": "https://techcrunch.com/2026/09/11/matt-mullenweg-tells-automattic-staff-in-slack-hes-back-in-control-after-ceo-ouster/",
+      "points": 148,
+      "comments": 146,
+      "publishedAt": "2026-09-11T15:29:35Z"
+    },
+    {
+      "id": "49716241",
+      "title": "Hugging Face is billing OpenAI $100M for hacking it",
+      "url": "https://thenextweb.com/news/hugging-face-delangue-openai-100m-compute-traces-demand",
+      "points": 147,
+      "comments": 51,
+      "publishedAt": "2026-09-15T17:56:10Z"
+    },
+    {
+      "id": "49716265",
+      "title": "Google copied our open-source code, removed engineers' names without credit",
+      "url": "https://www.reddit.com/r/reinforcementlearning/comments/1wg1unx/google_copied_our_opensource_code_removed_our/",
+      "points": 147,
+      "comments": 13,
+      "publishedAt": "2026-09-15T17:57:39Z"
+    },
+    {
+      "id": "49658672",
+      "title": "I fixed a tractor using John Deere's self-repair service. Farmers aren't sold",
+      "url": "https://www.wired.com/story/i-fixed-a-tractor-john-deere-self-repair-service/",
+      "points": 146,
+      "comments": 159,
+      "publishedAt": "2026-09-11T14:07:08Z"
+    },
+    {
+      "id": "49667762",
+      "title": "How to buy a good car for $1000",
+      "url": "https://abio.substack.com/p/how-poor-people-buy-cars",
+      "points": 145,
+      "comments": 233,
+      "publishedAt": "2026-09-12T01:37:06Z"
+    },
+    {
+      "id": "49710015",
+      "title": "How much of F-Droid is LLM generated?",
+      "url": "https://tintotint.eu/whacky-corner/f-droid_slop/",
+      "points": 143,
+      "comments": 180,
+      "publishedAt": "2026-09-15T09:47:48Z"
+    },
+    {
+      "id": "49667375",
+      "title": "Starlink Signal Leakage Threatens Radio Astronomy's Most Critical Frequencies",
+      "url": "https://www.gadgetreview.com/starlinks-signal-leakage-is-threatening-radio-astronomys-most-critical-frequencies",
+      "points": 143,
+      "comments": 86,
+      "publishedAt": "2026-09-12T00:40:32Z"
+    },
+    {
+      "id": "49649222",
+      "title": "Proof of Capture: Apple Reference Image, but open source and using steganography",
+      "url": "https://merybenavente.me/blog/proof-of-capture",
+      "points": 141,
+      "comments": 85,
+      "publishedAt": "2026-09-10T19:44:15Z"
+    },
+    {
+      "id": "49653328",
+      "title": "Exercise intensity is associated with cardiometabolic health",
+      "url": "https://www.cell.com/cell-reports-medicine/fulltext/S2666-3791(26)00405-2",
+      "points": 141,
+      "comments": 75,
+      "publishedAt": "2026-09-11T03:48:10Z"
+    },
+    {
+      "id": "49728733",
+      "title": "Can we stop with the uptime percentages?",
+      "url": "https://blog.jim-nielsen.com/2026/stop-with-the-uptime-percentage/",
+      "points": 139,
+      "comments": 104,
+      "publishedAt": "2026-09-16T15:40:04Z"
+    },
+    {
+      "id": "49697014",
+      "title": "Notes on gotchas while migrating 35kb preprompts from Opus to self-hosted Ollama",
+      "url": "https://patrickmccanna.net/notes-on-migrating-large-prompts-away-from-anthropic-openai-to-self-hosted-llms/",
+      "points": 139,
+      "comments": 76,
+      "publishedAt": "2026-09-14T13:59:09Z"
+    },
+    {
+      "id": "49693384",
+      "title": "OpenArch – PyTorch implementations of modern LLM architectures",
+      "url": "https://github.com/anuj0456/OpenArch",
+      "points": 139,
+      "comments": 32,
+      "publishedAt": "2026-09-14T07:55:19Z"
+    },
+    {
+      "id": "49682319",
+      "title": "Nvidia dismisses \"circular financing\", says every $1 it invests brings back $100",
+      "url": "https://invezz.com/news/2026/09/11/nvidia-says-every-1-it-invests-brings-back-100-so-why-does-the-stock-keep-falling/",
+      "points": 137,
+      "comments": 196,
+      "publishedAt": "2026-09-13T10:29:18Z"
+    },
+    {
+      "id": "49734264",
+      "title": "OpenSpec – A lightweight and configurable AI spec framework",
+      "url": "https://openspec.dev/",
+      "points": 136,
+      "comments": 55,
+      "publishedAt": "2026-09-16T23:06:39Z"
+    },
+    {
+      "id": "49672549",
+      "title": "Waymo pulls over, calls cops on juvenile riders who had 'ghost gun\"",
+      "url": "https://www.latimes.com/california/story/2026-09-12/juveniles-riding-in-waymo-arrested-after-police-find-ghost-gun",
+      "points": 135,
+      "comments": 223,
+      "publishedAt": "2026-09-12T14:16:24Z"
+    },
+    {
+      "id": "49683729",
+      "title": "US Customs supervisor busted for stealing hardware from Homeland Security PCs",
+      "url": "https://www.tomshardware.com/pc-components/us-customs-supervisor-busted-for-stealing-core-i7-cpus-ram-and-hard-drives-from-homeland-security-pcs-stolen-tech-swapped-with-inferior-hardware-and-cashed-out-on-newegg",
+      "points": 135,
+      "comments": 109,
+      "publishedAt": "2026-09-13T13:24:28Z"
+    },
+    {
+      "id": "49668777",
+      "title": "Usenet rewind archive search engine",
+      "url": "https://www.usenet-rewind.com/",
+      "points": 135,
+      "comments": 47,
+      "publishedAt": "2026-09-12T04:19:52Z"
+    },
+    {
+      "id": "49699493",
+      "title": "Cops Search Flock Cameras for Reasons of 'LMAO,' 'IDK,' and 'Asdfg'",
+      "url": "https://www.404media.co/cops-search-thousands-of-flock-cameras-for-reasons-of-lmao-idk-hehe-and-asdfg/",
+      "points": 135,
+      "comments": 14,
+      "publishedAt": "2026-09-14T16:23:41Z"
+    },
+    {
+      "id": "49699648",
+      "title": "Why don't machine learning research agents overfit?",
+      "url": "https://www.amazon.science/blog/why-dont-machine-learning-research-agents-overfit",
+      "points": 134,
+      "comments": 93,
+      "publishedAt": "2026-09-14T16:32:23Z"
+    },
+    {
+      "id": "49720164",
+      "title": "Saving Jet Fuel",
+      "url": "https://tech.marksblogg.com/scikit-decide-openap-optimal-flight-planning.html",
+      "points": 134,
+      "comments": 72,
+      "publishedAt": "2026-09-15T23:17:20Z"
+    },
+    {
+      "id": "49683033",
+      "title": "'Fingerprints' inside the Sun could reveal if it once swallowed a planet",
+      "url": "https://ras.ac.uk/news-and-press/research-highlights/fingerprints-inside-sun-could-reveal-if-it-once-swallowed-planet",
+      "points": 133,
+      "comments": 42,
+      "publishedAt": "2026-09-13T12:01:52Z"
+    },
+    {
+      "id": "49699373",
+      "title": "Claude is a Contrarian",
+      "url": "https://medium.com/@rdsubhas/claude-is-a-contrarian-dbce4de5cada",
+      "points": 132,
+      "comments": 152,
+      "publishedAt": "2026-09-14T16:14:24Z"
+    },
+    {
+      "id": "49670981",
+      "title": "We've followed their lives for six decades; now the stars of 7 Up are bowing out",
+      "url": "https://www.bbc.co.uk/news/articles/crm932el3yjo",
+      "points": 132,
+      "comments": 37,
+      "publishedAt": "2026-09-12T10:39:03Z"
+    },
+    {
+      "id": "49699384",
+      "title": "For AI leaders Doom is a form of hype",
+      "url": "https://erkansaka.net/2026/09/10/ai-doom-rhetoric-safety-hype/",
+      "points": 131,
+      "comments": 182,
+      "publishedAt": "2026-09-14T16:15:05Z"
+    },
+    {
+      "id": "49696402",
+      "title": "Show HN: Pelican-bicycle alternatives",
+      "url": "https://gally.net/temp/20260914pelican-alternatives/index.html",
+      "points": 131,
+      "comments": 45,
+      "publishedAt": "2026-09-14T13:20:22Z"
+    },
+    {
+      "id": "49673580",
+      "title": "Microcode in Intel's 8087 floating-point chip: the scale instruction",
+      "url": "https://www.righto.com/2026/09/8087-microcode-reverse-engineering-fscale.html",
+      "points": 130,
+      "comments": 53,
+      "publishedAt": "2026-09-12T15:49:52Z"
+    },
+    {
+      "id": "49711240",
+      "title": "OpenAI buys smartphone camera maker Glass Imaging for $300M",
+      "url": "https://techcrunch.com/2026/09/14/openai-buys-smartphone-camera-maker-glass-imaging-for-300-million-report-says/",
+      "points": 129,
+      "comments": 97,
+      "publishedAt": "2026-09-15T12:01:31Z"
+    },
+    {
+      "id": "49644179",
+      "title": "AI Is Breaking This Thing We Call Trust",
+      "url": "https://terriblesoftware.org/2026/09/10/ai-is-breaking-this-thing-we-call-trust/",
+      "points": 128,
+      "comments": 69,
+      "publishedAt": "2026-09-10T14:21:20Z"
+    },
+    {
+      "id": "49687312",
+      "title": "Flock cameras used to arrest a child for playing on a swing?",
+      "url": "https://www.youtube.com/watch?v=koclOnlde0E",
+      "points": 127,
+      "comments": 85,
+      "publishedAt": "2026-09-13T18:47:26Z"
+    },
+    {
+      "id": "49671159",
+      "title": "The worst spam emails: iLands AI agent hustle",
+      "url": "https://tedium.co/2026/09/11/ilands-agents-email-spam-kaixin-tang/",
+      "points": 127,
+      "comments": 56,
+      "publishedAt": "2026-09-12T11:13:38Z"
+    },
+    {
+      "id": "49701182",
+      "title": "Backprop Alternative: Augmented Lagrangian Predictive Coding",
+      "url": "https://pub.sakana.ai/pc-alm/",
+      "points": 126,
+      "comments": 45,
+      "publishedAt": "2026-09-14T18:03:12Z"
+    },
+    {
+      "id": "49714239",
+      "title": "Swift 6.4 Released",
+      "url": "https://www.swift.org/blog/swift-6.4-released/",
+      "points": 125,
+      "comments": 62,
+      "publishedAt": "2026-09-15T15:40:14Z"
+    },
+    {
+      "id": "49674498",
+      "title": "Will there be a 7G?",
+      "url": "https://arxiv.org/abs/2609.01877",
+      "points": 123,
+      "comments": 186,
+      "publishedAt": "2026-09-12T17:05:31Z"
+    },
+    {
+      "id": "49712186",
+      "title": "Australia 'on the same page' as Canada as it seeks deeper EU alliance",
+      "url": "https://www.reddit.com/r/worldnews/comments/1wgqken/australia_on_the_same_page_as_canada_as_it_seeks/",
+      "points": 123,
+      "comments": 101,
+      "publishedAt": "2026-09-15T13:25:38Z"
+    },
+    {
+      "id": "49715590",
+      "title": "GEFS on OpenBSD: A Early Preview",
+      "url": "https://marc.info/?l=openbsd-tech&m=178948744271633&w=2",
+      "points": 123,
+      "comments": 75,
+      "publishedAt": "2026-09-15T17:12:19Z"
+    },
+    {
+      "id": "49686134",
+      "title": "Romania soccer introduces black card to 'combat abusive behaviour' from parents",
+      "url": "https://www.nytimes.com/athletic/7586821/2026/09/12/football-black-card-referee/",
+      "points": 123,
+      "comments": 73,
+      "publishedAt": "2026-09-13T17:08:16Z"
+    },
+    {
+      "id": "49651372",
+      "title": "Thelio Mira AI Linux Workstation: 192 GB GPU Memory",
+      "url": "https://system76.com/workstations/thelio-mira-ai",
+      "points": 122,
+      "comments": 131,
+      "publishedAt": "2026-09-10T23:10:06Z"
+    },
+    {
+      "id": "49713395",
+      "title": "A Cop Searched 19,000 Flock Cameras Across 1,558 Cities. His Reason: 'LMAO'",
+      "url": "https://www.techtimes.co.uk/police-flock-search-licence-plate-lmao-1808683",
+      "points": 122,
+      "comments": 76,
+      "publishedAt": "2026-09-15T14:47:21Z"
+    },
+    {
+      "id": "49655176",
+      "title": "Neijuan",
+      "url": "https://en.wikipedia.org/wiki/Neijuan",
+      "points": 122,
+      "comments": 49,
+      "publishedAt": "2026-09-11T08:26:56Z"
+    },
+    {
+      "id": "49660482",
+      "title": "Hacker News with reduced priority for AI driven content",
+      "url": "https://sprinklz.io/public/pdwt4dve5uai",
+      "points": 121,
+      "comments": 57,
+      "publishedAt": "2026-09-11T15:52:49Z"
+    },
+    {
+      "id": "49695408",
+      "title": "Show HN: Kinesis – Control your Mac with the Meta Neural Band",
+      "url": "https://github.com/callbacked/kinesis",
+      "points": 121,
+      "comments": 46,
+      "publishedAt": "2026-09-14T12:01:31Z"
+    },
+    {
+      "id": "49731282",
+      "title": "Reverse-engineered Jev-like model",
+      "url": "https://github.com/vinnylarouge/jevlike",
+      "points": 121,
+      "comments": 17,
+      "publishedAt": "2026-09-16T18:49:57Z"
+    },
+    {
+      "id": "49694596",
+      "title": "Big AI sets out its terms for regulatory capture",
+      "url": "https://www.theregister.com/ai-and-ml/2026/09/14/big-ai-sets-out-its-terms-for-regulatory-capture-and-calls-it-pace-the-frontier/5296067",
+      "points": 120,
+      "comments": 71,
+      "publishedAt": "2026-09-14T10:28:28Z"
+    },
+    {
+      "id": "49690051",
+      "title": "The Coming War on General Computation (2011)",
+      "url": "https://en.wikisource.org/wiki/The_Coming_War_on_General_Computation",
+      "points": 120,
+      "comments": 44,
+      "publishedAt": "2026-09-13T23:54:55Z"
+    },
+    {
+      "id": "49700255",
+      "title": "Cloudflare AKE cuts origin HelloRetryRequests from 52% to 3.7%",
+      "url": "https://blog.cloudflare.com/automatic-key-exchange-for-origins/",
+      "points": 120,
+      "comments": 38,
+      "publishedAt": "2026-09-14T17:02:34Z"
+    },
+    {
+      "id": "49677648",
+      "title": "Giving up on smart rings",
+      "url": "https://notesbylex.com/giving-up-on-smart-rings",
+      "points": 119,
+      "comments": 184,
+      "publishedAt": "2026-09-12T22:00:20Z"
+    },
+    {
+      "id": "49665711",
+      "title": "AI researchers debate how close we are to recursive self-improvement",
+      "url": "https://www.dwarkesh.com/p/john-beren-charlie",
+      "points": 119,
+      "comments": 116,
+      "publishedAt": "2026-09-11T21:35:29Z"
+    },
+    {
+      "id": "49649164",
+      "title": "The GDR and Vietnam: From Fake Coffee to Coffee Empire",
+      "url": "https://www.katjahoyer.uk/p/the-gdr-and-vietnam-from-fake-coffee",
+      "points": 118,
+      "comments": 71,
+      "publishedAt": "2026-09-10T19:39:13Z"
+    },
+    {
+      "id": "49662246",
+      "title": "Rope, twine and thread: Invisible technologies of the Stone Age",
+      "url": "https://knowablemagazine.org/content/article/society/2026/prehistory-lost-threads",
+      "points": 118,
+      "comments": 56,
+      "publishedAt": "2026-09-11T17:38:11Z"
+    },
+    {
+      "id": "49733726",
+      "title": "HarnessTax: How Much Does the Harness Matter for Coding Agents?",
+      "url": "https://harnesstax.github.io/",
+      "points": 118,
+      "comments": 48,
+      "publishedAt": "2026-09-16T22:10:13Z"
+    },
+    {
+      "id": "49732036",
+      "title": "macOS 27 Golden Gate – Review",
+      "url": "https://arstechnica.com/gadgets/2026/09/macos-27-golden-gate-the-ars-technica-review/",
+      "points": 117,
+      "comments": 139,
+      "publishedAt": "2026-09-16T19:53:36Z"
+    },
+    {
+      "id": "49721548",
+      "title": "Negativland, Culture Jamming, and the Art of Making Something New",
+      "url": "https://blog.archive.org/2026/09/11/negativland-culture-jamming-and-the-art-of-making-something-new/",
+      "points": 117,
+      "comments": 40,
+      "publishedAt": "2026-09-16T02:46:06Z"
+    },
+    {
+      "id": "49658192",
+      "title": "Diesel prices in U.S. top $6 a gallon for first time",
+      "url": "https://www.cbsnews.com/news/rising-diesel-prices-consumer-impact/",
+      "points": 114,
+      "comments": 206,
+      "publishedAt": "2026-09-11T13:35:30Z"
+    },
+    {
+      "id": "49656564",
+      "title": "Instagram's head says engagement falls by half without the algorithm",
+      "url": "https://thenextweb.com/news/mosseri-instagram-algorithm-opt-out-engagement-australia",
+      "points": 114,
+      "comments": 104,
+      "publishedAt": "2026-09-11T11:24:10Z"
+    },
+    {
+      "id": "49718025",
+      "title": "How much oil-market buffer is left?",
+      "url": "https://www.depletion.org",
+      "points": 113,
+      "comments": 173,
+      "publishedAt": "2026-09-15T19:56:56Z"
+    },
+    {
+      "id": "49713999",
+      "title": "Cartesian – AI 3D Modeling for Design",
+      "url": "https://www.formas.ai/cartesian",
+      "points": 113,
+      "comments": 79,
+      "publishedAt": "2026-09-15T15:26:45Z"
+    },
+    {
+      "id": "49717280",
+      "title": "Learning to solve hard problems in RL for LLMs by never giving up",
+      "url": "https://mnoukhov.github.io/posts/ngu/",
+      "points": 113,
+      "comments": 9,
+      "publishedAt": "2026-09-15T19:07:38Z"
+    },
+    {
+      "id": "49735410",
+      "title": "DeepSeek-v4.1 Flash: Pushing the Limits of KV Cache Compression",
+      "url": "https://zartbot.github.io/blog/model_arch/dsv41flash_arch/en.html",
+      "points": 113,
+      "comments": 8,
+      "publishedAt": "2026-09-17T01:39:47Z"
+    },
+    {
+      "id": "49694840",
+      "title": "How Much Has Trump Made from Crypto? ($1.4B from 2025 Federal Disclosure)",
+      "url": "https://www.thepricer.org/how-much-has-trump-made-from-crypto/",
+      "points": 112,
+      "comments": 79,
+      "publishedAt": "2026-09-14T10:56:30Z"
+    },
+    {
+      "id": "49697094",
+      "title": "Adversarial Fashion Makes a Statement on AI Panopticon",
+      "url": "https://spectrum.ieee.org/adversarial-fashion",
+      "points": 112,
+      "comments": 48,
+      "publishedAt": "2026-09-14T14:04:53Z"
+    },
+    {
+      "id": "49666146",
+      "title": "Project Blinkenlights",
+      "url": "https://blinkenlights.de/en/",
+      "points": 110,
+      "comments": 34,
+      "publishedAt": "2026-09-11T22:15:00Z"
+    },
+    {
+      "id": "49684101",
+      "title": "Key symbols we lost to time, pt. 1: The PC side",
+      "url": "https://unsung.aresluna.org/key-symbols-we-lost-to-time-pt-1-the-pc-side/",
+      "points": 110,
+      "comments": 33,
+      "publishedAt": "2026-09-13T14:00:44Z"
+    },
+    {
+      "id": "49652028",
+      "title": "YuE2 · Frontier Music with Symbolic Planning",
+      "url": "https://map-yue2.github.io/",
+      "points": 109,
+      "comments": 101,
+      "publishedAt": "2026-09-11T00:33:26Z"
+    },
+    {
+      "id": "49672557",
+      "title": "Europe's \"Less\" Is Doing More Than Anyone Gives It Credit For",
+      "url": "https://oilprice.com/Energy/Energy-General/Europes-Less-Is-Doing-More-Than-Anyone-Gives-It-Credit-For.html",
+      "points": 109,
+      "comments": 60,
+      "publishedAt": "2026-09-12T14:17:28Z"
+    },
+    {
+      "id": "49653311",
+      "title": "Reverse-Engineering Claude Web's MicroVM: Uncovering Anthropic's Hidden Antspace",
+      "url": "https://aprilnea.me/en/blog/reverse-engineering-claude-code-antspace",
+      "points": 109,
+      "comments": 24,
+      "publishedAt": "2026-09-11T03:45:42Z"
+    },
+    {
+      "id": "49688391",
+      "title": "Flawed routers flood University of Wisconsin internet time server (2003)",
+      "url": "https://pages.cs.wisc.edu/~plonka/netgear-sntp/",
+      "points": 109,
+      "comments": 15,
+      "publishedAt": "2026-09-13T20:33:18Z"
+    },
+    {
+      "id": "49671972",
+      "title": "A few good ideas in programming languages",
+      "url": "https://prydt.xyz/blog/a-few-good-ideas-in-pl/",
+      "points": 108,
+      "comments": 75,
+      "publishedAt": "2026-09-12T13:07:52Z"
+    },
+    {
+      "id": "49643543",
+      "title": "LRU is harder to beat than the KV-cache papers suggest",
+      "url": "https://github.com/gauravapiscean/agentic-kv-cache",
+      "points": 108,
+      "comments": 58,
+      "publishedAt": "2026-09-10T13:39:11Z"
+    },
+    {
+      "id": "49658819",
+      "title": "New York thoracic surgeon: \"For many patients 9/11 is not over\"",
+      "url": "https://www.statnews.com/2026/09/11/sept-11-25th-anniversary-ground-zero-exposure-cancer-moment-of-silence/",
+      "points": 108,
+      "comments": 49,
+      "publishedAt": "2026-09-11T14:14:56Z"
+    },
+    {
+      "id": "49672365",
+      "title": "A Mathematical Framework for Transformer Circuits (2021)",
+      "url": "https://transformer-circuits.pub/2021/framework/index.html",
+      "points": 106,
+      "comments": 17,
+      "publishedAt": "2026-09-12T13:56:58Z"
+    },
+    {
+      "id": "49705868",
+      "title": "I'm not addicted to the internet or my smartphone. I'm addicted to information",
+      "url": "https://explorator.dev/addiction/",
+      "points": 105,
+      "comments": 90,
+      "publishedAt": "2026-09-14T23:52:14Z"
+    },
+    {
+      "id": "49709129",
+      "title": "The k-server conjecture is true",
+      "url": "https://arxiv.org/abs/2609.15979",
+      "points": 105,
+      "comments": 35,
+      "publishedAt": "2026-09-15T07:45:31Z"
+    },
+    {
+      "id": "49700153",
+      "title": "Developing provably correct Rust code with Verus",
+      "url": "https://www.amazon.science/blog/developing-provably-correct-rust-code-with-verus",
+      "points": 105,
+      "comments": 12,
+      "publishedAt": "2026-09-14T16:57:50Z"
+    },
+    {
+      "id": "49673392",
+      "title": "LG responds to TV spying allegations",
+      "url": "https://www.theverge.com/tech/994333/lg-responds-to-tv-spying-allegations",
+      "points": 105,
+      "comments": 1,
+      "publishedAt": "2026-09-12T15:33:48Z"
+    },
+    {
+      "id": "49643848",
+      "title": "Bending Spoons buying Miro for $1.355B",
+      "url": "https://investors.bendingspoons.com/newsroom/bending-spoons-agrees-to-acquire-miro",
+      "points": 104,
+      "comments": 78,
+      "publishedAt": "2026-09-10T14:00:21Z"
+    },
+    {
+      "id": "49647404",
+      "title": "JEP 544: Ahead-of-Time Code Compilation",
+      "url": "https://openjdk.org/jeps/544",
+      "points": 104,
+      "comments": 73,
+      "publishedAt": "2026-09-10T17:30:39Z"
+    },
+    {
+      "id": "49676849",
+      "title": "OpenAI's Sam Altman says it would be 'ill-advised' to go public in 2026",
+      "url": "https://techcrunch.com/2026/09/12/openais-sam-altman-says-it-would-be-ill-advised-to-go-public-in-2026/",
+      "points": 104,
+      "comments": 67,
+      "publishedAt": "2026-09-12T20:28:29Z"
+    },
+    {
+      "id": "49684266",
+      "title": "Houthis used Claude Code to develop missile guidance software: Anthropic",
+      "url": "https://clashreport.com/world/articles/houthis-used-claude-code-to-develop-missile-guidance-software-anthropic-s52mnx4pwpo",
+      "points": 103,
+      "comments": 92,
+      "publishedAt": "2026-09-13T14:15:40Z"
+    },
+    {
+      "id": "49691152",
+      "title": "OEMpocalypse: Unprivileged Android app to root on Samsung, Xiaomi, others",
+      "url": "https://calif.io/research/oempocalypse",
+      "points": 103,
+      "comments": 63,
+      "publishedAt": "2026-09-14T02:25:44Z"
+    },
+    {
+      "id": "49660555",
+      "title": "118M Queries per Second on Neki",
+      "url": "https://planetscale.com/blog/118-million-queries-per-second-on-neki",
+      "points": 103,
+      "comments": 50,
+      "publishedAt": "2026-09-11T15:56:37Z"
+    },
+    {
+      "id": "49695220",
+      "title": "Rockstar had a mole in the union worker discord server",
+      "url": "https://www.rockpapershotgun.com/rockstar-had-a-mole-in-the-union-worker-discord-server-for-over-two-and-a-half-years-gta-6-company-reveals-during-legal-battle",
+      "points": 103,
+      "comments": 46,
+      "publishedAt": "2026-09-14T11:45:08Z"
+    },
+    {
+      "id": "49701104",
+      "title": "Iranian banks' SSL certificates are being revoked due to OFAC sanctions",
+      "url": "https://digiato.global/report/iran-banks-ssl-certificates-domain-changes/",
+      "points": 102,
+      "comments": 202,
+      "publishedAt": "2026-09-14T17:58:00Z"
+    },
+    {
+      "id": "49645763",
+      "title": "Neki is sharded Postgres by PlanetScale",
+      "url": "https://neki.dev/",
+      "points": 101,
+      "comments": 4,
+      "publishedAt": "2026-09-10T15:48:14Z"
+    }
+  ],
+  "checkedAt": "2026-09-17T08:46:25Z",
+  "githubFetchedAt": "2026-09-17T08:41:16Z",
+  "hnFetchedAt": "2026-09-17T08:40:38Z",
+  "errors": {}
+}

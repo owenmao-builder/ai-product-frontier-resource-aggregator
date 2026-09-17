@@ -1,0 +1,40 @@
+name: Build and check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 7.33.7
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run typecheck
+      - run: pnpm --dir web install --frozen-lockfile
+      - run: pnpm --dir web run build
+
+  macos:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 7.33.7
+      - run: pnpm --dir web install --frozen-lockfile
+      - run: bash macos/test.sh
+      - name: Build the Apple Silicon app
+        run: bash macos/build.sh "$RUNNER_TEMP/AI News.app"

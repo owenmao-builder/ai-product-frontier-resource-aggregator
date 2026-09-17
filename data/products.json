@@ -1,0 +1,143 @@
+{
+  "verifiedAt": "2026-09-17T09:11:17Z",
+  "items": [
+    {
+      "id": "gemini-3-8-live",
+      "name": "Gemini 3.8 Live",
+      "maker": "Google",
+      "major": true,
+      "category": "语音模型",
+      "summary": "面向实时语音 Agent 的新模型，可结合视觉上下文并在对话中调用工具。",
+      "difference": "与同批推出的 Extended Thinking 相比，这一版侧重规模化与成本效率；支持边对话边执行后台工具调用、视觉理解与多语言切换。",
+      "access": "9 月 15 日起在 Gemini API、Google AI Studio 和 Search Live 逐步上线；企业能力分批预览。",
+      "homepage": "https://ai.google.dev/gemini-api/docs/live",
+      "sourceURL": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-8-live-gemini-3-8-live-extended-thinking",
+      "aliases": [
+        "Gemini 3.8 Live",
+        "Gemini-3.8-Live"
+      ],
+      "releasedOn": "2026-09-15",
+      "releaseKind": "新模型"
+    },
+    {
+      "id": "gemini-3-8-live-extended-thinking",
+      "name": "Gemini 3.8 Live Extended Thinking",
+      "maker": "Google",
+      "major": true,
+      "category": "语音模型",
+      "summary": "带更强多步推理的实时语音模型，面向复杂任务与连续对话。",
+      "difference": "在基础 Live 模型之上强调边推理边说话、异步工具调用和任务进度播报，减少执行复杂流程时的对话中断。",
+      "access": "9 月 15 日起在 Gemini API、Google AI Studio 和 Gemini Live 逐步上线；Workspace 按订阅与产品分批开放。",
+      "homepage": "https://ai.google.dev/gemini-api/docs/live",
+      "sourceURL": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-8-live-gemini-3-8-live-extended-thinking",
+      "aliases": [
+        "Gemini 3.8 Live Extended Thinking",
+        "Gemini 3.8 Live"
+      ],
+      "releasedOn": "2026-09-15",
+      "releaseKind": "新模型"
+    },
+    {
+      "id": "claude-docs-2026-09",
+      "name": "Claude Docs",
+      "maker": "Anthropic",
+      "major": true,
+      "category": "办公协作",
+      "summary": "9 月新上线的文档协作能力，可在 Claude 对话里共同起草和编辑文档。",
+      "difference": "与此前仅在聊天里返回文本相比，文档成为可直接编辑、分享的交付物；保留同一段对话中的上下文、技能和连接器。",
+      "access": "新功能处于付费计划 beta；新版体验先向 Pro / Max 分批推出，企业管理员决定启用时间。",
+      "homepage": "https://claude.ai/",
+      "sourceURL": "https://claude.com/blog/cowork-is-now-claude",
+      "aliases": [
+        "Claude Docs"
+      ],
+      "releasedOn": "2026-09-16",
+      "releaseKind": "新功能"
+    },
+    {
+      "id": "claude-slides-2026-09",
+      "name": "Claude Slides",
+      "maker": "Anthropic",
+      "major": true,
+      "category": "办公协作",
+      "summary": "9 月新上线的幻灯片能力，可在对话内生成、修改和演示幻灯片。",
+      "difference": "文档与演示稿共享对话上下文；可以直接编辑并演示，也能下载为 PowerPoint 或 PDF。",
+      "access": "新功能处于付费计划 beta；新版体验先向 Pro / Max 分批推出，企业管理员决定启用时间。",
+      "homepage": "https://claude.ai/",
+      "sourceURL": "https://claude.com/blog/cowork-is-now-claude",
+      "aliases": [
+        "Claude Slides"
+      ],
+      "releasedOn": "2026-09-16",
+      "releaseKind": "新功能"
+    },
+    {
+      "id": "gpt-6-astra",
+      "name": "GPT-6 Astra",
+      "maker": "OpenAI",
+      "major": true,
+      "category": "通用模型",
+      "summary": "面向复杂推理、编程、计算机操作和专业工作的新一代模型。",
+      "difference": "官方强调端到端任务完成、计算机操作与文档创作能力；条目以具体模型命名，不以 ChatGPT 品牌代替。",
+      "access": "通过支持该模型的 OpenAI 产品及 API 使用，具体可用性按账号与计划而定。",
+      "homepage": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+      "sourceURL": "https://openai.com/index/gpt-6-astra",
+      "aliases": [
+        "GPT-6 Astra",
+        "GPT‑6 Astra",
+        "GPT6 Astra",
+        "gpt-6-astra"
+      ],
+      "releasedOn": "2026-09-03",
+      "releaseKind": "新模型"
+    },
+    {
+      "id": "openmaic",
+      "name": "OpenMAIC",
+      "maker": "THU-MAIC 团队",
+      "major": false,
+      "category": "学习教育",
+      "summary": "根据主题和材料生成课程、课件、练习与互动课堂。",
+      "difference": "通过 Agent 工作台规划、制作和修改整套课程；支持补充文档、音视频材料，并可更换模型与媒体服务。",
+      "access": "开源项目；可查看演示或按文档自行部署。",
+      "homepage": "https://github.com/THU-MAIC/OpenMAIC",
+      "sourceURL": "https://github.com/THU-MAIC/OpenMAIC",
+      "repository": "THU-MAIC/OpenMAIC",
+      "aliases": [
+        "OpenMAIC"
+      ]
+    },
+    {
+      "id": "hyperframes",
+      "name": "HyperFrames",
+      "maker": "HeyGen",
+      "major": false,
+      "category": "视频创作",
+      "summary": "把 HTML、CSS、素材和动画渲染成可复现的 MP4 视频。",
+      "difference": "可供 AI 编程 Agent 调用，通过可编辑页面和动画组织视频；适合希望用代码控制视频内容与排版的创作者。",
+      "access": "开源 CLI 与 Agent skills；需要本地运行环境。",
+      "homepage": "https://github.com/heygen-com/hyperframes",
+      "sourceURL": "https://github.com/heygen-com/hyperframes",
+      "repository": "heygen-com/hyperframes",
+      "aliases": [
+        "HyperFrames"
+      ]
+    },
+    {
+      "id": "librechat",
+      "name": "LibreChat",
+      "maker": "Danny Avila / 社区",
+      "major": false,
+      "category": "通用助手",
+      "summary": "可自托管、连接多家模型的聊天和 Agent 工作台。",
+      "difference": "重点是模型与服务可替换，并支持 Agent、工具和工作空间；适合愿意自行部署、统一管理多个模型的用户。",
+      "access": "开源部署；需自行配置模型服务与权限。",
+      "homepage": "https://github.com/danny-avila/LibreChat",
+      "sourceURL": "https://github.com/danny-avila/LibreChat",
+      "repository": "danny-avila/LibreChat",
+      "aliases": [
+        "LibreChat"
+      ]
+    }
+  ]
+}

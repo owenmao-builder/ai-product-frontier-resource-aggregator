@@ -1,0 +1,20 @@
+AI Product Frontier Resource Aggregator
+https://github.com/owenmao-builder/ai-product-frontier-resource-aggregator
+
+Based on AI News Aggregator by SuYxh and contributors:
+https://github.com/SuYxh/ai-news-aggregator
+Base revision: d8ef598d087609cff362cac6404de7d493a7a5a8
+
+The upstream package.json declares the MIT license, and its README states
+"MIT © SuYxh". The base revision did not include a separate LICENSE file.
+This distribution includes the standard MIT text and preserves attribution
+to the upstream project.
+
+The upstream foundation includes the TypeScript news collector, React
+dashboard, source definitions, and supporting documentation. Additions in
+this project include the native macOS menu bar app, evidence-aware scoring,
+Chinese high-score briefs, direct RSS refresh, and product release/trending
+views. Historical upstream design documents describe the original project.
+
+Bundled news links and snapshots are public-source examples, not a grant
+of rights to publishers' articles, names, or third-party material.

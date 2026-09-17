@@ -1,0 +1,1709 @@
+{
+  "version": "importance-v2",
+  "generatedAt": "2026-09-17T08:16:57.391009Z",
+  "entries": [
+    {
+      "id": "5ce621cb6a1af037cc8bdd6c3d8372c587a97b61",
+      "fingerprint": "ea94d7e1c3c7218ddf70e946f7c1d82bc6f36ee635bb529eadc18c309438e32f",
+      "rating": {
+        "score": 7.0,
+        "reason": "值得关注的是利用非均匀权重分布改善存储，而非推翻信息论极限。作者报告了压缩和解码收益；本次只核查论文摘要。",
+        "tags": [
+          "权重量化",
+          "存储优化"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "research",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 4,
+            "reason": "摘要以既有五元打包为基线，报告更紧凑的权重布局。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "可能改善三元模型存储与解码，适用范围仍限该类模型。"
+          },
+          {
+            "key": "explanation",
+            "value": 4,
+            "reason": "解释零值分布如何带来压缩收益，并列出测试范围。"
+          },
+          {
+            "key": "decision",
+            "value": 3,
+            "reason": "有助于选择压缩研究方向，部署仍需复核完整实验。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://arxiv.org/abs/2609.16338",
+            "title": "三元大语言模型突破1.58比特障碍",
+            "quote": "BITCOS stores weights more compactly than the five-trit packing"
+          }
+        ],
+        "comparison": "摘要对照既有 five-trit packing；收益随零值比例和硬件实现变化，不能推广到所有 LLM。",
+        "gaps": [
+          "完整实验、代码与复现尚未核查",
+          "缺少独立硬件测试"
+        ],
+        "chineseTitle": "BITCOS：利用权重分布降低三元大模型的存储开销",
+        "highlights": [
+          "论文提出位图加符号向量布局，利用较高的零权重比例进行压缩。",
+          "摘要称，在 29 个模型中有 26 个比既有五元打包更省空间，最小达到每权重 1.485 比特。",
+          "这不意味着推翻信息论极限；目前依据摘要，完整实验和独立复现仍待核查。"
+        ]
+      }
+    },
+    {
+      "id": "ef2ed51e341e5f7f0aa615948eca81285c072daf",
+      "fingerprint": "dae475ed7497210bda28ca5f5cbcb52fff3b2bf9784663c7eaaa10198bae432f",
+      "rating": {
+        "score": 7.0,
+        "reason": "值得关注的是利用非均匀权重分布改善存储，而非推翻信息论极限。作者报告了压缩和解码收益；本次只核查论文摘要。",
+        "tags": [
+          "权重量化",
+          "存储优化"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "research",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 4,
+            "reason": "摘要以既有五元打包为基线，报告更紧凑的权重布局。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "可能改善三元模型存储与解码，适用范围仍限该类模型。"
+          },
+          {
+            "key": "explanation",
+            "value": 4,
+            "reason": "解释零值分布如何带来压缩收益，并列出测试范围。"
+          },
+          {
+            "key": "decision",
+            "value": 3,
+            "reason": "有助于选择压缩研究方向，部署仍需复核完整实验。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://arxiv.org/abs/2609.16338",
+            "title": "三元大语言模型突破1.58比特障碍",
+            "quote": "BITCOS stores weights more compactly than the five-trit packing"
+          }
+        ],
+        "comparison": "摘要对照既有 five-trit packing；收益随零值比例和硬件实现变化，不能推广到所有 LLM。",
+        "gaps": [
+          "完整实验、代码与复现尚未核查",
+          "缺少独立硬件测试"
+        ],
+        "chineseTitle": "BITCOS：利用权重分布降低三元大模型的存储开销",
+        "highlights": [
+          "论文提出位图加符号向量布局，利用较高的零权重比例进行压缩。",
+          "摘要称，在 29 个模型中有 26 个比既有五元打包更省空间，最小达到每权重 1.485 比特。",
+          "这不意味着推翻信息论极限；目前依据摘要，完整实验和独立复现仍待核查。"
+        ]
+      }
+    },
+    {
+      "id": "f0912e37615be0fab9e9a51ba63763f8b2c711de",
+      "fingerprint": "4dbb60122f4284859fc61cf74f438ab5b4fed9cbea1c10cde5c422c3a91a9139",
+      "rating": {
+        "score": 7.4,
+        "reason": "重要变化是失准报告机制更系统化，并公开一批案例。发布框架不等于模型已安全，也不能从案例数量推断事故发生率。",
+        "tags": [
+          "失准披露",
+          "治理"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "safety",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "把过去零散披露改为明确的追踪、调查和发布流程。"
+          },
+          {
+            "key": "impact",
+            "value": 4,
+            "reason": "有助于外部研究者持续获取前沿模型异常行为证据。"
+          },
+          {
+            "key": "explanation",
+            "value": 4,
+            "reason": "交代分流流程、发布限制及尚未解释行为的处理方式。"
+          },
+          {
+            "key": "decision",
+            "value": 4,
+            "reason": "可据此跟踪事故报告，并检查供应商披露实践。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://openai.com/index/model-misalignment-reporting-framework",
+            "title": "OpenAI 发布模型失准报告框架",
+            "quote": "our disclosures have been ad hoc and less frequent than ideal"
+          }
+        ],
+        "comparison": "官方原文明确对照过去零散、较少的披露方式；这是该公司的流程承诺，不是行业强制标准。",
+        "gaps": [
+          "披露完整性和独立审计仍待验证",
+          "样本无法用于估计整体事故率"
+        ],
+        "chineseTitle": "OpenAI 发布模型失准报告框架，并公开六份异常行为报告",
+        "highlights": [
+          "发布一套追踪、调查和披露模型失准行为的流程，并公开过去六个月的六份报告。",
+          "相较过去零散披露，新机制明确分流和发布安排，允许在尚未完全解释问题时先报告。",
+          "这是安全治理流程更新；公开案例数不能代表事故发生率，披露完整性仍待验证。"
+        ]
+      }
+    },
+    {
+      "id": "92377f69adb52541044f19763d8e84724327a5e7",
+      "fingerprint": "58c67d033a983e97bea0bffa16c286ba5a061d39035f4d3def3862362d32adac",
+      "rating": {
+        "score": 7.0,
+        "reason": "价值在于揭示评测失真，而非宣布模型突然获得新能力。修正后保留题集上的高分，不能外推为所有物理问题已解决。",
+        "tags": [
+          "评测可靠性",
+          "科学推理"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "research",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "通过专家重判区分模型失误与题目、答案或判分错误。"
+          },
+          {
+            "key": "impact",
+            "value": 4,
+            "reason": "会影响人们如何解释多个物理基准上的模型表现。"
+          },
+          {
+            "key": "explanation",
+            "value": 4,
+            "reason": "摘要说明校正和保留题目范围，提供前后结果。"
+          },
+          {
+            "key": "decision",
+            "value": 3,
+            "reason": "可指导评测选型，但需读全文复核重判方法。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://arxiv.org/abs/2609.13009",
+            "title": "How good are frontier models at physics?",
+            "quote": "Expert Re-Grading Reveals Broken Evaluations"
+          }
+        ],
+        "comparison": "比较原评分与专家复核后的评分；部分数字基于修正或保留子集，不能直接当成同一榜单的性能增长。",
+        "gaps": [
+          "本次仅核查摘要，未逐题核查全文",
+          "重判独立性与筛题影响需进一步确认"
+        ],
+        "chineseTitle": "前沿模型到底有多懂物理？专家重判揭示基准评测问题",
+        "highlights": [
+          "研究通过专家复核，区分模型错误与题目、参考答案和判分错误。",
+          "摘要报告修正后部分保留题集得分上升；这是评测口径校正，不是模型突然变强。",
+          "不能外推为所有物理问题已解决；本次仅核查摘要，需进一步检查筛题和重判方法。"
+        ]
+      }
+    },
+    {
+      "id": "e7f50f33f5b6eee9820ce41180d101e7b9442571",
+      "fingerprint": "cd97a7b01fbcda0e288dcc1855809505e28f0ac730dc4113a5be451c2a7a00c8",
+      "rating": {
+        "score": 6.2,
+        "reason": "这是一篇衡量 AI 使用价值的操作说明。演示数据与假设 ROI 不构成真实收益证据，评分来自方法和使用场景的清晰度。",
+        "tags": [
+          "AI 采用",
+          "效果衡量"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "analysis",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 2,
+            "reason": "把已有用量观察延伸到任务与成果的解释，非已证明的能力跃迁。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "对组织内 AI 采用和预算判断有实用价值。"
+          },
+          {
+            "key": "explanation",
+            "value": 4,
+            "reason": "用具体管理场景说明用量、任务、成果三类指标。"
+          },
+          {
+            "key": "decision",
+            "value": 4,
+            "reason": "管理员可据此设计观察和试验，但不能直接套用示例 ROI。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://openai.com/index/how-to-connect-ai-usage-to-business-value",
+            "title": "How to connect AI usage to business value",
+            "quote": "All screenshots use illustrative demo data."
+          }
+        ],
+        "comparison": "对照仅看消耗和活跃度的方式，增加任务与成果维度；未据此声称超过其他分析产品。",
+        "gaps": [
+          "ROI 示例为假设，非独立效果研究",
+          "实际套餐权限与团队结果仍需核实"
+        ]
+      }
+    },
+    {
+      "id": "5ec43d5a4d25ef61364a71784eaad4fc42b68233",
+      "fingerprint": "a3e7ed400d8a5e2185d0721c89a2c5753d8fb99168aa46e0452e41e8657b03c0",
+      "rating": {
+        "score": 5.8,
+        "reason": "增量是既有模型的浏览器与本地部署方式，不是新基础模型。作者给出了可试用材料，性能数字仍属作者测试。",
+        "tags": [
+          "语音识别",
+          "端侧部署"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "developer",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "把既有语音模型导出为 ONNX 与 INT8，降低运行依赖。"
+          },
+          {
+            "key": "impact",
+            "value": 2,
+            "reason": "主要服务梵语语音识别与端侧部署人群。"
+          },
+          {
+            "key": "explanation",
+            "value": 3,
+            "reason": "模型卡列出文件、输入处理和浏览器运行示例。"
+          },
+          {
+            "key": "decision",
+            "value": 4,
+            "reason": "开发者可按示例尝试，但准确率与设备兼容仍待测。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://huggingface.co/gnumanth/sushrota-sanskrit-asr-onnx",
+            "title": "Show HN: 基于浏览器的梵语自动语音识别（ASR）模型",
+            "quote": "with zero PyTorch/NeMo dependencies"
+          }
+        ],
+        "comparison": "相对原模型的运行依赖，该导出路径避免在客户端安装 PyTorch/NeMo。未核实识别率是否因量化变化。",
+        "gaps": [
+          "量化前后 WER 和独立性能测试缺失",
+          "目标浏览器兼容与授权条款需确认"
+        ]
+      }
+    },
+    {
+      "id": "198af94ee5426e6dc428774485fa9fe93a1c778a",
+      "fingerprint": "d2798231615a40a431b19d462edda68dcc2285e615dc307f0fa374e5febafa00",
+      "rating": {
+        "score": 7.0,
+        "reason": "核心变化是办公工作流整合与新产出入口。原文没有提供新基础模型突破的证据，实际收益还需在真实任务中验证。",
+        "tags": [
+          "办公工作流",
+          "分批上线"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "product",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "将原本分开的聊天与 Cowork 工作流程合并，并加入文档和幻灯片。"
+          },
+          {
+            "key": "impact",
+            "value": 4,
+            "reason": "覆盖多种办公任务，但受套餐和分批开放限制。"
+          },
+          {
+            "key": "explanation",
+            "value": 3,
+            "reason": "说明上下文衔接、产出形式和可用计划。"
+          },
+          {
+            "key": "decision",
+            "value": 4,
+            "reason": "用户可判断是否适合试用现有工作流。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://claude.com/blog/cowork-is-now-claude",
+            "title": "Claude Cowork 和聊天功能现已合并为一个 Claude",
+            "quote": "Claude Cowork and chat are merging into one Claude."
+          }
+        ],
+        "comparison": "官方明确对照此前独立的 Cowork、Design 和聊天入口，减少任务与上下文切换。",
+        "gaps": [
+          "分批上线与套餐可用性需以账户为准",
+          "缺少真实任务效果及同类产品对照"
+        ],
+        "chineseTitle": "Claude 合并 Cowork 与聊天，并推出 Docs 和 Slides",
+        "highlights": [
+          "聊天与 Cowork 合并，Design 融入对话，并加入文档和幻灯片产出。",
+          "相较原来多个入口分开使用，上下文、技能和连接器可以在同一工作流程衔接。",
+          "按套餐分批开放，相关功能仍有测试版限制；这是产品更新，不是新基础模型发布。"
+        ]
+      }
+    },
+    {
+      "id": "bbb6496b3b4dcdab2f80855e78490174e2e20987",
+      "fingerprint": "6990035b30be0096940c2dffb8a6dda5e97ece546645f337caef6ec3a4ee1ee5",
+      "rating": {
+        "score": 7.0,
+        "reason": "核心变化是办公工作流整合与新产出入口。原文没有提供新基础模型突破的证据，实际收益还需在真实任务中验证。",
+        "tags": [
+          "办公工作流",
+          "分批上线"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "product",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "将原本分开的聊天与 Cowork 工作流程合并，并加入文档和幻灯片。"
+          },
+          {
+            "key": "impact",
+            "value": 4,
+            "reason": "覆盖多种办公任务，但受套餐和分批开放限制。"
+          },
+          {
+            "key": "explanation",
+            "value": 3,
+            "reason": "说明上下文衔接、产出形式和可用计划。"
+          },
+          {
+            "key": "decision",
+            "value": 4,
+            "reason": "用户可判断是否适合试用现有工作流。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://claude.com/blog/cowork-is-now-claude",
+            "title": "Claude Cowork 和聊天功能现已合并为一个 Claude",
+            "quote": "Claude Cowork and chat are merging into one Claude."
+          }
+        ],
+        "comparison": "官方明确对照此前独立的 Cowork、Design 和聊天入口，减少任务与上下文切换。",
+        "gaps": [
+          "分批上线与套餐可用性需以账户为准",
+          "缺少真实任务效果及同类产品对照"
+        ],
+        "chineseTitle": "Claude 合并 Cowork 与聊天，并推出 Docs 和 Slides",
+        "highlights": [
+          "聊天与 Cowork 合并，Design 融入对话，并加入文档和幻灯片产出。",
+          "相较原来多个入口分开使用，上下文、技能和连接器可以在同一工作流程衔接。",
+          "按套餐分批开放，相关功能仍有测试版限制；这是产品更新，不是新基础模型发布。"
+        ]
+      }
+    },
+    {
+      "id": "34c87960a46a20a81c654084a990f4134b69b34c",
+      "fingerprint": "5fd9edb39ab93bdedbc523683aeb518ea92def5f9763d6e46854e653e9670239",
+      "rating": {
+        "score": 7.2,
+        "reason": "有明确系统对照的推理基础设施进展。这里只核查厂商文章，预览、正式提交与提交后测试需分别看待。",
+        "tags": [
+          "推理基础设施",
+          "性能对照"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "developer",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 4,
+            "reason": "披露新系统预览相对前代的推理吞吐变化。"
+          },
+          {
+            "key": "impact",
+            "value": 4,
+            "reason": "与大规模推理供给及系统扩展效率相关。"
+          },
+          {
+            "key": "explanation",
+            "value": 3,
+            "reason": "给出负载、规模与部分提交口径，也混有提交后的优化结果。"
+          },
+          {
+            "key": "decision",
+            "value": 3,
+            "reason": "可作为采购研究线索，不能替代真实成本与可用性测算。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://blogs.nvidia.com/blog/vera-rubin-nvl72-mlperf-inference",
+            "title": "NVIDIA Vera Rubin NVL72 Delivers Leading Performance in MLPerf Inference v6.1 Debut",
+            "quote": "In its first MLPerf Inference preview submission"
+          }
+        ],
+        "comparison": "原文对照 GB300 NVL72 与上一轮软件提交；不同模型的倍率不同，不能统一套用最高值。",
+        "gaps": [
+          "尚未逐项核对 MLCommons 原始结果",
+          "量产时间、功耗和真实部署成本待确认"
+        ],
+        "chineseTitle": "NVIDIA 公布 Vera Rubin NVL72 的 MLPerf 推理预览成绩",
+        "highlights": [
+          "厂商报告 Rubin NVL72 相对 GB300 的吞吐提升，不同负载的增幅不同。",
+          "同时展示多机柜扩展和软件优化效果；预览提交、正式结果与提交后测试要分开看。",
+          "这是性能结果披露，不能据此认定首次发布新架构；真实成本、功耗和供货仍需核查。"
+        ]
+      }
+    },
+    {
+      "id": "3a891d42ca5f62c2b29411be042300f8ac00ea29",
+      "fingerprint": "3a2fa8a8ce8e831e883f19691669b077cefedcf6e61d4887329046889422aa24",
+      "rating": {
+        "score": 6.4,
+        "reason": "研究观察了工作任务跨界是否持续发生。消息记录能支持使用行为的变化，不能单独证明 AI 导致生产率或岗位变化。",
+        "tags": [
+          "工作方式",
+          "观察研究"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "research",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "从跨职业任务尝试进一步观察是否成为重复使用行为。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "对企业任务分工和 AI 采用研究有参考意义。"
+          },
+          {
+            "key": "explanation",
+            "value": 4,
+            "reason": "交代消息样本、观察时段与研究局限。"
+          },
+          {
+            "key": "decision",
+            "value": 3,
+            "reason": "帮助设计组织内试点，不能直接推导岗位或生产率变化。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://openai.com/index/unlocking-new-ways-of-working",
+            "title": "How workers are unlocking new ways of working",
+            "quote": "some cross-occupation AI use is recurring"
+          }
+        ],
+        "comparison": "相对先前一次性的 task crossover 描述，本次追踪任务在后续使用中是否重复出现。",
+        "gaps": [
+          "观察样本存在选择限制",
+          "未建立 AI 使用与业务结果的因果关系"
+        ]
+      }
+    },
+    {
+      "id": "bad3dcc7e093af4bdd6adb00efac645e534f13b2",
+      "fingerprint": "aa2f6a292e92a0f565dfd3c2719f384fefa3b5944e98b0f099879c007b174a86",
+      "rating": {
+        "score": 6.4,
+        "reason": "值得读的是矩阵单元数值行为与复现差异，不是 GPU 算力排名。本次依据摘要，尚未审查完整实现。",
+        "tags": [
+          "数值精度",
+          "GPU"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "research",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "刻画多个 AMD 架构矩阵运算的数值行为并建立模型。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "对跨设备数值复现与科学计算有明确关联。"
+          },
+          {
+            "key": "explanation",
+            "value": 4,
+            "reason": "摘要说明测试向量、软件模型和验证范围。"
+          },
+          {
+            "key": "decision",
+            "value": 3,
+            "reason": "可指导误差研究，落地仍需检查模型与完整实验。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://arxiv.org/abs/2609.14845",
+            "title": "Accurate Models of AMD Matrix Cores",
+            "quote": "We characterise the numerical behaviour of matrix multipliers"
+          }
+        ],
+        "comparison": "比较不同 AMD 架构及其数值行为；摘要指出这些细节并不能仅靠统一软件设置消除。",
+        "gaps": [
+          "未核查全文、代码和测试覆盖",
+          "需独立验证具体硬件行为"
+        ]
+      }
+    },
+    {
+      "id": "c8f7e1fab626d9226a786e55ca0332a674c09a78",
+      "fingerprint": "283d9898263dab1fd212975b641aa3b421bfffffa058152a4fff87ab54064a38",
+      "rating": {
+        "score": 5.6,
+        "reason": "这是一项产业协作公告，关注电网与数据中心协调。联盟目标不等于已经降低电费或建立生效规则。",
+        "tags": [
+          "能源",
+          "产业联盟"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "business",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "新增联盟和协作方向，有确认的参与主体。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "触及 AI 数据中心受电网容量限制的问题。"
+          },
+          {
+            "key": "explanation",
+            "value": 3,
+            "reason": "说明灵活用电的机制与拟议协作内容。"
+          },
+          {
+            "key": "decision",
+            "value": 2,
+            "reason": "目前主要用于跟踪行业动向，落地承诺仍有限。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://blogs.nvidia.com/blog/ai-energy-management-alliance",
+            "title": "Emerald AI、Google 与 NVIDIA 成立联盟，推动灵活 AI 数据中心",
+            "quote": "announced the launch of the AI Energy Management Alliance"
+          }
+        ],
+        "comparison": "对照传统固定负荷连接方式，倡议让数据中心根据电网状况调整用电；规模收益仍待项目验证。",
+        "gaps": [
+          "实际项目、约束性承诺和采用范围待确认",
+          "缺少独立成本与电网效果数据"
+        ]
+      }
+    },
+    {
+      "id": "492eb4ff7e65321e6b87776d765d12b2162e85df",
+      "fingerprint": "9bc9c62a0796e2c2bc28d83784cae4a5a922c9dad473d89af4bd3a1b3cda318a",
+      "rating": {
+        "score": 7.0,
+        "reason": "重点是广告交互与投放工作流的变化。Sponsored Agent 只是此功能的描述，不因 Agent 这个词本身加分。",
+        "tags": [
+          "广告体验",
+          "产品试点"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "product",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "新增广告后的对话入口、创意工具和业务系统集成。"
+          },
+          {
+            "key": "impact",
+            "value": 4,
+            "reason": "会影响广告主操作和用户接触广告的方式。"
+          },
+          {
+            "key": "explanation",
+            "value": 3,
+            "reason": "描述体验边界、标识与试点开放范围。"
+          },
+          {
+            "key": "decision",
+            "value": 4,
+            "reason": "广告主可判断是否参与试用，实际回报仍待测试。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://openai.com/index/reimagining-advertising-with-ai",
+            "title": "OpenAI 通过“赞助代理”扩展 ChatGPT 广告业务",
+            "quote": "We’re testing Sponsored Agents"
+          }
+        ],
+        "comparison": "对照此前广告展示与跳转流程，新增明确标识的赞助对话及管理工具集成。",
+        "gaps": [
+          "试点账户和地区可用性待确认",
+          "缺少独立转化率与隐私影响验证"
+        ],
+        "chineseTitle": "OpenAI 测试赞助对话，并扩展 ChatGPT 广告工具",
+        "highlights": [
+          "用户点广告后，可选择进入明确标识的品牌赞助对话。",
+          "广告主新增创意辅助和 HubSpot、Shopify 等工具集成，改变投放与咨询流程。",
+          "目前受试点和地区限制；转化率及隐私影响尚无独立验证，不因 Agent 名称获得额外加分。"
+        ]
+      }
+    },
+    {
+      "id": "a4d2c1667014a737766721c70d32e2515d30a289",
+      "fingerprint": "c5b5d2c95159e8b2097dc6ae259524ea07f7a84f53645acfa3f5fef007b03c8c",
+      "rating": {
+        "score": 7.0,
+        "reason": "重点是广告交互与投放工作流的变化。Sponsored Agent 只是此功能的描述，不因 Agent 这个词本身加分。",
+        "tags": [
+          "广告体验",
+          "产品试点"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "product",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "新增广告后的对话入口、创意工具和业务系统集成。"
+          },
+          {
+            "key": "impact",
+            "value": 4,
+            "reason": "会影响广告主操作和用户接触广告的方式。"
+          },
+          {
+            "key": "explanation",
+            "value": 3,
+            "reason": "描述体验边界、标识与试点开放范围。"
+          },
+          {
+            "key": "decision",
+            "value": 4,
+            "reason": "广告主可判断是否参与试用，实际回报仍待测试。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://openai.com/index/reimagining-advertising-with-ai",
+            "title": "OpenAI 通过“赞助代理”扩展 ChatGPT 广告业务",
+            "quote": "We’re testing Sponsored Agents"
+          }
+        ],
+        "comparison": "对照此前广告展示与跳转流程，新增明确标识的赞助对话及管理工具集成。",
+        "gaps": [
+          "试点账户和地区可用性待确认",
+          "缺少独立转化率与隐私影响验证"
+        ],
+        "chineseTitle": "OpenAI 测试赞助对话，并扩展 ChatGPT 广告工具",
+        "highlights": [
+          "用户点广告后，可选择进入明确标识的品牌赞助对话。",
+          "广告主新增创意辅助和 HubSpot、Shopify 等工具集成，改变投放与咨询流程。",
+          "目前受试点和地区限制；转化率及隐私影响尚无独立验证，不因 Agent 名称获得额外加分。"
+        ]
+      }
+    },
+    {
+      "id": "f8008f4078dcfae8553880f8d47c537c4f1159f1",
+      "fingerprint": "70e52758dffd6007c17853c707ca8fb8edb6c86a29edf52aa74acae3d3b331ba",
+      "rating": {
+        "score": 7.0,
+        "reason": "重点是广告交互与投放工作流的变化。Sponsored Agent 只是此功能的描述，不因 Agent 这个词本身加分。",
+        "tags": [
+          "广告体验",
+          "产品试点"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "product",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "新增广告后的对话入口、创意工具和业务系统集成。"
+          },
+          {
+            "key": "impact",
+            "value": 4,
+            "reason": "会影响广告主操作和用户接触广告的方式。"
+          },
+          {
+            "key": "explanation",
+            "value": 3,
+            "reason": "描述体验边界、标识与试点开放范围。"
+          },
+          {
+            "key": "decision",
+            "value": 4,
+            "reason": "广告主可判断是否参与试用，实际回报仍待测试。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://openai.com/index/reimagining-advertising-with-ai",
+            "title": "OpenAI 通过“赞助代理”扩展 ChatGPT 广告业务",
+            "quote": "We’re testing Sponsored Agents"
+          }
+        ],
+        "comparison": "对照此前广告展示与跳转流程，新增明确标识的赞助对话及管理工具集成。",
+        "gaps": [
+          "试点账户和地区可用性待确认",
+          "缺少独立转化率与隐私影响验证"
+        ],
+        "chineseTitle": "OpenAI 测试赞助对话，并扩展 ChatGPT 广告工具",
+        "highlights": [
+          "用户点广告后，可选择进入明确标识的品牌赞助对话。",
+          "广告主新增创意辅助和 HubSpot、Shopify 等工具集成，改变投放与咨询流程。",
+          "目前受试点和地区限制；转化率及隐私影响尚无独立验证，不因 Agent 名称获得额外加分。"
+        ]
+      }
+    },
+    {
+      "id": "f45de038d54b2bd3175d817b3b9c5ed0938d2d12",
+      "fingerprint": "da4555be6ae3591cdde1e9ca13df01a386e5e7fce9a99fd36b38f7fb5a15776c",
+      "rating": {
+        "score": 6.8,
+        "reason": "有价值的是两种内核编程路径及其取舍。Rust GPU 并非首次出现；原文明确现阶段不适合当作成熟生产方案。",
+        "tags": [
+          "GPU 编程",
+          "早期工具"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "developer",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "提供两条原生 Rust GPU 内核开发路径；生态此前已有相关项目。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "对 Rust GPU 开发者有价值，暂不能代表全面替代 CUDA C++。"
+          },
+          {
+            "key": "explanation",
+            "value": 4,
+            "reason": "用示例说明内存安全边界、控制粒度与工具链取舍。"
+          },
+          {
+            "key": "decision",
+            "value": 4,
+            "reason": "可以实验和反馈，文章明确两项目都尚未生产就绪。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://developer.nvidia.com/blog/introducing-cuda-rust-two-tracks-for-writing-gpu-kernels",
+            "title": "英伟达宣布支持使用Rust进行原生GPU编程",
+            "quote": "Both projects are early-stage and neither is production-ready."
+          }
+        ],
+        "comparison": "比较 SIMT 与 Tile 对线程控制和所有权的不同处理；文章承认已有 Rust GPU 生态，未证明性能优于 C++。",
+        "gaps": [
+          "API 与功能覆盖仍在变化",
+          "未核查独立性能和生产稳定性"
+        ]
+      }
+    },
+    {
+      "id": "7d06b36966f01884965ac298959d207723228818",
+      "fingerprint": "f637b7d85ca7a27db305d2676a434f5b1e403f2f9a627fe5ba8b849afa123f35",
+      "rating": {
+        "score": 6.8,
+        "reason": "有价值的是两种内核编程路径及其取舍。Rust GPU 并非首次出现；原文明确现阶段不适合当作成熟生产方案。",
+        "tags": [
+          "GPU 编程",
+          "早期工具"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "developer",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "提供两条原生 Rust GPU 内核开发路径；生态此前已有相关项目。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "对 Rust GPU 开发者有价值，暂不能代表全面替代 CUDA C++。"
+          },
+          {
+            "key": "explanation",
+            "value": 4,
+            "reason": "用示例说明内存安全边界、控制粒度与工具链取舍。"
+          },
+          {
+            "key": "decision",
+            "value": 4,
+            "reason": "可以实验和反馈，文章明确两项目都尚未生产就绪。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://developer.nvidia.com/blog/introducing-cuda-rust-two-tracks-for-writing-gpu-kernels",
+            "title": "英伟达宣布支持使用Rust进行原生GPU编程",
+            "quote": "Both projects are early-stage and neither is production-ready."
+          }
+        ],
+        "comparison": "比较 SIMT 与 Tile 对线程控制和所有权的不同处理；文章承认已有 Rust GPU 生态，未证明性能优于 C++。",
+        "gaps": [
+          "API 与功能覆盖仍在变化",
+          "未核查独立性能和生产稳定性"
+        ]
+      }
+    },
+    {
+      "id": "962e82fce5bef11a0ff77f2d22f81f34b52e297e",
+      "fingerprint": "e683e35b49de37b069cb630aeff2429accdadc0f498214ff2f25666487fa5d63",
+      "rating": {
+        "score": 5.6,
+        "reason": "Dream-RSI 的新意在探索策略与历史回放，底层编码代理保持不变。不能从标题推导为通用自主递归进化已实现。",
+        "tags": [
+          "探索策略",
+          "研究原型"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "research",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "用历史探索树构造回放环境，调整外层探索策略。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "可能降低一类探索任务的策略试验成本。"
+          },
+          {
+            "key": "explanation",
+            "value": 3,
+            "reason": "摘要解释编排层与底层编码代理的关系。"
+          },
+          {
+            "key": "decision",
+            "value": 2,
+            "reason": "提供研究线索，摘要不足以判断部署收益。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://arxiv.org/abs/2609.14858",
+            "title": "Dream-RSI：通过不断演化的世界实现递归式自我优化",
+            "quote": "while leaving the underlying coding agent unchanged"
+          }
+        ],
+        "comparison": "摘要对照固定策略及昂贵在线策略搜索；成本改善需完整基线与实验支持。",
+        "gaps": [
+          "本次只核查摘要",
+          "具体成本、基线与复现材料待检查"
+        ]
+      }
+    },
+    {
+      "id": "2fdc006cf017aeafb888d2daa4cb97f75505e1c2",
+      "fingerprint": "7722fdb028a9fec447297a38d40dbe7e85dc7f9ad508802650ed5d0c92c5ee5c",
+      "rating": {
+        "score": 7.4,
+        "reason": "有可检查的基座对照与部署材料。标题中的少用 token、近乎无损不能套到所有任务：模型卡的部分数学测试掉分更明显。",
+        "tags": [
+          "推理效率",
+          "衍生模型"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "model",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 4,
+            "reason": "模型卡直接对照同一基座与适配后模型，报告减少推理 token。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "对本地推理效率有价值，收益依任务和精度而异。"
+          },
+          {
+            "key": "explanation",
+            "value": 4,
+            "reason": "提供多基准、采样设置及速度与精度取舍。"
+          },
+          {
+            "key": "decision",
+            "value": 4,
+            "reason": "可按示例评测；商业使用条件和精度损失需单独检查。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://huggingface.co/ukisai/Swift-Qwen3.8-27b",
+            "title": "Show HN: Swift-Qwen3.8-27B, -58.3% thinking, x1.95 speed, accuracy of xhigh",
+            "quote": "All results below compare the Qwen3.8-27B BF16 base"
+          }
+        ],
+        "comparison": "BF16 同基座对照与量化实验分开；GPQA 的中位 token 减少不等于所有任务的平均节省，速度也不能直接按 token 换算。",
+        "gaps": [
+          "结果主要来自作者，尚无独立复现",
+          "不同任务的精度损失与商业授权条件需核对"
+        ],
+        "chineseTitle": "Swift-Qwen3.8-27B：作者称可减少推理 token，部分任务仍有精度取舍",
+        "highlights": [
+          "这是基于 Qwen3.8-27B 的第三方衍生模型，通过调整训练减少冗长推理。",
+          "作者提供同基座对照和运行配置；标题中的 58.3% 是特定口径，不能当作所有任务的平均节省。",
+          "部分数学任务掉分更明显，且商业使用有授权条件；并非 Qwen 官方发布新模型。"
+        ]
+      }
+    },
+    {
+      "id": "fc048b3573d49f5eee49a9fcbc2e4b61c12d8e9a",
+      "fingerprint": "1666a3245c32c4e36ac6c5d1b3c273b39e474397565cdccd419c0a33bd716428",
+      "rating": {
+        "score": 5.4,
+        "reason": "主要价值是浏览器分发与地区化体验。官方合作公告可以证明发布，但不能自动证明隐私或性能优于所有替代方案。",
+        "tags": [
+          "浏览器 AI",
+          "地区开放"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "product",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 2,
+            "reason": "明确浏览器 AI 入口的模型合作与地区开放，架构创新证据有限。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "为部分 Firefox 用户增加模型触达场景。"
+          },
+          {
+            "key": "explanation",
+            "value": 3,
+            "reason": "解释浏览器任务、地区和隐私承诺。"
+          },
+          {
+            "key": "decision",
+            "value": 3,
+            "reason": "可据此判断关注或试用，真实体验仍待检查。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://mistral.ai/news/mistral-x-mozilla",
+            "title": "Mistral X Mozilla：私密、多语言的 AI 浏览体验",
+            "quote": "is now powered by Mistral models."
+          }
+        ],
+        "comparison": "此次明确 Smart Window 的 Mistral 接入与地区安排，未提供与原实现同条件性能对照。",
+        "gaps": [
+          "隐私承诺的实际执行未独立验证",
+          "地区开放与旧版功能差异需体验确认"
+        ]
+      }
+    },
+    {
+      "id": "2c542338121337a83c8d63e9f2f7d45cbe9399bf",
+      "fingerprint": "443a192d649c532f58c20e0c0e58bc19276dcb1f664769103924e7aa4bf56b4f",
+      "rating": {
+        "score": 5.4,
+        "reason": "主要价值是浏览器分发与地区化体验。官方合作公告可以证明发布，但不能自动证明隐私或性能优于所有替代方案。",
+        "tags": [
+          "浏览器 AI",
+          "地区开放"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "product",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 2,
+            "reason": "明确浏览器 AI 入口的模型合作与地区开放，架构创新证据有限。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "为部分 Firefox 用户增加模型触达场景。"
+          },
+          {
+            "key": "explanation",
+            "value": 3,
+            "reason": "解释浏览器任务、地区和隐私承诺。"
+          },
+          {
+            "key": "decision",
+            "value": 3,
+            "reason": "可据此判断关注或试用，真实体验仍待检查。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://mistral.ai/news/mistral-x-mozilla",
+            "title": "Mistral X Mozilla：私密、多语言的 AI 浏览体验",
+            "quote": "is now powered by Mistral models."
+          }
+        ],
+        "comparison": "此次明确 Smart Window 的 Mistral 接入与地区安排，未提供与原实现同条件性能对照。",
+        "gaps": [
+          "隐私承诺的实际执行未独立验证",
+          "地区开放与旧版功能差异需体验确认"
+        ]
+      }
+    },
+    {
+      "id": "0ff50cf4a43eda96fb8b595dfde3647bc4a4851f",
+      "fingerprint": "c4a135fa5f0eec9386b5e3bc55487d9f01c4ca7a5d4a2336b9562470b917d36f",
+      "rating": {
+        "score": 5.6,
+        "reason": "这是已有模型在新领域的应用研究。后续开放计划、健康收益与实际预测效果要区分，不能把目标写成已实现结果。",
+        "tags": [
+          "环境计算",
+          "应用研究"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "research",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "将已有气象生成模型方法扩展到污染场景。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "对环境计算有潜在价值，实际预测效果仍待验证。"
+          },
+          {
+            "key": "explanation",
+            "value": 3,
+            "reason": "交代训练数据来源和工具迁移过程。"
+          },
+          {
+            "key": "decision",
+            "value": 2,
+            "reason": "可作为研究方向线索，不能据此部署公共健康决策。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://blogs.nvidia.com/blog/uk-air-pollution-research-earth-2",
+            "title": "University of Manchester Uses NVIDIA Earth-2 to Forecast Air Pollution Across the UK",
+            "quote": "generated training data from existing chemistry-climate simulations"
+          }
+        ],
+        "comparison": "相对传统化学气候模拟，尝试使用学习模型降低计算负担；未给出可据此定论的独立效果验证。",
+        "gaps": [
+          "实测污染预测误差和外部验证待补充",
+          "计划开放的材料是否已提供需跟踪"
+        ]
+      }
+    },
+    {
+      "id": "0774a951d62dc81f808118bc56579f063e2f08b5",
+      "fingerprint": "97a7a4fbca92d5c86ec019aeb33683957060b2cddc87ff435c0645f31760ba46",
+      "rating": {
+        "score": 4.8,
+        "reason": "这条消息的关注点是浏览器入口和使用便利性。Harness 是它依赖的产品名称，帖子没有证明底层 Agent 架构发生突破。",
+        "tags": [
+          "浏览器插件",
+          "入口改进"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "product",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 2,
+            "reason": "把已有 DSH 页面嵌入浏览器界面，属于入口体验改进。"
+          },
+          {
+            "key": "impact",
+            "value": 2,
+            "reason": "主要影响该工具用户的页面切换与编码习惯。"
+          },
+          {
+            "key": "explanation",
+            "value": 3,
+            "reason": "作者说明三种使用模式及快捷键。"
+          },
+          {
+            "key": "decision",
+            "value": 3,
+            "reason": "有代码链接可进一步检查，实际兼容性尚未测试。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://www.v2ex.com/t/1242601",
+            "title": "[分享创造] 做了一个插件，将 DeepSeek Harness 插入到了所有的网页上，随时随地 Vibe Coding",
+            "quote": "DSH 会以半透明的方式，覆盖在浏览的网页上方"
+          }
+        ],
+        "comparison": "相对在独立标签页打开 DSH，插件提供覆盖显示、专注和后台浏览模式；未审查仓库实现。",
+        "gaps": [
+          "尚未审查源代码、权限与兼容性",
+          "作者演示未独立复现"
+        ]
+      }
+    },
+    {
+      "id": "48083095e48f283438afe952ee852d367c0769d6",
+      "fingerprint": "c9da870d96d8e146ee809e50f574f7b41c65ae7d0bd0944292c487c1ecf2dbc4",
+      "rating": {
+        "score": 6.0,
+        "reason": "按政策进展评估其重要性。报道中的众议院通过不能直接标成法律已生效，影响取决于后续程序与正式文本。",
+        "tags": [
+          "立法进展",
+          "数据中心"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "policy",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "报道法案从委员会推进到众议院表决的新进展。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "涉及数据中心供电基础设施的成本分担。"
+          },
+          {
+            "key": "explanation",
+            "value": 3,
+            "reason": "交代表决、主体和拟议政策方向。"
+          },
+          {
+            "key": "decision",
+            "value": 3,
+            "reason": "可用于跟踪立法进程，但尚不足以据此判断法定义务。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://www.axios.com/2026/09/16/house-ai-data-center-power-bills",
+            "title": "众议院投票通过法案，旨在控制人工智能数据中心的成本",
+            "quote": "The House passed the bipartisan Ratepayer Protection Act"
+          }
+        ],
+        "comparison": "报道对照此前委员会阶段与最新院会表决；并非声称已完成全部立法程序。",
+        "gaps": [
+          "尚未核对官方法案文本和后续进度",
+          "适用范围与生效义务须查正式文件"
+        ]
+      }
+    },
+    {
+      "id": "cf7ac3a5a15527fe89794b0e7be32a2c7897a41e",
+      "fingerprint": "f11bbdf822b9272e306ce7f30b0e429df360afdf9f52012b9cc5eb4c6e675fb6",
+      "rating": {
+        "score": 7.0,
+        "reason": "阅读价值是把“允许评估”拆成访问权限、时间和发布独立性等可核查条件。公司承诺不能当成制度已经完整落地。",
+        "tags": [
+          "评估独立性",
+          "治理分析"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "analysis",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "采访评估机构，补充驻场评估承诺背后的独立性条件。"
+          },
+          {
+            "key": "impact",
+            "value": 4,
+            "reason": "涉及前沿模型安全评估与外部问责。"
+          },
+          {
+            "key": "explanation",
+            "value": 4,
+            "reason": "通过时间、访问权限和发表约束解释承诺的局限。"
+          },
+          {
+            "key": "decision",
+            "value": 3,
+            "reason": "可指导审查安全承诺，实际制度落地仍不明确。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://techcrunch.com/2026/09/16/anthropic-and-openai-want-to-embed-safety-evaluators-will-they-really-be-independent",
+            "title": "Anthropic and OpenAI want to embed safety evaluators. Will they really be independent?",
+            "quote": "Neither company has shared which evaluators they’ll work with"
+          }
+        ],
+        "comparison": "报道对照过去发布前短期测试与拟议的深入驻场访问，具体执行安排仍缺失。",
+        "gaps": [
+          "以报道与采访为依据，尚未核对全部一手文件",
+          "实际合同、进入时间及发表权限待确认"
+        ],
+        "chineseTitle": "Anthropic 和 OpenAI 拟引入驻场安全评估，独立性如何保证？",
+        "highlights": [
+          "报道采访外部评估机构，讨论更深入访问训练过程和模型检查点的可能性。",
+          "与发布前短期测试相比，关键变化应是访问范围、充足时间和独立发表权。",
+          "具体机构、时间和合同安排尚不完整，公开承诺不能当作制度已落地。"
+        ]
+      }
+    },
+    {
+      "id": "815c98458e61f7051c82eade7f31a0e7dc41cf87",
+      "fingerprint": "1d5f3265b417ea36dbbd11d37c8f20546d1a680dc2a834a7430c83a629b938a1",
+      "rating": {
+        "score": 6.8,
+        "reason": "11/11 是结果达成数，其中五次走了预期外路径。价值在测试复核与评测设计，不能据此认定所有旧榜单模型都已被稳定超越。",
+        "tags": [
+          "安全能力",
+          "评测复核"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "model",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "测试复核区分完成目标与走预期攻击路径。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "对安全代理评测有意义，样本与环境范围有限。"
+          },
+          {
+            "key": "explanation",
+            "value": 4,
+            "reason": "披露替代路径、完整费用及修订基准版本。"
+          },
+          {
+            "key": "decision",
+            "value": 4,
+            "reason": "可帮助选择评测方法；不能照搬为通用模型排名。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://enclave.ai/blog/deepseek-v41-flash-is-now-our-best-hacking-model",
+            "title": "DeepSeek v4.1 Flash 现已成为我们最优秀的黑客模型",
+            "quote": "six planned exploits and found five unexpected routes"
+          }
+        ],
+        "comparison": "作者修订测试后要求同版本重跑；旧版结果与新版排行不应混比，成功运行费用也不同于包含失败的总费用。",
+        "gaps": [
+          "私有测试环境，未独立复现",
+          "更广任务和同版本竞争模型测试仍缺失"
+        ]
+      }
+    },
+    {
+      "id": "1885a860c6e7852e617b9481d525cbc4f5ca07ad",
+      "fingerprint": "b30dcc717850e31e4b1eea80e1c29eb47763588734ee8ebe9e825b84839412aa",
+      "rating": {
+        "score": 6.8,
+        "reason": "11/11 是结果达成数，其中五次走了预期外路径。价值在测试复核与评测设计，不能据此认定所有旧榜单模型都已被稳定超越。",
+        "tags": [
+          "安全能力",
+          "评测复核"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "model",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "测试复核区分完成目标与走预期攻击路径。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "对安全代理评测有意义，样本与环境范围有限。"
+          },
+          {
+            "key": "explanation",
+            "value": 4,
+            "reason": "披露替代路径、完整费用及修订基准版本。"
+          },
+          {
+            "key": "decision",
+            "value": 4,
+            "reason": "可帮助选择评测方法；不能照搬为通用模型排名。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://enclave.ai/blog/deepseek-v41-flash-is-now-our-best-hacking-model",
+            "title": "DeepSeek v4.1 Flash 现已成为我们最优秀的黑客模型",
+            "quote": "six planned exploits and found five unexpected routes"
+          }
+        ],
+        "comparison": "作者修订测试后要求同版本重跑；旧版结果与新版排行不应混比，成功运行费用也不同于包含失败的总费用。",
+        "gaps": [
+          "私有测试环境，未独立复现",
+          "更广任务和同版本竞争模型测试仍缺失"
+        ]
+      }
+    },
+    {
+      "id": "000385aaa5cd76b8c616fb47331d5422f043e97f",
+      "fingerprint": "41a1b4d6e20931caf364d7d5df2f7234210112c0fefa1db7af09f9772b373ae6",
+      "rating": {
+        "score": 5.4,
+        "reason": "值得关注的主题是代理获得哪些工具与权限。此项按安全分析文章评估，不把文中法规解释视为已核实法律结论。",
+        "tags": [
+          "权限控制",
+          "安全分析"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "analysis",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 2,
+            "reason": "把权限控制和制度覆盖问题放在一起解释，非新模型发布。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "对部署 AI 工具时的权限设计有参考意义。"
+          },
+          {
+            "key": "explanation",
+            "value": 3,
+            "reason": "提供具体授权边界思路，但关键统计来自转述。"
+          },
+          {
+            "key": "decision",
+            "value": 3,
+            "reason": "可转化为权限设计检查；法规义务需另查官方文件。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://thenextweb.com/news/owasp-llm-2026-agency-cra",
+            "title": "The hardest AI security problems now live in what an agent is permitted to do",
+            "quote": "Read-only tools instead of general connectors"
+          }
+        ],
+        "comparison": "从仅看模型回答转向检查可调用工具、身份和权限边界；未独立核实文中榜单变动。",
+        "gaps": [
+          "OWASP 原始榜单与统计方法待核查",
+          "法律适用范围和义务需核对官方文本"
+        ]
+      }
+    },
+    {
+      "id": "6d5faf834be4c4bee3f7278eb8eef1689345e833",
+      "fingerprint": "54559d2393257bb31efd8d3eceff87853753b6ff12dba4c56141f01bd50fe018",
+      "rating": {
+        "score": 5.0,
+        "reason": "按融资事实与资源用途判断，不要求具备某种 Agent 架构。效率提升数字来自公司和客户说法，不能等同于独立测试。",
+        "tags": [
+          "融资",
+          "漏洞管理"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "business",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "报道新融资的金额、领投方及资金计划。"
+          },
+          {
+            "key": "impact",
+            "value": 2,
+            "reason": "对该公司扩张有意义，行业格局影响暂缺证据。"
+          },
+          {
+            "key": "explanation",
+            "value": 3,
+            "reason": "解释产品在漏洞管理中的位置和资源用途。"
+          },
+          {
+            "key": "decision",
+            "value": 2,
+            "reason": "可作供应商跟踪线索，不能据融资推断效果领先。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://thenextweb.com/news/hackuity-raises-19m-forgepoint-vulnerability-management",
+            "title": "Hackuity raises $19M to help security teams sort through AI-found vulnerabilities",
+            "quote": "has raised $19M in a round led by Forgepoint Capital International"
+          }
+        ],
+        "comparison": "相对既有业务与上一轮融资，本轮增加产品和地区扩张资源；未证明已改变整个竞争格局。",
+        "gaps": [
+          "尚未交叉核实交易公告",
+          "收入、留存和独立产品效果未披露"
+        ]
+      }
+    },
+    {
+      "id": "dd7a337906de9102943738b697dd4729d23a5c6d",
+      "fingerprint": "afecf0faa7484080ddc4f492a3295d2f81ab47896cae1ca09326d3635be1e279",
+      "rating": {
+        "score": 5.8,
+        "reason": "这篇文章的价值在历史对照，不应因缺少新模型或架构细节而扣成低质量。其评论立场与可查事实需要分别看待。",
+        "tags": [
+          "历史对照",
+          "监管讨论"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T07:41:40.574286Z",
+        "model": "Codex · 原文材料评估",
+        "version": "importance-v2",
+        "category": "analysis",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 2,
+            "reason": "整理长期公开表态，新增价值主要是时间线与联系。"
+          },
+          {
+            "key": "impact",
+            "value": 3,
+            "reason": "有助于读者理解近期监管呼吁的历史背景。"
+          },
+          {
+            "key": "explanation",
+            "value": 4,
+            "reason": "多年份实例支持对口头承诺与行动关系的审视。"
+          },
+          {
+            "key": "decision",
+            "value": 3,
+            "reason": "提供追踪线索，不能替代法规或公司行动的逐项核查。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://www.theverge.com/policy/995534/a-brief-history-of-ai-executives-calling-for-regulation",
+            "title": "A brief history of AI executives calling for regulation",
+            "quote": "this is far from the first time AI thought leaders have sounded the alarm"
+          }
+        ],
+        "comparison": "把近期呼吁与历年公开表态并列；文章推断不能直接用来判断每家公司的真实动机。",
+        "gaps": [
+          "未逐个打开历史引用核查",
+          "实际法规状态和公司行动需一手材料确认"
+        ]
+      }
+    },
+    {
+      "id": "67da8ad9b5c8dce7e56b1b456090748841db27ea",
+      "fingerprint": "ed14a710348b1e3a821304c75d691eae878435f63d840c6d5cb5acf09eba2b0f",
+      "rating": {
+        "score": 8.4,
+        "reason": "以 Google 官方公告和开发者说明核实这条新模型消息。基础重要度 7.4 分，官方大厂新模型发布加 1 分；厂商效果声明尚未独立复现。",
+        "tags": [
+          "语音模型",
+          "并行推理"
+        ],
+        "method": "reviewed",
+        "assessedAt": "2026-09-17T08:13:38.349791+00:00",
+        "model": "Codex · 官方材料核查",
+        "version": "importance-v2",
+        "category": "model",
+        "evidenceLevel": "B",
+        "dimensions": [
+          {
+            "key": "increment",
+            "value": 3,
+            "reason": "较前代强化语音对话与后台任务的协同，官方明确为两个新模型。"
+          },
+          {
+            "key": "impact",
+            "value": 4,
+            "reason": "覆盖开发者及多个用户入口，实际开放范围仍因产品而异。"
+          },
+          {
+            "key": "explanation",
+            "value": 4,
+            "reason": "官方说明异步调用、视觉上下文和推理取舍。"
+          },
+          {
+            "key": "decision",
+            "value": 4,
+            "reason": "提供 API 和 AI Studio 入口，开发者可评估接入。"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-8-live-gemini-3-8-live-extended-thinking/",
+            "title": "Google：Gemini 3.8 Live 系列发布公告",
+            "quote": "Today, we’re introducing two new models"
+          },
+          {
+            "url": "https://blog.google/innovation-and-ai/technology/developers-tools/build-real-time-voice-applications-gemini-audio/",
+            "title": "Google：实时语音开发者说明",
+            "quote": "Asynchronous function calling: Execute API and tool calls in the background"
+          }
+        ],
+        "comparison": "官方对照此前 Live 模型与串联式语音方案，强调并行推理和异步工具调用；未据此宣称全部任务优于竞品。",
+        "gaps": [
+          "实际发布日期为 9 月 15 日，本条是今天收录，不能写成今天刚发布",
+          "原聚合页面正文未获取，发布事实改由官方材料核查",
+          "延迟、可靠性和性能排名仍待独立验证"
+        ],
+        "release": {
+          "kind": "model",
+          "publisher": "Google",
+          "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-8-live-gemini-3-8-live-extended-thinking/",
+          "quote": "Today, we’re introducing two new models",
+          "reason": "Google 官方明确发布两款新语音模型，满足大厂新模型发布条件。"
+        },
+        "chineseTitle": "Google 发布 Gemini 3.8 Live 系列：支持边对话边执行任务",
+        "highlights": [
+          "Google 于 9 月 15 日发布 3.8 Live 和 Extended Thinking；这条消息是今天收录。",
+          "支持后台异步工具调用与视觉上下文；Extended Thinking 可以并行推理和说话。",
+          "可通过 Gemini API 和 AI Studio 接入，部分企业入口仍为私测；真实效果需验证。"
+        ]
+      }
+    }
+  ]
+}
