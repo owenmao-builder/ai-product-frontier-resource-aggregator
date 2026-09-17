@@ -186,7 +186,7 @@ final class NewsStore: ObservableObject {
     func schedule() {
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: Double(max(5, preferences.refreshMinutes) * 60), repeats: true) { [weak self] _ in
-            Task { @MainActor in await self?.refresh() }
+            Task { @MainActor [weak self] in await self?.refresh() }
         }
         if let timer { RunLoop.main.add(timer, forMode: .common) }
     }
