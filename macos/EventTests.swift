@@ -62,6 +62,10 @@ enum EventTests {
         let compared = item("compare","Qwen3.9 发布，性能领先 GPT-6 Astra","https://one.test/q39")
         precondition(NewsEvents.identity(compared,products:[gpt]).subject == "qwen3.9","A mentioned competitor must not become the event subject")
         precondition(NewsEvents.groups([item("d1","DeepSeek-R1-0528 发布","https://one.test/d"),item("d2","DeepSeek-R1 发布","https://two.test/d")],now:now).count == 2)
+        let benchmark = item("bench","LongDS 发布 v1.1，GPT-6 Astra 领跑数据分析榜","https://one.test/benchmark")
+        precondition(NewsEvents.groups([benchmark,integrations[0]],products:[gpt],now:now).count == 2,"A new benchmark mentioning a model is not the model release")
+        let benchmarkModel = item("new-qwen","千问上线 Qwen3.8-Omni-Flash：30项评测提升","https://q.test/launch")
+        precondition(NewsEvents.groups([qwen[0],benchmarkModel],now:now).count == 1,"A launch can still report benchmark results without becoming a separate benchmark event")
         var duplicate = a; duplicate.id = "urlcopy"; duplicate.url += "?utm_source=rss"
         let duplicateRow = NewsEvents.present(NewsEvents.groups([a,duplicate],products:[law],now:now)[0],ratings:scores,now:now)
         precondition(duplicateRow.event?.articleCount == 1 && duplicateRow.event?.bonus == 0)

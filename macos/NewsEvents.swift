@@ -134,6 +134,13 @@ enum NewsEvents {
             }.first?.name
         }
         if let subject {
+            if kind == "release", has("评测|测评|排行榜|领跑.{0,24}榜|评估|benchmark|evaluation") {
+                let name = NSRegularExpression.escapedPattern(for:clean(subject)).replacingOccurrences(of:"-",with:"[- ]?")
+                let launch = "(?:发布|上线|推出|introduc(?:es|ing)?|releas(?:es|ed)?|launch(?:es|ed)?)"
+                let directRelease = has(launch + "\\s*(?:全新|新一代|模型|了)?\\s*" + name) ||
+                    has(name + "\\s*(?:模型)?\\s*" + launch)
+                if !directRelease { kind = "evaluation" }
+            }
             if kind == "release", Scoring.matches(compact(subject),#"^(qwen|glm|gpt|gemini|deepseek|claude).*?[0-9]"#),
                has("接入|搭载|集成|整合|powered by|built on|combining") { kind = "integration" }
             let suffix = ["release","pricing"].contains(kind) ? "" : "|" + compact(String(item.title.prefix(100)))
