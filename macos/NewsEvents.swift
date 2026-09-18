@@ -204,18 +204,27 @@ enum NewsEvents {
     // Extract only complete, topic-bearing sentences. Never present a title as a body analysis.
     static func excerpts(_ document: ArticleDocument, item: NewsItem) -> [String] {
         guard document.readable else { return [] }
-        let identity = identity(item)
+        let identity = identity(item,document:document)
         let subjectTokens = identity.subject.map { compact($0) }
         let keywords = Set(clean(item.title).components(separatedBy:CharacterSet.alphanumerics.inverted)
             .filter { $0.count >= 3 && !["the","for","and","with","new","model","openai","launches","introducing"].contains($0) })
         let sentences = document.text.replacingOccurrences(of:#"(?<=[.!?])\s+(?=[A-Z])"#,with:"\n",options:.regularExpression)
             .components(separatedBy:CharacterSet(charactersIn:"。！？\n"))
             .map { $0.trimmingCharacters(in:.whitespacesAndNewlines) }
-            .filter { (20...350).contains($0.count) && !Scoring.matches($0,"免责声明|相关阅读|猜你喜欢|广告|cookie|subscribe|copyright|点击关注|扫码|首页|RSS订阅|责编|线索投递|登录.{0,3}注册|sign in") }
-        let relevant = sentences.filter { sentence in
-            !focus(sentence).isEmpty && (subjectTokens.map { compact(sentence).contains($0) } ?? (keywords.filter { clean(sentence).contains($0) }.count >= 2 || compact(sentence).contains(compact(String(item.title.prefix(12))))))
+        var contextUntil = -1
+        var candidates: [(index:Int,text:String,weight:Int)] = []
+        for (index,sentence) in sentences.enumerated() {
+            guard (20...350).contains(sentence.count),
+                  !Scoring.matches(sentence,"免责声明|相关阅读|猜你喜欢|广告|cookie|subscribe|copyright|点击关注|扫码|首页|RSS订阅|责编|线索投递|登录.{0,3}注册|sign in|来源[：:]|发自") else { continue }
+            let namesSubject = subjectTokens.map { compact(sentence).contains($0) } ?? (keywords.filter { clean(sentence).contains($0) }.count >= 2 || compact(sentence).contains(compact(String(item.title.prefix(12)))))
+            if namesSubject { contextUntil = index + 2 }
+            let facets = focus(sentence)
+            guard !facets.isEmpty, namesSubject || index <= contextUntil else { continue }
+            let change = Scoring.matches(sentence,"新增|重构|原生|独立|共享|协调器|覆盖|introduc|native|parallel|memory") ? 4 : 0
+            candidates.append((index,sentence,facets.count * 2 + change))
         }
-        return Array(unique(relevant).prefix(2))
+        let selected = candidates.sorted { $0.weight == $1.weight ? $0.index < $1.index : $0.weight > $1.weight }.prefix(2).sorted { $0.index < $1.index }
+        return unique(selected.map(\.text))
     }
 
     static func present(_ group: Group, ratings: [String:NewsRating], documents: [String:ArticleDocument] = [:],

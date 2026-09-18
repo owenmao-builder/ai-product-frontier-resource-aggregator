@@ -51,6 +51,9 @@ enum EventTests {
         let projectDoc = ArticleDocument(url:vague.url,title:vague.title,text:"Claude Code 这次重构的重点是 Projects，可以拆分任务并行执行。" + String(repeating:"补充公开正文。",count:65),fetchedAt:timestamp(now),truncated:false)
         precondition(NewsEvents.groups(projects+[vague],documents:[vague.url:projectDoc],now:now).count == 1,"A body-named feature can connect an otherwise ambiguous title")
         precondition(NewsEvents.groups(projects+[vague],now:now).count == 2,"Do not guess a missing feature from the brand alone")
+        var architectureDoc = projectDoc
+        architectureDoc.text = "最新亮相的 Claude Code Projects 重构版，把静态资料夹改为协作中心。这次重构的核心是一个协调器，负责并行工作线程和共享记忆。" + String(repeating:"其他普通描述，没有额外主题。",count:50)
+        precondition(NewsEvents.excerpts(architectureDoc,item:vague).contains(where:{$0.contains("协调器")}),"Carry the named subject into adjacent architecture detail instead of repeating only the headline")
         let generic = [item("g1","OpenAI 更新产品政策","https://one.test/a"),item("g2","OpenAI 更新语音产品","https://two.test/b")]
         precondition(NewsEvents.groups(generic,now:now).count == 2,"Brand alone is insufficient")
         let integrations = [item("model","发布 GPT-6 Astra 新模型","https://one.test/model"),item("int","其他产品接入 GPT-6 Astra 模型","https://two.test/integration")]
