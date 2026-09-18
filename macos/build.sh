@@ -23,7 +23,7 @@ path=Path(sys.argv[1])
 path.write_text(path.read_text().replace('type="module"', 'defer').replace('crossorigin', ''))
 PYBUILD
 xcrun swiftc -O -swift-version 5 -target arm64-apple-macosx13.0 \
-  macos/Models.swift macos/ArticleEvidence.swift macos/Scoring.swift macos/DirectFeeds.swift macos/Products.swift macos/NewsStore.swift macos/Views.swift macos/ProductViews.swift macos/App.swift \
+  macos/Models.swift macos/ArticleEvidence.swift macos/Scoring.swift macos/DirectFeeds.swift macos/SourceTimes.swift macos/Products.swift macos/NewsStore.swift macos/Views.swift macos/ProductViews.swift macos/App.swift \
   -framework Cocoa -framework SwiftUI -framework WebKit -framework Security -framework CryptoKit \
   -o "$APP_OUTPUT/Contents/MacOS/AINewsMenu"
 codesign --force --deep --sign - "$APP_OUTPUT"

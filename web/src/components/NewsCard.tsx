@@ -5,7 +5,7 @@ import { SourceBadge } from './SourceBadge'
 import { formatDateTime } from '../utils/formatDate'
 import { ratingFor, scoreOf, evidenceFor, categories, dimensionNames, publicSourceURL } from '../lib/ratings'
 import { Analytics } from '../utils/analytics'
-import { newsTime } from '../lib/newsTime'
+import { newsTime, formatBeijingTime } from '../lib/newsTime'
 
 interface NewsCardProps {
   item: NewsItem
@@ -36,7 +36,7 @@ export function NewsCard({ item, index, isVisited = false, isFavorite = false, o
             {displayTitle}<ExternalLink className="inline-block w-3.5 h-3.5 ml-2 text-slate-400"/>
           </a>
           <div className="flex items-center gap-3 mt-3 text-xs text-slate-500 dark:text-slate-400 flex-wrap">
-            <span className="flex items-center gap-1" title={time.explanation}><Clock className="w-3.5 h-3.5"/>{time.isCollection ? '收录 ' : ''}{formatDateTime(time.timestamp === null ? null : new Date(time.timestamp).toISOString())}</span>
+            <span className="flex items-center gap-1" title={time.explanation}><Clock className="w-3.5 h-3.5"/>{time.isCollection ? '收录 ' : ''}{formatBeijingTime(time.timestamp)}</span>
             {[categories[score.category || "other"], ...score.tags].slice(0,3).map((tag,i) => <span key={`${tag}-${i}`} className="rounded px-1.5 py-0.5 bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-300">{tag}</span>)}
           </div>
           {(value ?? -1) >= 7 && <button onClick={() => setExpanded(!expanded)} className="mt-3 text-xs font-medium text-primary-600 dark:text-primary-300">{expanded ? '收起重点 ↑' : '展开重点 ↓'}</button>}

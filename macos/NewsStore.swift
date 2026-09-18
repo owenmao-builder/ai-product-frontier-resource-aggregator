@@ -80,6 +80,7 @@ final class NewsStore: ObservableObject {
     private var directFeedCache: [String: DirectFeedCache] = [:]
     private let productCatalog = Products.bundled("products.json", as: ProductBoard.self) ?? ProductBoard(verifiedAt: "", items: [])
     private var productPulse = ProductPulse()
+    private var sourceTimes: [String: SourcePublication] = [:]
 
     init() {
         let defaults = UserDefaults.standard
@@ -105,6 +106,8 @@ final class NewsStore: ObservableObject {
         documents = (try? Data(contentsOf: cacheDirectory.appendingPathComponent("documents-v2.json"))).flatMap { try? JSONDecoder().decode([String: ArticleDocument].self, from: $0) } ?? [:]
         directFeedCache = (try? Data(contentsOf: cacheDirectory.appendingPathComponent("direct-feeds.json"))).flatMap { try? JSONDecoder().decode([String: DirectFeedCache].self, from: $0) } ?? [:]
         productPulse = (try? Data(contentsOf: cacheDirectory.appendingPathComponent("product-pulse.json"))).flatMap { try? JSONDecoder().decode(ProductPulse.self, from: $0) } ?? Products.bundled("product-pulse.json", as: ProductPulse.self) ?? ProductPulse()
+        sourceTimes = (try? Data(contentsOf: cacheDirectory.appendingPathComponent("source-times.json"))).flatMap { try? JSONDecoder().decode([String: SourcePublication].self, from: $0) } ?? [:]
+        mergeSourceTimes()
         mergeDirectFeeds()
         recalculate()
     }
@@ -128,7 +131,7 @@ final class NewsStore: ObservableObject {
 
     var items: [NewsItem] { snapshots["24h"]?.items ?? [] }
     var todayItems: [NewsItem] { items.filter { Self.isToday($0) } }
-    static func isToday(_ item: NewsItem, now: Date = Date(), calendar: Calendar = .current) -> Bool {
+    static func isToday(_ item: NewsItem, now: Date = Date(), calendar: Calendar = beijingCalendar) -> Bool {
         item.newsTime(now: now).date.map { $0 <= now && calendar.isDate($0, inSameDayAs: now) } ?? false
     }
     var unreadCount: Int { items.filter { !seen.contains($0.url) }.count }
@@ -143,7 +146,7 @@ final class NewsStore: ObservableObject {
         }.sorted { first, second in
             let a = rating(for: first).sortScore, b = rating(for: second).sortScore
             if a != b { return a > b }
-            return (first.date ?? .distantPast) > (second.date ?? .distantPast)
+            return first.newsTime().orderedBefore(second.newsTime())
         }
     }
     var lead: NewsItem? { visible.first }
@@ -220,11 +223,14 @@ final class NewsStore: ObservableObject {
             let (bytes, response) = try await session.data(for: request)
             guard let response = response as? HTTPURLResponse, response.statusCode == 200 else { throw NewsError.message("资讯源暂不可用，正在显示上次保存的内容。") }
             let parsed = try Self.decode(bytes)
-            snapshots[range] = parsed
+            snapshots[range] = SourceTimes.apply(parsed, cached: sourceTimes)
             try? bytes.write(to: cacheDirectory.appendingPathComponent("latest-\(range).json"), options: .atomic)
             lastChecked = Date()
             UserDefaults.standard.set(lastChecked, forKey: "last-checked")
         } catch { self.error = "拉取失败：\(error.localizedDescription)" }
+        sourceTimes = await SourceTimes.refresh(snapshots[range]?.items ?? [], cached: sourceTimes, session: session)
+        if let bytes = try? JSONEncoder().encode(sourceTimes) { try? bytes.write(to: cacheDirectory.appendingPathComponent("source-times.json"), options: .atomic) }
+        mergeSourceTimes()
         directFeedCache = await directUpdates
         productPulse = await productUpdates
         if let bytes = try? JSONEncoder().encode(productPulse) { try? bytes.write(to: cacheDirectory.appendingPathComponent("product-pulse.json"), options: .atomic) }
@@ -234,6 +240,12 @@ final class NewsStore: ObservableObject {
         mergeDirectFeeds()
         recalculate()
         if range == "24h" { startScoring() }
+    }
+
+    private func mergeSourceTimes() {
+        for range in Array(snapshots.keys) {
+            if let snapshot = snapshots[range] { snapshots[range] = SourceTimes.apply(snapshot, cached: sourceTimes) }
+        }
     }
 
     private func mergeDirectFeeds() {

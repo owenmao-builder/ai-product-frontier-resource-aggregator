@@ -83,7 +83,7 @@ struct MenuContent: View {
                         .font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 }
                 HStack {
-                    Text("资讯更新 \(timeLabel(store.snapshots["24h"]?.generated_at))")
+                    Text("北京时间 · 更新 \(beijingTimeLabel(date: parseDate(store.snapshots["24h"]?.generated_at)))")
                     Spacer()
                     Text("每 \(store.preferences.refreshMinutes) 分钟检查")
                 }.font(.system(size: 12)).foregroundStyle(.secondary)

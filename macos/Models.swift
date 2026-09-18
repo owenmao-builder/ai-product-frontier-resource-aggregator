@@ -15,15 +15,21 @@ struct NewsItem: Codable, Identifiable {
     var title_zh: String?
     var title_bilingual: String?
     var rating: NewsRating?
+    var source_publication: SourcePublication? = nil
     var displayTitle: String { ([title_zh, title_en, title_bilingual, title].compactMap { $0 }.first { !$0.isEmpty } ?? title).replacingOccurrences(of: #"\s+"#, with: " ", options: .regularExpression).trimmingCharacters(in: .whitespacesAndNewlines) }
     var date: Date? { newsTime().date }
     func newsTime(now: Date = Date()) -> NewsTime {
+        if let source = source_publication, source.sourceURL == url,
+           let published = parseDate(source.publishedAt), published <= now,
+           let verified = parseDate(source.verifiedAt), verified <= now {
+            return NewsTime(date: published, isCollection: false, explanation: "已核对原站发布时间，按北京时间（UTC+8）显示。")
+        }
         let published = parseDate(published_at)
         let collected = parseDate(first_seen_at)
         // Allow small source-clock skew, but never display a future publication.
         let afterCollection = published.flatMap { date in collected.map { date.timeIntervalSince($0) > 300 } } ?? false
         if let published, published <= now, !afterCollection {
-            return NewsTime(date: published, isCollection: false, explanation: "发布时间，按本机时区显示。")
+            return NewsTime(date: published, isCollection: false, explanation: "信息源发布时间，按北京时间（UTC+8）显示。")
         }
         let reason = afterCollection ? "来源发布时间晚于收录时间" : published != nil ? "来源发布时间在未来" : "来源未提供有效发布时间"
         if let collected, collected <= now {
@@ -41,7 +47,33 @@ struct NewsTime {
     var date: Date?
     var isCollection: Bool
     var explanation: String
-    var label: String { (isCollection ? "收录 " : "") + timeLabel(date: date) }
+    var label: String { (isCollection ? "收录 " : "") + beijingTimeLabel(date: date) }
+    var isPublished: Bool { date != nil && !isCollection }
+    func orderedBefore(_ other: NewsTime) -> Bool {
+        if isPublished != other.isPublished { return isPublished }
+        return (date ?? .distantPast) > (other.date ?? .distantPast)
+    }
+}
+
+struct SourcePublication: Codable {
+    var publishedAt: String
+    var verifiedAt: String
+    var sourceURL: String
+}
+
+var beijingCalendar: Calendar {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = TimeZone(identifier: "Asia/Shanghai")!
+    return calendar
+}
+
+func beijingTimeLabel(date: Date?, now: Date = Date()) -> String {
+    guard let date else { return "时间未提供" }
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "zh_CN")
+    formatter.timeZone = beijingCalendar.timeZone
+    formatter.dateFormat = beijingCalendar.isDate(date, inSameDayAs: now) ? "HH:mm" : "MM-dd HH:mm"
+    return formatter.string(from: date)
 }
 
 struct SiteStat: Codable {

@@ -17,6 +17,12 @@ export interface NewsRating {
   release?: {kind:string; publisher:string; url:string; quote:string; reason:string} | null
 }
 
+export interface SourcePublication {
+  publishedAt: string
+  verifiedAt: string
+  sourceURL: string
+}
+
 export interface NewsItem {
   id: string
   site_id: string
@@ -32,6 +38,7 @@ export interface NewsItem {
   title_zh: string | null
   title_bilingual: string
   rating?: NewsRating
+  source_publication?: SourcePublication
 }
 
 export interface SiteStat {

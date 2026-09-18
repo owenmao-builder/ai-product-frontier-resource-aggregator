@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import type { NewsData, NewsItem, SiteStat } from '../types'
 import { matchesScore, scoreOf, ratingFor } from '../lib/ratings'
-import { newsTime } from '../lib/newsTime'
+import { compareNewsTimes } from '../lib/newsTime'
+import { resolveSourceTimes } from '../lib/sourceTimes'
 
 export interface SourceStat {
   source: string
@@ -125,7 +126,8 @@ export function useNewsData(): UseNewsDataReturn {
       if (!response.ok) {
         throw new Error('数据加载失败')
       }
-      const json = await response.json()
+      const json = await resolveSourceTimes(await response.json())
+      if (signal?.aborted) return
       
       preloadedDataRef.current[range] = json
       
@@ -208,7 +210,7 @@ export function useNewsData(): UseNewsDataReturn {
     
     items = [...items].sort((a, b) => {
       if (sortBy === 'score' && (scoreOf(a) ?? -1) !== (scoreOf(b) ?? -1)) return (scoreOf(b) ?? -1) - (scoreOf(a) ?? -1)
-      return (newsTime(b).timestamp ?? 0) - (newsTime(a).timestamp ?? 0)
+      return compareNewsTimes(a, b)
     })
     return items.slice(0, displayCount)
   }, [data, selectedSite, selectedSource, searchQuery, displayCount, minScore, sortBy, selectedCategory])

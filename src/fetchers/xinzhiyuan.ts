@@ -1,5 +1,7 @@
 import type { RawItem } from '../types.js';
 import { BaseFetcher } from './base.js';
+import { xinzhiyuanPublishedAt } from '../utils/xinzhiyuan-time.js';
+export { xinzhiyuanPublishedAt } from '../utils/xinzhiyuan-time.js';
 
 interface WPPost {
   id: number;
@@ -11,17 +13,6 @@ interface WPPost {
 
 const WINDOW_DAYS = 7;
 const MAX_PER_PAGE = 100;
-
-export function xinzhiyuanPublishedAt(post: Pick<WPPost, 'date' | 'date_gmt'>): Date | null {
-  // WordPress date is site-local; date_gmt is UTC, but neither includes an offset.
-  // Never let the collector machine's timezone decide how to interpret them.
-  for (const [raw, offset] of [[post.date_gmt, 'Z'], [post.date, '+08:00']]) {
-    if (!raw || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?$/.test(raw)) continue;
-    const date = new Date(/(?:Z|[+-]\d{2}:\d{2})$/.test(raw) ? raw : raw + offset);
-    if (Number.isFinite(date.getTime())) return date;
-  }
-  return null;
-}
 
 export class XinzhiyuanFetcher extends BaseFetcher {
   siteId = 'xinzhiyuan';
