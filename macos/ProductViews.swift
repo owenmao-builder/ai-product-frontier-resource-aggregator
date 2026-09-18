@@ -7,6 +7,7 @@ struct ProductMenuContent: View {
     @State private var query = ""
     @State private var expanded: String?
     @State private var showMethod = false
+    @State private var showPending = false
 
     private var visible: [AIProduct] {
         store.productBoard.items.filter { product in
@@ -37,6 +38,22 @@ struct ProductMenuContent: View {
             }
             ScrollView {
                 LazyVStack(spacing: 0) {
+                    if let discovery = store.productBoard.discovery, !discovery.pending.isEmpty || !discovery.errors.isEmpty {
+                        DisclosureGroup("发布线索 · \(discovery.pending.count) 项待核验", isExpanded: $showPending) {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("缺少官方公告或发布日期的，暂不计入近 7 天上新。").foregroundStyle(.secondary)
+                                ForEach(Array(discovery.pending.enumerated()), id: \.offset) { _, item in
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text(item.name).fontWeight(.medium)
+                                        Text(item.reason).foregroundStyle(.secondary)
+                                        if let source = item.officialURL, let url = publicArticleURL(source) { Link("已找到的官方资料 ↗", destination: url) }
+                                        if let url = publicArticleURL(item.newsURL) { Link("相关新闻 ↗", destination: url) }
+                                    }.frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                if !discovery.errors.isEmpty { Text(discovery.errors.joined(separator: "；")).foregroundStyle(.orange) }
+                            }.font(.system(size: 11)).padding(.top, 8)
+                        }.font(.system(size: 12)).foregroundStyle(.orange).padding(15)
+                    }
                     if visible.isEmpty {
                         VStack(spacing: 10) {
                             Image(systemName: "square.grid.2x2").font(.system(size: 28)).foregroundStyle(.secondary)
@@ -61,7 +78,7 @@ struct ProductMenuContent: View {
                 HStack {
                     Button(action: openDashboard) { Label("打开产品看板", systemImage: "square.grid.2x2") }.buttonStyle(.borderless).font(.system(size: 14, weight: .medium))
                     Spacer()
-                    Text("检查 \(timeLabel(store.productBoard.checkedAt))").font(.system(size: 11)).foregroundStyle(.secondary)
+                    Text("发布同步 \(beijingTimeLabel(date: parseDate(store.productBoard.discovery?.checkedAt)))").font(.system(size: 11)).foregroundStyle(.secondary)
                 }
             }.padding(.horizontal, 17).padding(.vertical, 12)
         }
@@ -93,6 +110,9 @@ struct ProductMenuContent: View {
             }
             if let day = product.releasedOn {
                 Text("官方发布 " + day).font(.system(size: 11, weight: .medium)).foregroundStyle(.indigo)
+            }
+            if product.discoveredAutomatically == true {
+                Text("新闻自动同步 · 官方发布已核对").font(.system(size: 10)).foregroundStyle(.green).help(product.dateBasis ?? "已读取官方发布页")
             }
             Text(product.summary).font(.system(size: 13)).lineSpacing(3).fixedSize(horizontal: false, vertical: true)
             if let signal = product.signals?.first {

@@ -1,23 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ArrowUpRight, Building2, CheckCircle2, Flame, RefreshCw, Search, Sparkles } from 'lucide-react'
-import type { AIProduct, ProductBoard } from '../types'
+import type { AIProduct, ProductBoard, ProductDiscovery } from '../types'
 import catalog from '../../../data/products.json'
+import { isRecentRelease, mergeProductCatalog } from '../lib/products'
 
 type ProductFilter = 'all' | 'major' | 'hot'
-const dateLabel = (value?: string) => value ? new Date(value).toLocaleString('zh-CN', {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '尚未更新'
+const dateLabel = (value?: string) => value ? new Date(value).toLocaleString('zh-CN', {timeZone:'Asia/Shanghai',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '尚未更新'
 
-export function isRecentRelease(product: AIProduct, now = Date.now()) {
-  if (!product.releasedOn || !/^\d{4}-\d{2}-\d{2}$/.test(product.releasedOn) || !['新模型','新版本','新功能','新工具','新架构'].includes(product.releaseKind || '')) return false
-  const [year, month, day] = product.releasedOn.split('-').map(Number)
-  const release = new Date(year, month - 1, day)
-  if (release.getFullYear() !== year || release.getMonth() !== month - 1 || release.getDate() !== day) return false
-  const start = new Date(now)
-  start.setHours(0, 0, 0, 0)
-  start.setDate(start.getDate() - 6)
-  return release.getTime() >= start.getTime() && release.getTime() <= now
-}
-
-export function ProductsBoard({board, loading, onRefresh}: {board?: ProductBoard; loading: boolean; onRefresh: () => void}) {
+export function ProductsBoard({board, discovery, loading, onRefresh}: {board?: ProductBoard; discovery?:ProductDiscovery; loading: boolean; onRefresh: () => void}) {
   const [filter, setFilter] = useState<ProductFilter>('major')
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('all')
@@ -26,7 +16,7 @@ export function ProductsBoard({board, loading, onRefresh}: {board?: ProductBoard
     const timer = window.setInterval(() => setNow(Date.now()), 60000)
     return () => window.clearInterval(timer)
   }, [])
-  const source: ProductBoard = board || catalog
+  const source = useMemo(()=>board || mergeProductCatalog(catalog,discovery,now),[board,discovery,now])
   const products = useMemo(() => source.items.filter(product => !product.major || isRecentRelease(product, now)).map(product => ({...product, signals: (product.signals || []).filter(signal => {
     const age = now - Date.parse(signal.observedAt)
     return age >= 0 && age <= 86400000
@@ -47,7 +37,7 @@ export function ProductsBoard({board, loading, onRefresh}: {board?: ProductBoard
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-3">近 7 天，大厂又发布了什么？</h2>
           <p className="text-sm text-slate-600 dark:text-slate-300 mt-3 leading-relaxed">直接看具体模型、版本和新功能，标明官方发布日期、这次新增的能力，以及近期热门工具。</p>
         </div>
-        <button onClick={onRefresh} disabled={loading} aria-label="刷新产品热度" className="shrink-0 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 p-2.5 text-slate-600 dark:text-slate-300 hover:text-primary-600"><RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /></button>
+        <button onClick={onRefresh} disabled={loading} aria-label="同步新产品与热度" className="shrink-0 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 p-2.5 text-slate-600 dark:text-slate-300 hover:text-primary-600"><RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /></button>
       </div>
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-5 text-sm">
         <span className="inline-flex items-center gap-2 text-primary-700 dark:text-primary-300"><Building2 className="w-4 h-4" /><strong>{majorCount}</strong> 项大厂近 7 天上新</span>
@@ -66,9 +56,16 @@ export function ProductsBoard({board, loading, onRefresh}: {board?: ProductBoard
 
     <div className="flex flex-wrap justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
       <span>GitHub 周榜 · {dateLabel(source.githubFetchedAt)}　 /　HN 近 7 天 · {dateLabel(source.hnFetchedAt)}</span>
-      <span>热度随「立即拉取」更新</span>
+      <span>{source.discovery ? `发布同步 ${dateLabel(source.discovery.checkedAt)} · 新闻与产品同时更新` : '发布清单尚未自动同步，点击刷新'}</span>
     </div>
     {Object.values(source.errors || {}).length > 0 && <p role="status" className="text-sm rounded-xl bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300 p-3">{Object.values(source.errors || {}).join(' ')}</p>}
+
+    {Boolean(source.discovery?.pending.length || source.discovery?.errors.length) && <details className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-950/20 p-4 text-sm">
+      <summary className="cursor-pointer text-amber-800 dark:text-amber-300 font-medium">新闻中的发布线索 · {source.discovery?.pending.length || 0} 项待核验</summary>
+      <p className="text-xs text-slate-500 mt-2">尚未取得匹配的官方公告或发布日期，暂不计入“大厂近 7 天上新”。已核实条目保留，来源恢复后继续核对。</p>
+      {source.discovery?.pending.map(item=><div key={item.maker+item.name} className="mt-3 border-t border-amber-100 dark:border-amber-900 pt-3"><strong>{item.name}</strong><span className="text-xs text-slate-500 ml-2">{item.maker}</span><p className="text-xs text-slate-500 mt-1">{item.reason}</p>{item.officialURL&&<a href={item.officialURL} target="_blank" rel="noopener noreferrer" className="block text-xs text-primary-600 dark:text-primary-300 my-1">已找到的官方资料 ↗</a>}<a href={item.newsURL} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 dark:text-primary-300">相关新闻 · {item.newsTitle} ↗</a></div>)}
+      {source.discovery?.errors.length ? <p className="text-xs text-amber-700 dark:text-amber-400 mt-3">{source.discovery.errors.join('；')}</p> : null}
+    </details>}
 
     <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
       {visible.map(product => <ProductCard key={product.id} product={product} />)}
@@ -79,7 +76,7 @@ export function ProductsBoard({board, loading, onRefresh}: {board?: ProductBoard
       <summary className="cursor-pointer font-medium">入选标准与覆盖范围</summary>
       <p className="mt-3">大厂上新只收录官方确认的具体模型、版本或新功能，按官方公告的首发日期筛选最近 7 个自然日（含今天），不使用抓取日期、文章更新时间或旧模型被再次报道的日期。超过时限、只有品牌名或日期未核实的条目不展示；新模型优先排列。</p>
       <p className="mt-2">近期热门满足任一条件：进入 GitHub 周趋势榜且本周新增至少 500 星，或最近 7 天相关 HN 话题达到 100 赞。大厂条目在此也必须满足发布时限；其他工具可以较早发布、最近走红。热度不等于质量，不与新闻评分混算，超过 24 小时未更新的热度停止计入。</p>
-      <p className="mt-2">发布条目按官方资料核验维护，覆盖不等于全网；热度与今日相关消息随刷新更新，过期条目自动移出。</p>
+      <p className="mt-2">每轮从新闻识别具体发布，核对支持的官方来源后自动入栏，并关联今日报道；未核实的显示原因，过期条目自动移出。内置编辑资料补充说明，覆盖不等于全网。核对官方发布不代表已独立验证其性能宣称。</p>
     </details>
   </section>
 }
@@ -92,6 +89,7 @@ function ProductCard({product}: {product: AIProduct}) {
       <a aria-label={`${product.name} 官网`} href={product.homepage} target="_blank" rel="noopener noreferrer" className="rounded-lg p-2 bg-slate-50 dark:bg-slate-700 text-slate-500 hover:text-primary-600"><ArrowUpRight className="w-4 h-4" /></a>
     </div>
     {product.releasedOn && <p className="text-xs font-medium text-primary-600 dark:text-primary-300 mt-3">官方发布 {product.releasedOn} · {product.releaseKind}</p>}
+    {product.discoveredAutomatically && <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-2" title={product.dateBasis}>由新闻自动同步 · 官方发布已核对</p>}
     <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mt-3">{product.summary}</p>
     <div className="flex flex-wrap gap-2 mt-4">
       {product.major && <span className="inline-flex items-center gap-1 text-xs rounded-md px-2 py-1 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-300"><CheckCircle2 className="w-3 h-3" />大厂上新</span>}

@@ -60,6 +60,22 @@ enum ProductTests {
         boundary.releasedOn = "2026-09-11"
         precondition(Products.isRecentRelease(boundary,now:parseDate("2026-09-17T15:59:59Z")!,calendar:timezone))
         precondition(!Products.isRecentRelease(boundary,now:parseDate("2026-09-17T16:00:00Z")!,calendar:timezone), "Date-only publication follows the user's local day at midnight")
-        print("PASS: product release windows, invalid and unknown dates, local midnight expiry, exact announcements, heat thresholds and today's related news")
+        var discovered = product
+        discovered.id = "discovered"; discovered.name = "AlphaAI Next"; discovered.aliases = ["AlphaAI Next"]
+        discovered.discoveredAutomatically = true; discovered.verifiedAt = timestamp(now); discovered.dateBasis = "官方结构化发布日期"
+        let pending = PendingProduct(name:"Unconfirmed Model",maker:"Example",newsTitle:"A new model",newsURL:"https://example.com/pending",reason:"缺少官方日期")
+        let discovery = ProductDiscovery(checkedAt:timestamp(now),items:[product,discovered],pending:[pending],errors:[])
+        let merged = Products.mergedCatalog(catalog, discovery: discovery, now: now)
+        precondition(merged.items.count == 2 && merged.items[0].summary == catalog.items[0].summary, "Merge new releases without duplicating or replacing curated descriptions")
+        var releaseNews = item; releaseNews.title = "AlphaAI Next launches"; releaseNews.url = "https://example.com/next"
+        let synced = Products.board(catalog:merged,pulse:pulse,news:[releaseNews],now:now)
+        precondition(synced.items.first { $0.id == "discovered" }?.relatedNews?.count == 1, "A newly discovered product must link today's matching news")
+        precondition(synced.discovery?.pending.count == 1 && !synced.items.contains { $0.name == pending.name }, "Unverified leads are visible separately, never counted as confirmed releases")
+        let restored = try JSONDecoder().decode(ProductBoard.self, from: JSONEncoder().encode(synced))
+        precondition(restored.discovery?.items.count == 2 && restored.items.first { $0.id == "discovered" }?.dateBasis == discovered.dateBasis, "Discovery status and provenance survive cache round trips")
+        let noResurrection = Products.mergedCatalog(catalog, discovery:discovery, now:now.addingTimeInterval(7 * 86400))
+        precondition(Products.board(catalog:noResurrection,pulse:pulse,news:[],now:now.addingTimeInterval(7 * 86400)).items.isEmpty)
+        precondition(!Products.isRecentRelease(boundary,now:parseDate("2026-09-17T16:00:00Z")!), "The default release window follows Beijing midnight regardless of system timezone")
+        print("PASS: product release windows, automatic catalog merging, pending leads, persistence, Beijing midnight expiry, exact announcements, heat thresholds and today's related news")
     }
 }

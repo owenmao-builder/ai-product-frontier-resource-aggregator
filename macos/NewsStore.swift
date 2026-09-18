@@ -81,7 +81,10 @@ final class NewsStore: ObservableObject {
     private let collector = LocalCollector()
     private let directFeeds = DirectFeed.configured
     private var directFeedCache: [String: DirectFeedCache] = [:]
-    private let productCatalog = Products.bundled("products.json", as: ProductBoard.self) ?? ProductBoard(verifiedAt: "", items: [])
+    private let bundledProductCatalog = Products.bundled("products.json", as: ProductBoard.self) ?? ProductBoard(verifiedAt: "", items: [])
+    private var productCatalog: ProductBoard {
+        Products.mergedCatalog(bundledProductCatalog, discovery: snapshots["24h"]?.product_discovery ?? snapshots["7d"]?.product_discovery)
+    }
     private var productPulse = ProductPulse()
     private var sourceTimes: [String: SourcePublication] = [:]
     private var initialCollectorSeed: [NewsItem] = []

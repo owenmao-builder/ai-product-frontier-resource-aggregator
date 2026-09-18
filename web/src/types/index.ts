@@ -64,6 +64,7 @@ export interface NewsData {
   items: NewsItem[]
   direct_sources?: DirectFeedStatus[]
   product_board?: ProductBoard
+  product_discovery?: ProductDiscovery
   collection?: CollectionStatus
 }
 
@@ -103,6 +104,9 @@ export interface AIProduct {
   releasedOn?: string
   releaseKind?: string
   repository?: string
+  discoveredAutomatically?: boolean
+  verifiedAt?: string
+  dateBasis?: string
   signals?: {kind: string; label: string; title: string; url: string; observedAt: string}[]
   relatedNews?: {title: string; url: string; date: string}[]
 }
@@ -114,6 +118,14 @@ export interface ProductBoard {
   githubFetchedAt?: string
   hnFetchedAt?: string
   errors?: Record<string, string>
+  discovery?: ProductDiscovery
+}
+
+export interface ProductDiscovery {
+  checkedAt: string
+  items: AIProduct[]
+  pending: {name:string; maker:string; newsTitle:string; newsURL:string; reason:string; officialURL?:string}[]
+  errors: string[]
 }
 
 export interface DirectFeedStatus {

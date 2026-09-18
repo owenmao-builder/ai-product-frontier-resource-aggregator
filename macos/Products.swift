@@ -18,6 +18,9 @@ struct AIProduct: Codable, Identifiable {
     var releaseKind: String? = nil
     var signals: [ProductSignal]? = nil
     var relatedNews: [ProductNews]? = nil
+    var discoveredAutomatically: Bool? = nil
+    var verifiedAt: String? = nil
+    var dateBasis: String? = nil
     var isHot: Bool { !(signals ?? []).isEmpty }
 }
 
@@ -42,6 +45,23 @@ struct ProductBoard: Codable {
     var githubFetchedAt: String? = nil
     var hnFetchedAt: String? = nil
     var errors: [String: String]? = nil
+    var discovery: ProductDiscovery? = nil
+}
+
+struct PendingProduct: Codable {
+    var name: String
+    var maker: String
+    var newsTitle: String
+    var newsURL: String
+    var reason: String
+    var officialURL: String? = nil
+}
+
+struct ProductDiscovery: Codable {
+    var checkedAt: String
+    var items: [AIProduct]
+    var pending: [PendingProduct]
+    var errors: [String]
 }
 
 struct GitHubTrend: Codable {
@@ -69,9 +89,25 @@ struct ProductPulse: Codable {
 
 enum Products {
     static let trendingURL = "https://github.com/trending?since=weekly"
-    static let method = "大厂上新：官方确认、最近 7 个自然日（含今天）发布的具体模型、版本或新功能，显示官方发布日期；过期或日期未核实的不展示。近期热门：GitHub 周榜本周新增 ≥500 星，或近 7 天相关 HN 话题 ≥100 赞；大厂条目仍须满足发布时限。仅覆盖已核实条目，热度不代表质量。超过 24 小时的热度停止计入。"
+    static let method = "每轮从新闻发现具体模型、版本、产品与功能，读取官方发布页核对名称及日期，自动同步入栏。大厂上新只展示最近 7 个北京时间自然日（含今天）的已核实发布；未取得官方日期的消息列为待核验线索。近期热门：GitHub 周增 ≥500 星或近 7 天 HN ≥100 赞，超过 24 小时的热度失效；大厂条目仍须满足发布时限。"
 
-    static func releaseDate(_ product: AIProduct, calendar: Calendar = .current) -> Date? {
+    static func mergedCatalog(_ bundled: ProductBoard, discovery: ProductDiscovery?, now: Date = Date()) -> ProductBoard {
+        guard let discovery else { return bundled }
+        func key(_ name: String) -> String { name.lowercased().filter { $0.isLetter || $0.isNumber } }
+        var result = bundled
+        var names = Set(bundled.items.filter { isRecentRelease($0, now: now) }.flatMap { [$0.name] + $0.aliases }.map(key))
+        for product in discovery.items where isRecentRelease(product, now: now) {
+            if names.insert(key(product.name)).inserted { result.items.append(product) }
+        }
+        var status = discovery
+        let activeNames = Set(result.items.filter { isRecentRelease($0, now: now) }.flatMap { [$0.name] + $0.aliases }.map(key))
+        status.pending = status.pending.filter { !activeNames.contains(key($0.name)) }
+        result.discovery = status
+        if !discovery.items.isEmpty { result.verifiedAt = discovery.checkedAt }
+        return result
+    }
+
+    static func releaseDate(_ product: AIProduct, calendar: Calendar = beijingCalendar) -> Date? {
         guard let day = product.releasedOn, day.range(of: #"^\d{4}-\d{2}-\d{2}$"#, options: .regularExpression) != nil,
               let kind = product.releaseKind, ["新模型", "新版本", "新功能", "新工具", "新架构"].contains(kind),
               publicArticleURL(product.sourceURL) != nil else { return nil }
@@ -85,7 +121,7 @@ enum Products {
         return date
     }
 
-    static func isRecentRelease(_ product: AIProduct, now: Date = Date(), calendar: Calendar = .current) -> Bool {
+    static func isRecentRelease(_ product: AIProduct, now: Date = Date(), calendar: Calendar = beijingCalendar) -> Bool {
         guard let date = releaseDate(product, calendar: calendar),
               let firstDay = calendar.date(byAdding: .day, value: -6, to: calendar.startOfDay(for: now)) else { return false }
         return date >= firstDay && date <= now
@@ -182,7 +218,7 @@ enum Products {
         }
         // Parse dates once for the shared news list, not once per product on the UI thread.
         let todayNews: [(item: NewsItem, date: Date)] = news.compactMap { item in
-            guard let date = item.date, date <= now, Calendar.current.isDate(date, inSameDayAs: now), item.safeURL != nil else { return nil }
+            guard let date = item.date, date <= now, beijingCalendar.isDate(date, inSameDayAs: now), item.safeURL != nil else { return nil }
             return (item, date)
         }.sorted { $0.date > $1.date }
         var board = catalog

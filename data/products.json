@@ -2,6 +2,23 @@
   "verifiedAt": "2026-09-17T09:11:17Z",
   "items": [
     {
+      "id": "astra-for-law",
+      "name": "Astra for Law",
+      "maker": "OpenAI",
+      "major": true,
+      "category": "专业应用",
+      "summary": "以 GPT-6 Astra 为基础、针对法律工作的专门产品。",
+      "difference": "将模型与法律检索索引、专业分析及写作指令组合，侧重律师工作流；这次发布的是行业应用，不能算作 GPT-6 模型再次升级。",
+      "access": "首批通过 Trusted Access 向选定律所开放；具体范围和接入方式以官方公告为准。",
+      "homepage": "https://openai.com/index/astra-for-law",
+      "sourceURL": "https://openai.com/index/astra-for-law",
+      "aliases": ["Astra for Law"],
+      "releasedOn": "2026-09-17",
+      "releaseKind": "新工具",
+      "verifiedAt": "2026-09-18T08:40:00Z",
+      "dateBasis": "编辑核对官方页面显示的首发日期；该页自动读取可能返回 HTTP 403"
+    },
+    {
       "id": "gemini-3-8-live",
       "name": "Gemini 3.8 Live",
       "maker": "Google",

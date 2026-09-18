@@ -1,3 +1,5 @@
+import type { ProductDiscovery } from './product-discovery.js';
+
 export interface RawItem {
   siteId: string;
   siteName: string;
@@ -65,6 +67,7 @@ export interface SiteStat {
 }
 
 export interface LatestPayload {
+  product_discovery?: ProductDiscovery;
   generated_at: string;
   window_hours: number;
   total_items: number;

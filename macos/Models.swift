@@ -108,6 +108,7 @@ struct NewsData: Codable {
     var items: [NewsItem]
     var direct_sources: [DirectFeedStatus]? = nil
     var product_board: ProductBoard? = nil
+    var product_discovery: ProductDiscovery? = nil
     var collection: CollectionStatus? = nil
 }
 
