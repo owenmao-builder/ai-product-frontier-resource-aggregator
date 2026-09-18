@@ -16,6 +16,7 @@ struct NewsItem: Codable, Identifiable {
     var title_bilingual: String?
     var rating: NewsRating?
     var source_publication: SourcePublication? = nil
+    var priority: NewsPriority? = nil
     var displayTitle: String { ([title_zh, title_en, title_bilingual, title].compactMap { $0 }.first { !$0.isEmpty } ?? title).replacingOccurrences(of: #"\s+"#, with: " ", options: .regularExpression).trimmingCharacters(in: .whitespacesAndNewlines) }
     var date: Date? { newsTime().date }
     func newsTime(now: Date = Date()) -> NewsTime {
@@ -107,6 +108,7 @@ struct NewsData: Codable {
     var items: [NewsItem]
     var direct_sources: [DirectFeedStatus]? = nil
     var product_board: ProductBoard? = nil
+    var collection: CollectionStatus? = nil
 }
 
 struct NewsRating: Codable, Equatable {
@@ -176,11 +178,25 @@ struct ReviewedArchive: Codable {
     var entries: [ReviewedEntry]
 }
 
+private enum ParsedDates {
+    static let lock = NSLock()
+    static let cache: NSCache<NSString, NSDate> = { let value = NSCache<NSString, NSDate>(); value.countLimit = 20000; return value }()
+    static let fractional: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
+    static let whole = ISO8601DateFormatter()
+}
+
 func parseDate(_ text: String?) -> Date? {
-    guard let text else { return nil }
-    let formatter = ISO8601DateFormatter()
-    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-    return formatter.date(from: text) ?? ISO8601DateFormatter().date(from: text)
+    guard let text, !text.isEmpty else { return nil }
+    if let cached = ParsedDates.cache.object(forKey: text as NSString) { return cached as Date }
+    ParsedDates.lock.lock()
+    defer { ParsedDates.lock.unlock() }
+    let date = ParsedDates.fractional.date(from: text) ?? ParsedDates.whole.date(from: text)
+    if let date { ParsedDates.cache.setObject(date as NSDate, forKey: text as NSString) }
+    return date
 }
 
 func timestamp(_ date: Date = Date()) -> String { ISO8601DateFormatter().string(from: date) }

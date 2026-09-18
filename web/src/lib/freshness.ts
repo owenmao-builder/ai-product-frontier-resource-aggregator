@@ -1,7 +1,15 @@
-import type { DirectFeedStatus } from '../types'
+import type { CollectionStatus, DirectFeedStatus } from '../types'
 import { formatBeijingTime } from './newsTime'
 
-export function newsFreshness(generatedAt: string | undefined, sources: DirectFeedStatus[] = [], now = Date.now()) {
+export function newsFreshness(generatedAt: string | undefined, sources: DirectFeedStatus[] = [], now = Date.now(), collection?: CollectionStatus) {
+  if (collection?.mode === 'local') {
+    const ok = collection.sources.filter(s => s.ok).length
+    const failed = collection.sources.length - ok
+    const elapsed = now - Date.parse(collection.finished_at)
+    return { directLabel: `本机采集 ${ok}/${collection.sources.length} 源成功${failed ? ` · ${failed} 源异常` : ''}`,
+      snapshotLabel: `本轮完成 ${formatBeijingTime(Date.parse(collection.finished_at))}${elapsed >= 3_600_000 ? ` · ${Math.floor(elapsed / 3_600_000)} 小时未更新` : ''}`,
+      isStale: failed > 0 || elapsed >= 3_600_000 }
+  }
   const generated = Date.parse(generatedAt || '')
   const age = now - generated
   const snapshotLabel = !Number.isFinite(generated) ? '聚合内容暂未取得' : age < 0 ? '聚合快照时间异常' : `聚合快照 ${formatBeijingTime(generated)}${age >= 3_600_000 ? ` · ${Math.floor(age / 3_600_000)} 小时未更新` : ''}`

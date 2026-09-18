@@ -69,6 +69,7 @@ interface ParsedArticle {
   title: string;
   url: string;
   description: string;
+  publishedAt: Date | null;
 }
 
 interface ParsedFeed {
@@ -107,12 +108,14 @@ function parseWechatRss(xml: string): ParsedFeed {
     const titleMatch = item.match(/<title>([^<]+)<\/title>/);
     const linkMatch = item.match(/<link>([^<]+)<\/link>/);
     const descMatch = item.match(/<description>([^<]*)<\/description>/);
+    const pubDate = item.match(/<pubDate>([^<]+)<\/pubDate>/)?.[1];
 
     if (titleMatch && linkMatch) {
       articles.push({
         title: decodeHtmlEntities(titleMatch[1]),
         url: decodeHtmlEntities(linkMatch[1]),
         description: descMatch ? decodeHtmlEntities(descMatch[1]) : '',
+        publishedAt: pubDate && Number.isFinite(Date.parse(pubDate)) ? new Date(pubDate) : null,
       });
     }
   }
@@ -153,7 +156,7 @@ export class WechatRssFetcher extends BaseFetcher {
             source: sourceName,
             title: article.title,
             url: article.url,
-            publishedAt: parsed.lastBuildDate,
+            publishedAt: article.publishedAt,
             meta: {
               category: feed.category,
               description: article.description.slice(0, 200),

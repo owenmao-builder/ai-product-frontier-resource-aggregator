@@ -58,7 +58,7 @@ export class XinzhiyuanFetcher extends BaseFetcher {
             title,
             url: post.link,
             publishedAt,
-            meta: { postId: post.id },
+            meta: { postId: post.id, time_basis: 'publisher_addtime' },
           })
         );
       }

@@ -9,6 +9,7 @@ import { firstNonEmpty } from '../utils/text.js';
 import { getHost } from '../utils/url.js';
 import { hashString } from '../utils/hash.js';
 import { withDirectFeeds } from '../direct-feeds.js';
+import { fetchText } from '../utils/http.js';
 
 export function parseOpmlSubscriptions(opmlContent: string): OpmlFeed[] {
   const parser = new XMLParser({
@@ -56,7 +57,7 @@ export function parseOpmlSubscriptions(opmlContent: string): OpmlFeed[] {
   return feeds;
 }
 
-function resolveOfficialRssUrl(feedUrl: string): { url: string | null; skipReason: string | null } {
+export function resolveOfficialRssUrl(feedUrl: string): { url: string | null; skipReason: string | null } {
   const src = (feedUrl || '').trim();
   if (!src) return { url: null, skipReason: 'empty_url' };
 
@@ -78,7 +79,7 @@ function resolveOfficialRssUrl(feedUrl: string): { url: string | null; skipReaso
   return { url: src, skipReason: null };
 }
 
-async function fetchSingleFeed(
+export async function fetchSingleFeed(
   feed: OpmlFeed,
   now: Date,
   verbose: boolean = true
@@ -102,7 +103,7 @@ async function fetchSingleFeed(
       },
     });
 
-    const parsed = await parser.parseURL(feedUrl);
+    const parsed = await parser.parseString(await fetchText(feedUrl, { timeout: CONFIG.rss.feedTimeout }));
     const sourceName = firstNonEmpty(feedTitle, parsed.title, getHost(feedUrl));
 
     for (const entry of parsed.items || []) {

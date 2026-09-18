@@ -1,6 +1,6 @@
 import { X, Rss, Globe, CheckCircle, XCircle, Clock, ExternalLink } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import type { DirectFeedStatus, SiteStat } from '../types'
+import type { CollectionStatus, DirectFeedStatus, SiteStat } from '../types'
 import directFeeds from '../../../feeds/direct-feeds.json'
 import { formatBeijingTime } from '../lib/newsTime'
 
@@ -11,6 +11,7 @@ interface SourceModalProps {
   sourceCount: number
   windowHours: number
   directSources?: DirectFeedStatus[]
+  collection?: CollectionStatus
 }
 
 interface SourceStatus {
@@ -86,14 +87,14 @@ const SITE_INFO: Record<string, { description: string; url: string }> = {
   },
 }
 
-export function SourceModal({ isOpen, onClose, siteStats, sourceCount, windowHours, directSources = [] }: SourceModalProps) {
+export function SourceModal({ isOpen, onClose, siteStats, sourceCount, windowHours, directSources = [], collection }: SourceModalProps) {
   const [sourceStatus, setSourceStatus] = useState<SourceStatus | null>(null)
   const [opmlGroups, setOpmlGroups] = useState<OpmlGroup[]>([])
 
   useEffect(() => {
     if (isOpen) {
       const basePath = import.meta.env.BASE_URL || '/'
-      fetch(`${basePath}data/source-status.json`)
+      if (!collection) fetch(`${basePath}data/source-status.json`)
         .then(res => res.json())
         .then(data => setSourceStatus(data))
         .catch(() => {})
@@ -103,7 +104,7 @@ export function SourceModal({ isOpen, onClose, siteStats, sourceCount, windowHou
         .then(data => setOpmlGroups(data))
         .catch(() => {})
     }
-  }, [isOpen])
+  }, [isOpen, collection])
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -158,6 +159,24 @@ export function SourceModal({ isOpen, onClose, siteStats, sourceCount, windowHou
         </div>
 
         <div className="px-6 py-4 overflow-y-auto max-h-[calc(85vh-80px)]">
+          {collection && <section className="mb-6" aria-label="本轮采集状态">
+            <h3 className="font-semibold text-slate-900 dark:text-white">本轮本机采集 · {formatBeijingTime(Date.parse(collection.finished_at))}</h3>
+            <p className="text-xs text-slate-500 mt-2">已检查 {collection.sources.length} 个平台或订阅入口，{collection.sources.filter(s => s.ok).length} 个成功。成功表示本轮取得内容，不代表每个来源都有新发布；失败来源保留上次内容。</p>
+            <details className="mt-3 rounded-lg border border-slate-200 dark:border-slate-700 p-3" open={collection.sources.some(s => !s.ok)}>
+              <summary className="cursor-pointer text-sm font-medium">异常来源（{collection.sources.filter(s => !s.ok).length}）</summary>
+              {collection.sources.filter(s => !s.ok).map(source => <div key={source.id} className="mt-3 text-xs text-amber-700 dark:text-amber-400">
+                <strong>{source.name}</strong> · {source.skipped ? '未采集' : '失败'} · {source.error}
+                <div className="mt-1 text-slate-500">检查 {formatBeijingTime(Date.parse(source.checked_at))}{source.fetched_at ? ` · 上次成功 ${formatBeijingTime(Date.parse(source.fetched_at))}` : ' · 尚无成功记录'}</div>
+              </div>)}
+            </details>
+            <details className="mt-3 rounded-lg border border-slate-200 dark:border-slate-700 p-3">
+              <summary className="cursor-pointer text-sm font-medium">查看全部来源的检查与发布时间</summary>
+              {collection.sources.map(source => <div key={source.id} className="py-2 border-b last:border-0 border-slate-100 dark:border-slate-700 text-xs">
+                <div className="flex justify-between gap-3"><strong>{source.name}</strong><span className={source.ok ? 'text-emerald-600' : 'text-amber-600'}>{source.ok ? `成功 · ${source.item_count} 条` : '异常'}</span></div>
+                <div className="mt-1 text-slate-500">检查 {formatBeijingTime(Date.parse(source.checked_at))}{source.latest_published_at ? ` · 最近发布 ${formatBeijingTime(Date.parse(source.latest_published_at))}` : ' · 发布时间未提供'}</div>
+              </div>)}
+            </details>
+          </section>}
           <section className="mb-6" aria-label="我的信息源">
             <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">原站直采 · 随 Mac 应用每轮刷新</h3>
             {directFeeds.map(feed => {
@@ -203,13 +222,14 @@ export function SourceModal({ isOpen, onClose, siteStats, sourceCount, windowHou
             <Globe className="w-4 h-4" />
             数据平台详情
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">聚合平台状态来自其公布的快照{sourceStatus?.generated_at ? `（${formatBeijingTime(Date.parse(sourceStatus.generated_at))}）` : ''}，不代表本轮原站直采的检查结果。</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{collection ? '平台状态来自本轮本机采集。资讯数量包括仍在时间范围内的缓存；不会把旧文章标成刚发布。' : `聚合平台状态来自其公布的快照${sourceStatus?.generated_at ? `（${formatBeijingTime(Date.parse(sourceStatus.generated_at))}）` : ''}，不代表本轮原站直采的检查结果。`}</p>
           
           <div className="space-y-3">
             {sortedSiteStats.map((stat) => {
+              const live = collection?.sources.filter(s => stat.site_id === 'opmlrss' ? s.kind === 'rss' : s.id === stat.site_id)
               const siteInfo = sourceStatus?.sites.find(s => s.site_id === stat.site_id)
-              const isOk = stat.site_id === 'directrss' ? !directSources.some(source => source.error) : siteInfo?.ok !== false
-              const statusKnown = stat.site_id === 'directrss' ? directSources.some(source => source.checkedAt) : Boolean(siteInfo)
+              const isOk = stat.site_id === 'directrss' ? !directSources.some(source => source.error) : collection ? Boolean(live?.length && live.every(s => s.ok)) : siteInfo?.ok !== false
+              const statusKnown = stat.site_id === 'directrss' ? directSources.some(source => source.checkedAt) : collection ? Boolean(live?.length) : Boolean(siteInfo)
               const info = SITE_INFO[stat.site_id]
               const isOpml = stat.site_id === 'opmlrss'
               
@@ -276,7 +296,7 @@ export function SourceModal({ isOpen, onClose, siteStats, sourceCount, windowHou
             })}
           </div>
 
-          {sourceStatus?.failed_sites && sourceStatus.failed_sites.length > 0 && (
+          {!collection && sourceStatus?.failed_sites && sourceStatus.failed_sites.length > 0 && (
             <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">
               <h4 className="text-sm font-medium text-red-700 dark:text-red-400 mb-2">抓取失败的数据源</h4>
               <p className="text-xs text-red-600 dark:text-red-300">

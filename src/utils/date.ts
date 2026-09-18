@@ -1,9 +1,11 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 import timezone from 'dayjs/plugin/timezone.js';
+import customParseFormat from 'dayjs/plugin/customParseFormat.js';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.extend(customParseFormat);
 
 export function toISOString(date: Date | null): string | null {
   if (!date) return null;
@@ -136,7 +138,7 @@ export function parseDate(value: unknown, now: Date): Date | null {
 
   const techUrlsMatch = str.match(/(\d{4}-\d{2}-\d{2}\s+\d{1,2}:\d{2}:\d{2}[AP]M)\s+UTC/);
   if (techUrlsMatch) {
-    const parsed = dayjs(techUrlsMatch[1], 'YYYY-MM-DD h:mm:ssA');
+    const parsed = dayjs.utc(techUrlsMatch[1], 'YYYY-MM-DD h:mm:ssA');
     if (parsed.isValid()) {
       return parsed.utc().toDate();
     }

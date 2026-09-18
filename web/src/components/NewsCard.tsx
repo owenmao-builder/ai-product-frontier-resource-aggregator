@@ -37,6 +37,7 @@ export function NewsCard({ item, index, isVisited = false, isFavorite = false, o
           </a>
           <div className="flex items-center gap-3 mt-3 text-xs text-slate-500 dark:text-slate-400 flex-wrap">
             <span className="flex items-center gap-1" title={time.explanation}><Clock className="w-3.5 h-3.5"/>{time.isCollection ? '收录 ' : ''}{formatBeijingTime(time.timestamp)}</span>
+            {item.priority?.reasons.slice(0,2).map(reason => <span key={reason} title={`排序依据：${item.priority?.reasons.join('；')}${item.priority?.provisional ? '；升级幅度待原文核验，不代表已经取得证据评分。' : ''}`} className="rounded px-1.5 py-0.5 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">{reason}</span>)}
             {[categories[score.category || "other"], ...score.tags].slice(0,3).map((tag,i) => <span key={`${tag}-${i}`} className="rounded px-1.5 py-0.5 bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-300">{tag}</span>)}
           </div>
           {(value ?? -1) >= 7 && <button onClick={() => setExpanded(!expanded)} className="mt-3 text-xs font-medium text-primary-600 dark:text-primary-300">{expanded ? '收起重点 ↑' : '展开重点 ↓'}</button>}

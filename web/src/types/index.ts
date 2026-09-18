@@ -39,6 +39,7 @@ export interface NewsItem {
   title_bilingual: string
   rating?: NewsRating
   source_publication?: SourcePublication
+  priority?: {value:number; modelChange:number; architectureChange:number; heat:number; focus:number; reasons:string[]; provisional:boolean}
 }
 
 export interface SiteStat {
@@ -63,6 +64,28 @@ export interface NewsData {
   items: NewsItem[]
   direct_sources?: DirectFeedStatus[]
   product_board?: ProductBoard
+  collection?: CollectionStatus
+}
+
+export interface CollectionSource {
+  id: string
+  name: string
+  kind: 'platform' | 'rss'
+  url?: string
+  ok: boolean
+  checked_at: string
+  fetched_at?: string
+  latest_published_at?: string
+  item_count: number
+  error?: string
+  skipped?: boolean
+}
+
+export interface CollectionStatus {
+  mode: 'local'
+  started_at: string
+  finished_at: string
+  sources: CollectionSource[]
 }
 
 export interface AIProduct {

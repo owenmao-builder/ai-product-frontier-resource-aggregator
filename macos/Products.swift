@@ -167,7 +167,7 @@ enum Products {
         product.aliases.contains { alias in
             let escaped = NSRegularExpression.escapedPattern(for: alias)
             let pattern = alias.range(of: #"[\p{Han}]"#, options: .regularExpression) == nil ? "(?i)(?<![a-z0-9])" + escaped + "(?![a-z0-9])" : "(?i)" + escaped
-            return title.range(of: pattern, options: .regularExpression) != nil
+            return Scoring.matches(title, pattern)
         }
     }
 

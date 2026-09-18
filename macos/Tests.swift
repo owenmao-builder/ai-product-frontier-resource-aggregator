@@ -7,6 +7,7 @@ enum ScoringTests {
         try await DirectFeedTests.refreshTests()
         try SourceTimeTests.run()
         try ProductTests.run()
+        PriorityTests.run()
         let now = timestamp()
         let item = NewsItem(id: "known", site_id: "rss", site_name: "RSS", source: "Official", title: "DeepSeek 发布开源 Agent Harness SDK，新增 plugin middleware tracing", url: "https://example.com/article", published_at: now, first_seen_at: now, last_seen_at: now)
         let pending = Scoring.rule(item)

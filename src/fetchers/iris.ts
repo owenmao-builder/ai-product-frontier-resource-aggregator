@@ -4,6 +4,8 @@ import { BaseFetcher } from './base.js';
 import { fetchText } from '../utils/http.js';
 import { parseDate } from '../utils/date.js';
 import { firstNonEmpty } from '../utils/text.js';
+import { CONFIG } from '../config.js';
+import pLimit from 'p-limit';
 
 export class IrisFetcher extends BaseFetcher {
   siteId = 'iris';
@@ -14,7 +16,7 @@ export class IrisFetcher extends BaseFetcher {
     const items: RawItem[] = [];
 
     const feedMatch = html.match(/const\s+feeds\s*=\s*\[(.*?)\]\s*;/s);
-    if (!feedMatch) return items;
+    if (!feedMatch) throw new Error('Info Flow 页面未提供订阅列表');
 
     const feedSection = feedMatch[1];
     const feedRegex = /\{\s*name:\s*'([^']+)'\s*,\s*url:\s*'([^']+)'\s*\}/g;
@@ -27,9 +29,10 @@ export class IrisFetcher extends BaseFetcher {
 
     const parser = new Parser();
 
-    for (const feed of feeds) {
+    const limit = pLimit(8);
+    await Promise.all(feeds.map(feed => limit(async () => {
       try {
-        const parsed = await parser.parseURL(feed.url);
+        const parsed = await parser.parseString(await fetchText(feed.url, { timeout: CONFIG.rss.feedTimeout }));
         const sourceName = firstNonEmpty(feed.name, parsed.title, 'Iris Feed');
 
         for (const entry of parsed.items || []) {
@@ -53,9 +56,9 @@ export class IrisFetcher extends BaseFetcher {
           );
         }
       } catch {
-        continue;
+        return;
       }
-    }
+    })));
 
     return items;
   }

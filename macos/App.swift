@@ -72,7 +72,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler
         statusItem.length = iconOnly ? NSStatusItem.squareLength : NSStatusItem.variableLength
         button.imagePosition = iconOnly ? .imageOnly : .imageLeading
         button.title = ""
-        if let first = store.items.sorted(by: { store.rating(for: $0).sortScore > store.rating(for: $1).sortScore }).first {
+        if let first = store.lead {
             let rating = store.rating(for: first)
             if !iconOnly {
                 let title = store.title(for: first)
@@ -185,5 +185,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKScriptMessageHandler
         return nil
     }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
+    func applicationWillTerminate(_ notification: Notification) { store.stop() }
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool { showPopover(); return true }
 }

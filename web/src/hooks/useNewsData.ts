@@ -209,6 +209,7 @@ export function useNewsData(): UseNewsDataReturn {
     }
     
     items = [...items].sort((a, b) => {
+      if (sortBy === 'score' && (a.priority?.value ?? 0) !== (b.priority?.value ?? 0)) return (b.priority?.value ?? 0) - (a.priority?.value ?? 0)
       if (sortBy === 'score' && (scoreOf(a) ?? -1) !== (scoreOf(b) ?? -1)) return (scoreOf(b) ?? -1) - (scoreOf(a) ?? -1)
       return compareNewsTimes(a, b)
     })

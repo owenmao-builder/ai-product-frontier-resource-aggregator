@@ -35,6 +35,7 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 7.33.7
+      - run: pnpm install --frozen-lockfile
       - run: pnpm --dir web install --frozen-lockfile
       - run: bash macos/test.sh
       - name: Build the Apple Silicon app

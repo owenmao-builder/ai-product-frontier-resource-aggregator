@@ -10,6 +10,7 @@ struct Preferences: Codable {
     var aiEnabled = false
     var apiBaseURL = ""
     var model = ""
+    var watchedProducts: [String]? = nil
 }
 
 enum KeyStore {
@@ -69,6 +70,7 @@ final class NewsStore: ObservableObject {
     private var timer: Timer?
     private var cachedAI: RatingCache
     private var ruleCache: [String: NewsRating] = [:]
+    private var priorities: [String: NewsPriority] = [:]
     private var reviewed: [String: ReviewedEntry] = [:]
     private var documents: [String: ArticleDocument] = [:]
     private var apiKey: String?
@@ -76,11 +78,13 @@ final class NewsStore: ObservableObject {
     private var generation = 0
     private let cacheDirectory: URL
     private let session: URLSession
+    private let collector = LocalCollector()
     private let directFeeds = DirectFeed.configured
     private var directFeedCache: [String: DirectFeedCache] = [:]
     private let productCatalog = Products.bundled("products.json", as: ProductBoard.self) ?? ProductBoard(verifiedAt: "", items: [])
     private var productPulse = ProductPulse()
     private var sourceTimes: [String: SourcePublication] = [:]
+    private var initialCollectorSeed: [NewsItem] = []
 
     init() {
         let defaults = UserDefaults.standard
@@ -97,7 +101,11 @@ final class NewsStore: ObservableObject {
         for range in ["24h", "7d"] {
             let cached = cacheDirectory.appendingPathComponent("latest-\(range).json")
             let bundled = Bundle.main.resourceURL?.appendingPathComponent("seed/latest-\(range).json")
-            if let data = (try? Data(contentsOf: cached)) ?? bundled.flatMap({ try? Data(contentsOf: $0) }), let snapshot = try? Self.decode(data) { snapshots[range] = snapshot }
+            if let data = (try? Data(contentsOf: cached)) ?? bundled.flatMap({ try? Data(contentsOf: $0) }), let snapshot = try? Self.decode(data) {
+                snapshots[range] = snapshot
+                // Seed the archive before the 24-hour view expires yesterday's articles.
+                initialCollectorSeed.append(contentsOf: snapshot.items)
+            }
         }
         if let url = Bundle.main.resourceURL?.appendingPathComponent("seed/assessments-v2.json"),
            let data = try? Data(contentsOf: url), let archive = try? JSONDecoder().decode(ReviewedArchive.self, from: data), archive.version == Scoring.version {
@@ -141,7 +149,14 @@ final class NewsStore: ObservableObject {
         let checked = sources.compactMap { parseDate($0.checkedAt) }.max()
         return "原站直采 \(ready)/\(directFeeds.count) · 检查 \(beijingTimeLabel(date: checked))"
     }
-    var snapshotLabel: String { aggregateSnapshotLabel(snapshots["24h"]?.generated_at) }
+    var snapshotLabel: String {
+        if loading { return "正在逐一采集资讯平台与订阅源…" }
+        if let collection = snapshots["24h"]?.collection {
+            return collection.label + (collection.failures > 0 ? " · \(collection.failures)源异常" : "")
+        }
+        return aggregateSnapshotLabel(snapshots["24h"]?.generated_at)
+    }
+    func stop() { timer?.invalidate(); collector.cancel(); scoringTask?.cancel() }
     var visible: [NewsItem] {
         items.filter { item in
             let rating = rating(for: item)
@@ -151,6 +166,8 @@ final class NewsStore: ObservableObject {
             if filter == "unread" && seen.contains(item.url) { return false }
             return query.isEmpty || (title(for: item) + " " + item.displayTitle + " " + item.title + " " + item.source).localizedCaseInsensitiveContains(query)
         }.sorted { first, second in
+            let pa = priority(for: first).value, pb = priority(for: second).value
+            if pa != pb { return pa > pb }
             let a = rating(for: first).sortScore, b = rating(for: second).sortScore
             if a != b { return a > b }
             return first.newsTime().orderedBefore(second.newsTime())
@@ -158,6 +175,9 @@ final class NewsStore: ObservableObject {
     }
     var lead: NewsItem? { visible.first }
     func rating(for item: NewsItem) -> NewsRating { ratings[item.id] ?? ruleCache[item.id] ?? Scoring.rule(item) }
+    func priority(for item: NewsItem) -> NewsPriority {
+        priorities[item.id] ?? Priority.rank(item, rating: rating(for: item), products: productCatalog.items, pulse: productPulse, watchlist: preferences.watchedProducts ?? Priority.defaultWatchlist)
+    }
     func title(for item: NewsItem) -> String {
         let rating = rating(for: item)
         if rating.sortScore >= 7, let title = rating.chineseTitle, Scoring.matches(title, "[\\p{Han}]") { return title }
@@ -183,6 +203,13 @@ final class NewsStore: ObservableObject {
             }
         }
         ratings = next
+        priorities = [:]
+        let priorityContext = Priority.Context(products: productCatalog.items, pulse: productPulse, watchlist: preferences.watchedProducts ?? Priority.defaultWatchlist)
+        for snapshot in snapshots.values {
+            for item in snapshot.items where priorities[item.id] == nil {
+                priorities[item.id] = Priority.rank(item, rating: rating(for: item), context: priorityContext)
+            }
+        }
         productBoard = Products.board(catalog: productCatalog, pulse: productPulse, news: todayItems.map { item in
             var value = item; value.title_zh = title(for: item); return value
         })
@@ -216,24 +243,21 @@ final class NewsStore: ObservableObject {
         guard !loading, ["24h", "7d"].contains(range) else { return }
         loading = true; error = nil; onUpdate?()
         defer { loading = false; onUpdate?() }
-        // User-added subscriptions refresh independently of the upstream JSON host.
+        // Every refresh runs the full collector; original feeds can update while it is still running.
         async let directUpdates = DirectFeeds.refresh(directFeeds, cached: directFeedCache, session: session)
         async let productUpdates = Products.refresh(cached: productPulse, session: session)
-        do {
-            let base = preferences.dataBaseURL.trimmingCharacters(in: .whitespacesAndNewlines).trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-            guard var components = URLComponents(string: base + "/latest-\(range).json"), components.scheme == "https", components.host != nil, components.user == nil, components.password == nil else { throw NewsError.message("请在设置中填写有效的 HTTPS 数据地址。") }
-            components.queryItems = [URLQueryItem(name: "checked", value: String(Int(Date().timeIntervalSince1970 / 60)))]
-            guard let url = components.url else { throw NewsError.message("数据地址无效。") }
-            var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
-            request.setValue("application/json", forHTTPHeaderField: "Accept")
-            request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
-            let (bytes, response) = try await session.data(for: request)
-            guard let response = response as? HTTPURLResponse, response.statusCode == 200 else { throw NewsError.message("资讯源暂不可用，正在显示上次保存的内容。") }
-            let parsed = try Self.decode(bytes)
-            snapshots[range] = SourceTimes.apply(parsed, cached: sourceTimes)
-            try? bytes.write(to: cacheDirectory.appendingPathComponent("latest-\(range).json"), options: .atomic)
-        } catch { self.error = "拉取失败：\(error.localizedDescription)" }
+        let seed = ["24h", "7d"].compactMap { snapshots[$0] }.flatMap(\.items) + initialCollectorSeed
+        async let collected = collector.collect(directory: cacheDirectory, seed: seed)
         directFeedCache = await directUpdates
+        mergeDirectFeeds(); recalculate(); onUpdate?()
+        do {
+            for parsed in try await collected {
+                let key = parsed.window_hours == 24 ? "24h" : "7d"
+                snapshots[key] = SourceTimes.apply(parsed, cached: sourceTimes)
+                if let bytes = try? JSONEncoder().encode(parsed) { try? bytes.write(to: cacheDirectory.appendingPathComponent("latest-\(key).json"), options: .atomic) }
+            }
+            initialCollectorSeed = []
+        } catch { self.error = error.localizedDescription }
         // Show newly fetched original-source news even if the aggregate host is stale or failed.
         if snapshots[range] == nil {
             snapshots[range] = NewsData(generated_at: "", window_hours: range == "24h" ? 24 : 168,
@@ -268,7 +292,6 @@ final class NewsStore: ObservableObject {
     }
 
     func save(_ newPreferences: Preferences, key: String?) throws {
-        guard let source = URL(string: newPreferences.dataBaseURL), source.scheme == "https", source.host != nil, source.user == nil, source.password == nil, source.query == nil, source.fragment == nil else { throw NewsError.message("数据地址需要是 HTTPS 目录地址，不含查询参数。") }
         if newPreferences.aiEnabled {
             guard let base = URL(string: newPreferences.apiBaseURL), base.scheme == "https", base.host != nil, base.user == nil, base.password == nil, base.query == nil, base.fragment == nil, !newPreferences.model.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw NewsError.message("启用 AI 评分前，请填写 HTTPS API 地址和模型名称。") }
             let usableKey = key ?? apiKey ?? KeyStore.read()
@@ -301,6 +324,8 @@ final class NewsStore: ObservableObject {
         }
         let batch = Array(candidates.sorted { first, second in
             // This only orders body retrieval; a headline never earns release points.
+            let pa = priority(for: first).value, pb = priority(for: second).value
+            if pa != pb { return pa > pb }
             let a = Scoring.majorPublisher(at: first.url) != nil
             let b = Scoring.majorPublisher(at: second.url) != nil
             return a != b ? a : (first.date ?? .distantPast) > (second.date ?? .distantPast)
@@ -379,7 +404,7 @@ final class NewsStore: ObservableObject {
     func dashboardData(range: String) -> NewsData? {
         guard var result = snapshots[range] else { return nil }
         result.product_board = productBoard
-        result.items = result.items.map { item in var item = item; item.rating = rating(for: item); if (item.rating?.sortScore ?? -1) >= 7 { item.title_zh = title(for: item) }; return item }
+        result.items = result.items.map { item in var item = item; item.rating = rating(for: item); item.priority = priority(for: item); if (item.rating?.sortScore ?? -1) >= 7 { item.title_zh = title(for: item) }; return item }
         return result
     }
 }

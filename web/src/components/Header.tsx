@@ -17,6 +17,7 @@ interface HeaderProps {
   onTimeRangeChange: (range: TimeRange) => void
   isSwitching?: boolean
   productsView?: boolean
+  localCollection?: boolean
 }
 
 export function Header({ 
@@ -32,7 +33,8 @@ export function Header({
   timeRange,
   onTimeRangeChange,
   isSwitching = false,
-  productsView = false
+  productsView = false,
+  localCollection = false
 }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-700">
@@ -121,7 +123,7 @@ export function Header({
             {generatedAt && !productsView && (
               <div className="hidden lg:flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full">
                 <Clock className="w-3.5 h-3.5" />
-                <span>聚合快照 {formatBeijingTime(Date.parse(generatedAt))}</span>
+                <span>{localCollection ? '本机采集' : '聚合快照'} {formatBeijingTime(Date.parse(generatedAt))}</span>
                 {windowHours && (
                   <span className="text-slate-400 dark:text-slate-500">· {windowHours}h</span>
                 )}

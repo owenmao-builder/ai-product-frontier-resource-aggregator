@@ -6,6 +6,7 @@ interface FetchOptions extends RequestInit {
 }
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+class HttpError extends Error { constructor(public status: number) { super(`HTTP ${status}`); } }
 
 export async function fetchWithRetry(url: string, options: FetchOptions = {}): Promise<Response> {
   const { retries = CONFIG.http.retries, timeout = CONFIG.http.timeout, ...fetchOptions } = options;
@@ -17,29 +18,26 @@ export async function fetchWithRetry(url: string, options: FetchOptions = {}): P
   if (!headers.has('Accept-Language')) {
     headers.set('Accept-Language', 'zh-CN,zh;q=0.9,en;q=0.8');
   }
+  if (!headers.has('Cache-Control')) headers.set('Cache-Control', 'no-cache');
 
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
-
       const response = await fetch(url, {
         ...fetchOptions,
         headers,
-        signal: controller.signal,
+        signal: options.signal ? AbortSignal.any([options.signal, AbortSignal.timeout(timeout)]) : AbortSignal.timeout(timeout),
       });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok && CONFIG.http.retryStatusCodes.includes(response.status)) {
-        throw new Error(`HTTP ${response.status}`);
+      if (!response.ok) {
+        await response.body?.cancel();
+        throw new HttpError(response.status);
       }
 
       return response;
     } catch (error) {
       lastError = error as Error;
+      if (error instanceof HttpError && !CONFIG.http.retryStatusCodes.includes(error.status)) throw error;
       if (attempt < retries) {
         await sleep(CONFIG.http.retryDelay * (attempt + 1));
       }

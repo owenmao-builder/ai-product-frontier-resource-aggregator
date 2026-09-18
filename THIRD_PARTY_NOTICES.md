@@ -163,3 +163,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## Local collector and Node.js
+
+The macOS distribution also includes a bundled news collector and the official Node.js v22.23.2 Apple Silicon runtime. The build verifies the runtime archive against a pinned SHA-256 digest. Complete runtime licenses are included in `NODE-LICENSE.txt`; licenses for every bundled collector dependency are generated from the installed packages into `COLLECTOR-THIRD-PARTY-NOTICES.txt` inside the app Resources directory.

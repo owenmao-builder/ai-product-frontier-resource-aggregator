@@ -58,8 +58,16 @@ enum Scoring {
         严格返回 JSON：{"ratings":[{"id":"原样 id","status":"assessed 或 pending","category":"上述枚举","evidenceLevel":"A/B/C","reason":"简体中文，说明为何值得读或为何待评估","chineseTitle":"中文标题","highlights":["中文重点一","中文重点二"],"release":null,"comparison":"对照材料能支持的变化；无对照填空","dimensions":[{"key":"increment","value":3,"reason":"依据"},{"key":"impact","value":3,"reason":"依据"},{"key":"explanation","value":3,"reason":"依据"},{"key":"decision","value":3,"reason":"依据"}],"sources":[{"url":"材料 URL","title":"材料标题","quote":"原文短句"}],"tags":["主题"],"gaps":["仍待确认的问题"]}]}
         """
     }
+    private static let patterns = NSCache<NSString, NSRegularExpression>()
     static func matches(_ text: String, _ pattern: String) -> Bool {
-        text.range(of: pattern, options: [.regularExpression, .caseInsensitive]) != nil
+        let regex: NSRegularExpression
+        if let cached = patterns.object(forKey: pattern as NSString) { regex = cached }
+        else {
+            guard let compiled = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) else { return false }
+            patterns.setObject(compiled, forKey: pattern as NSString)
+            regex = compiled
+        }
+        return regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)) != nil
     }
     static func fingerprint(_ item: NewsItem) -> String {
         SHA256.hash(data: Data((version + "\n" + item.id + "\n" + item.title + "\n" + item.url).utf8)).map { String(format: "%02x", $0) }.joined()

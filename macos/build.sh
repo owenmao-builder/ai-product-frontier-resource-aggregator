@@ -6,7 +6,9 @@ cd "$APP_SOURCE/web"
 if [ ! -d node_modules ]; then npx --yes pnpm@7.33.7 install --frozen-lockfile; fi
 MAC_APP=1 npm run build
 cd "$APP_SOURCE"
+if [ ! -d node_modules/esbuild ]; then npx --yes pnpm@7.33.7 install --frozen-lockfile; fi
 mkdir -p "$APP_OUTPUT/Contents/MacOS" "$APP_OUTPUT/Contents/Resources/web" "$APP_OUTPUT/Contents/Resources/seed"
+node macos/bundle-collector.mjs "$APP_OUTPUT"
 cp macos/Info.plist "$APP_OUTPUT/Contents/Info.plist"
 cp LICENSE NOTICE THIRD_PARTY_NOTICES.md "$APP_OUTPUT/Contents/Resources/"
 cp feeds/direct-feeds.json "$APP_OUTPUT/Contents/Resources/"
@@ -23,8 +25,9 @@ path=Path(sys.argv[1])
 path.write_text(path.read_text().replace('type="module"', 'defer').replace('crossorigin', ''))
 PYBUILD
 xcrun swiftc -O -swift-version 5 -target arm64-apple-macosx13.0 \
-  macos/Models.swift macos/ArticleEvidence.swift macos/Scoring.swift macos/DirectFeeds.swift macos/SourceTimes.swift macos/Products.swift macos/NewsStore.swift macos/Views.swift macos/ProductViews.swift macos/App.swift \
+  macos/Models.swift macos/ArticleEvidence.swift macos/Scoring.swift macos/NewsPriority.swift macos/DirectFeeds.swift macos/LocalCollector.swift macos/SourceTimes.swift macos/Products.swift macos/NewsStore.swift macos/Views.swift macos/ProductViews.swift macos/App.swift \
   -framework Cocoa -framework SwiftUI -framework WebKit -framework Security -framework CryptoKit \
   -o "$APP_OUTPUT/Contents/MacOS/AINewsMenu"
+codesign --force --sign - "$APP_OUTPUT/Contents/Helpers/node"
 codesign --force --deep --sign - "$APP_OUTPUT"
 printf 'Built: %s\n' "$APP_OUTPUT"

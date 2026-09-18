@@ -59,7 +59,7 @@ function App() {
     isSwitching,
     minScore, setMinScore, selectedCategory, setSelectedCategory, sortBy, setSortBy, scoring, aiError, lastChecked,
   } = useNewsData()
-  const freshness = newsFreshness(data?.generated_at, data?.direct_sources)
+  const freshness = newsFreshness(data?.generated_at, data?.direct_sources, Date.now(), data?.collection)
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
@@ -71,6 +71,7 @@ function App() {
         generatedAt={data?.generated_at}
         windowHours={data?.window_hours}
         onShowSources={() => setShowSourceModal(true)}
+        localCollection={data?.collection?.mode === 'local'}
         onShowHistory={() => setShowHistoryModal(true)}
         onShowFavorites={() => setShowFavoritesModal(true)}
         timeRange={timeRange}
@@ -117,7 +118,7 @@ function App() {
           <label className="flex items-center gap-2">类型<select aria-label="新闻类型" value={selectedCategory} onChange={event => setSelectedCategory(event.target.value)} className="bg-white dark:bg-slate-800 border rounded-lg p-2 border-slate-200 dark:border-slate-700"><option value="all">全部类型</option>{Object.entries(categories).map(([key,label]) => <option key={key} value={key}>{label}</option>)}</select></label>
           <label className="flex items-center gap-2">分数<select value={minScore} onChange={event => setMinScore(Number(event.target.value))} className="bg-white dark:bg-slate-800 border rounded-lg p-2 border-slate-200 dark:border-slate-700"><option value={0}>全部资讯</option><option value={-1}>待评估</option><option value={7}>7 分及以上</option><option value={8}>8 分及以上</option></select></label>
           <span className="text-slate-500 dark:text-slate-400">北京时间</span>
-          <label className="flex items-center gap-2">排序<select value={sortBy} onChange={event => setSortBy(event.target.value as 'score'|'time')} className="bg-white dark:bg-slate-800 border rounded-lg p-2 border-slate-200 dark:border-slate-700"><option value="score">重要度优先</option><option value="time">最新优先</option></select></label>
+          <label className="flex items-center gap-2" title="模型升级 30% · 架构变化 30% · 产品热度 25% · 关注匹配 15%；线索排序不改变证据评分">排序<select value={sortBy} onChange={event => setSortBy(event.target.value as 'score'|'time')} className="bg-white dark:bg-slate-800 border rounded-lg p-2 border-slate-200 dark:border-slate-700"><option value="score">关注优先</option><option value="time">最新优先</option></select></label>
         </div>}
         {(error || aiError) && <div role="status" className="rounded-lg p-3 bg-amber-50 text-amber-800 dark:bg-amber-900/20 dark:text-amber-200 text-sm">{error || aiError}{data && ' · 已保留上次数据'}</div>}
         <NewsList
@@ -143,6 +144,7 @@ function App() {
       </footer>
 
       <SourceModal
+        collection={data?.collection}
         isOpen={showSourceModal}
         onClose={() => setShowSourceModal(false)}
         siteStats={siteStats}

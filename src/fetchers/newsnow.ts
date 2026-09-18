@@ -289,7 +289,6 @@ export class NewsNowFetcher extends BaseFetcher {
       const sid = String(block.id || 'unknown');
       const sourceTitle = firstNonEmpty(block.title, block.name, block.desc, sid);
       const sourceLabel = sourceTitle !== sid ? `${sourceTitle} (${sid})` : sid;
-      const updated = parseUnixTimestamp(block.updatedTime) || now;
 
       for (const it of block.items || []) {
         const title = (it.title || '').trim();
@@ -311,9 +310,7 @@ export class NewsNowFetcher extends BaseFetcher {
           const postId = String(it.id);
           publishedAt = sspaiTimes[postId] || null;
         }
-        if (!publishedAt) {
-          publishedAt = updated;
-        }
+        // A ranking refresh is not an article's publication time.
 
         items.push(
           this.createItem({

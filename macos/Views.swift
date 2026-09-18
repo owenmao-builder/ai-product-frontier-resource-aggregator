@@ -46,7 +46,7 @@ struct MenuContent: View {
                 filter("待评估", "pending")
                 filter("未读", "unread")
                 Spacer()
-                Text("重要度 ↓").font(.system(size: 12)).foregroundStyle(.secondary)
+                Text("关注优先 ↓").font(.system(size: 12)).foregroundStyle(.secondary).help(Priority.method)
             }.padding(.horizontal, 16).padding(.vertical, 12)
 
             Divider()
@@ -85,11 +85,11 @@ struct MenuContent: View {
                 HStack {
                     Text(store.directRefreshLabel)
                     Spacer()
-                    Text("每 \(store.preferences.refreshMinutes) 分钟直采")
+                    Text("每 \(store.preferences.refreshMinutes) 分钟全源采集")
                 }.font(.system(size: 12)).foregroundStyle(.secondary)
                 Text("\(store.snapshotLabel) · 北京时间")
                     .font(.system(size: 11)).foregroundStyle(.secondary)
-                    .help("原站订阅直接抓取最新消息；其余聚合平台随上游快照更新。检查成功不代表上游发布了新快照。")
+                    .help("本机直接检查全部已配置的平台与订阅入口。失败来源保留缓存；完整看板的「信息源」显示逐源状态。")
                 HStack {
                     Button(action: openDashboard) { Label("打开完整看板", systemImage: "macwindow") }.buttonStyle(.borderless).font(.system(size: 14, weight: .medium))
                     Spacer()
@@ -116,6 +116,7 @@ struct MenuContent: View {
         let rating = store.rating(for: item)
         let read = store.seen.contains(item.url)
         let newsTime = item.newsTime()
+        let priority = store.priority(for: item)
         return VStack(alignment: .leading, spacing: 9) {
             HStack(alignment: .top, spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
@@ -132,6 +133,11 @@ struct MenuContent: View {
                             .multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading)
                             .foregroundStyle(read ? Color.secondary : Color.primary)
                     }.buttonStyle(.plain).help("在默认浏览器阅读原文")
+                    if !priority.reasons.isEmpty {
+                        Text(priority.reasons.prefix(2).joined(separator: " · "))
+                            .font(.system(size: 10, weight: .medium)).foregroundStyle(.orange).lineLimit(1)
+                            .help(Priority.method + "\n本条：" + priority.reasons.joined(separator: "；") + (priority.provisional ? "。升级幅度尚待原文核验。" : ""))
+                    }
                     Group {
                         HStack(spacing: 6) { ForEach(Array(([rating.categoryLabel] + rating.tags).prefix(3)), id: \.self) { tag in
                             Text(tag).font(.system(size: 10)).foregroundStyle(.indigo).padding(.horizontal, 5).padding(.vertical, 3).background(Color.indigo.opacity(0.07), in: RoundedRectangle(cornerRadius: 4))
@@ -204,24 +210,29 @@ struct SettingsContent: View {
     @ObservedObject var store: NewsStore
     var close: () -> Void
     @State private var draft: Preferences
+    @State private var watchlistText: String
     @State private var key = ""
     @State private var keyChanged = false
     @State private var error: String?
     init(store: NewsStore, close: @escaping () -> Void) {
         self.store = store; self.close = close; _draft = State(initialValue: store.preferences)
+        _watchlistText = State(initialValue: (store.preferences.watchedProducts ?? Priority.defaultWatchlist).joined(separator: ", "))
     }
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack { Text("更新与评分").font(.system(size: 21, weight: .bold)); Spacer(); Button("关闭", action: close).keyboardShortcut(.cancelAction) }
+            ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
             GroupBox {
                 VStack(alignment: .leading, spacing: 13) {
                     Picker("检查更新", selection: $draft.refreshMinutes) { Text("每 5 分钟").tag(5); Text("每 15 分钟").tag(15); Text("每 30 分钟").tag(30); Text("每小时").tag(60) }
                     Toggle("菜单栏仅显示闪光符号", isOn: $draft.compactTitle)
                     Text("点开符号即可预览消息和评分。关闭此项后，菜单栏会显示新闻标题及分数。应用运行时持续检查；退出应用后停止。")
                         .font(.system(size: 12)).foregroundStyle(.secondary)
-                    TextField("资讯数据目录（HTTPS）", text: $draft.dataBaseURL).textFieldStyle(.roundedBorder)
-                    Text("上方频率控制官方博客、新智元和苔藓之火等原站订阅的直接抓取。此地址提供补充聚合内容，更新时间由上游决定；各来源的检查时间、发布情况与失败原因可在「信息源」查看。")
+                    Text("每轮由本机直接采集资讯平台、RSS 和官方博客，不再等待第三方 JSON 快照。各来源的成功、失败、最近发布时间可在「信息源」查看；来源自身停更时会保留其原有发布时间。")
                         .font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                    TextField("关注产品，用逗号分隔", text: $watchlistText).textFieldStyle(.roundedBorder)
+                    Text(Priority.method).font(.system(size: 11)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 }.padding(8)
             }
             GroupBox {
@@ -236,11 +247,14 @@ struct SettingsContent: View {
                         .font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 }.padding(8)
             }
+            }
+            }
             if let error { Text(error).font(.system(size: 12)).foregroundStyle(.red) }
             HStack {
                 Link("原项目 · MIT", destination: URL(string: "https://github.com/SuYxh/ai-news-aggregator")!).font(.system(size: 12))
                 Spacer()
                 Button("保存设置") {
+                    draft.watchedProducts = watchlistText.components(separatedBy: CharacterSet(charactersIn: ",，\n")).map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
                     do { try store.save(draft, key: keyChanged ? key : nil); close() } catch { self.error = error.localizedDescription }
                 }.buttonStyle(.borderedProminent).tint(.indigo).keyboardShortcut(.defaultAction)
             }
