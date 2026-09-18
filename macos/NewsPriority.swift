@@ -12,7 +12,7 @@ struct NewsPriority: Codable {
 
 enum Priority {
     static let defaultWatchlist = ["DeepSeek", "Claude", "GPT", "Codex", "Qwen", "GLM", "Gemini"]
-    static let method = "关注优先：模型升级 30%、架构/框架变化 30%、产品热度 25%、关注匹配 15%；同优先级再看证据评分和发布时间。热度只使用 24 小时内抓到的 GitHub 周增星与近 7 天 HN 讨论。标题只能提供待核验线索，不能据此认定重大升级或提高证据评分；融资、传闻、账号交易和普通品牌提及不因品牌排前。"
+    static let method = InterestScore.method
     static let aliasGroups = [["DeepSeek", "深度求索"], ["Claude", "Anthropic"], ["GPT", "ChatGPT", "OpenAI", "Astra"], ["Codex"], ["Qwen", "千问", "通义"], ["GLM", "智谱", "Z.ai"], ["Gemini", "DeepMind"]]
 
     private static let expressions = NSCache<NSString, NSRegularExpression>()
@@ -46,8 +46,10 @@ enum Priority {
         var products: [ProductHeat]
         var pointsByURL: [String: Int]
         var watches: [NSRegularExpression]
+        var productAliases: [NSRegularExpression]
 
         init(products: [AIProduct], pulse: ProductPulse, watchlist: [String] = Priority.defaultWatchlist, now: Date = Date()) {
+            productAliases = products.flatMap(\.aliases).filter { !$0.isEmpty }.map { Priority.aliasExpression($0) }
             func fresh(_ value: String?) -> Bool {
                 guard let date = parseDate(value) else { return false }
                 return (0...86400).contains(now.timeIntervalSince(date))
@@ -103,7 +105,8 @@ enum Priority {
         if architecture > 0 { reasons.append(verified && rating.release?.kind == "architecture" ? "已核实架构变更" : architecture >= 22 ? "架构大改线索" : architecture >= 14 ? "框架变更线索" : "接口/工具更新") }
 
         let focused = context.watches.contains { matches($0, text) }
-        let technicalEvent = model > 0 || architecture > 0 || (releaseAction && has("产品|工具|功能|能力|API|推理|多模态|上下文|语音|视频|编程|agent|feature|product|inference"))
+        let namedProduct = context.productAliases.contains { matches($0, text) }
+        let technicalEvent = model > 0 || architecture > 0 || (releaseAction && (namedProduct || has("产品|工具|功能|能力|API|推理|多模态|上下文|语音|视频|编程|agent|feature|product|inference")))
         var heat = 0
         if !excluded {
             let articleURL = item.url.trimmingCharacters(in: CharacterSet(charactersIn: "/"))

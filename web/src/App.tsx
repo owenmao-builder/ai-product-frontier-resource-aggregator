@@ -114,11 +114,11 @@ function App() {
         />
         
         {<div className="flex flex-wrap items-center gap-3 text-sm">
-          <div className="mr-auto text-slate-500 dark:text-slate-400">{scoring ? '正在读取原文并评估…' : `已评估 ${data?.items.filter(item => scoreOf(item) !== null).length || 0} 条 · 点击分数查看依据`}{lastChecked && <span className="ml-3">刚检查 {new Date(lastChecked).toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'})}</span>}</div>
+          <div className="mr-auto text-slate-500 dark:text-slate-400">{scoring ? '正在读取原文并评估…' : `已评分 ${data?.items.filter(item => scoreOf(item) !== null).length || 0} 条 · 点击分数查看依据`}{lastChecked && <span className="ml-3">刚检查 {new Date(lastChecked).toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'})}</span>}</div>
           <label className="flex items-center gap-2">类型<select aria-label="新闻类型" value={selectedCategory} onChange={event => setSelectedCategory(event.target.value)} className="bg-white dark:bg-slate-800 border rounded-lg p-2 border-slate-200 dark:border-slate-700"><option value="all">全部类型</option>{Object.entries(categories).map(([key,label]) => <option key={key} value={key}>{label}</option>)}</select></label>
-          <label className="flex items-center gap-2">分数<select value={minScore} onChange={event => setMinScore(Number(event.target.value))} className="bg-white dark:bg-slate-800 border rounded-lg p-2 border-slate-200 dark:border-slate-700"><option value={0}>全部资讯</option><option value={-1}>待评估</option><option value={7}>7 分及以上</option><option value={8}>8 分及以上</option></select></label>
+          <label className="flex items-center gap-2">分数<select value={minScore} onChange={event => setMinScore(Number(event.target.value))} className="bg-white dark:bg-slate-800 border rounded-lg p-2 border-slate-200 dark:border-slate-700"><option value={0}>全部资讯</option><option value={-1}>未评分</option><option value={7}>7 分及以上</option><option value={8}>8 分及以上</option></select></label>
           <span className="text-slate-500 dark:text-slate-400">北京时间</span>
-          <label className="flex items-center gap-2" title="模型升级 30% · 架构变化 30% · 产品热度 25% · 关注匹配 15%；线索排序不改变证据评分">排序<select value={sortBy} onChange={event => setSortBy(event.target.value as 'score'|'time')} className="bg-white dark:bg-slate-800 border rounded-lg p-2 border-slate-200 dark:border-slate-700"><option value="score">关注优先</option><option value="time">最新优先</option></select></label>
+          <label className="flex items-center gap-2" title="按关注分从高到低；模型升级、架构变化、热度和关注匹配按适用维度计算，证据状态不限制评分">排序<select value={sortBy} onChange={event => setSortBy(event.target.value as 'score'|'time')} className="bg-white dark:bg-slate-800 border rounded-lg p-2 border-slate-200 dark:border-slate-700"><option value="score">关注优先</option><option value="time">最新优先</option></select></label>
         </div>}
         {(error || aiError) && <div role="status" className="rounded-lg p-3 bg-amber-50 text-amber-800 dark:bg-amber-900/20 dark:text-amber-200 text-sm">{error || aiError}{data && ' · 已保留上次数据'}</div>}
         <NewsList
@@ -138,7 +138,7 @@ function App() {
       <footer className="border-t border-slate-200 dark:border-slate-700 py-6 mt-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-center text-sm text-slate-500 dark:text-slate-400">
-            {section === 'products' ? '大厂上新按官方发布日期筛选近 7 天 · 具体型号与版本 · 热度不等于质量' : '按新闻类型评估 · 官方大厂新模型 / 新技术架构发布 +1 分 · 7 分及以上中文重点 · 证据不足时待评估'}
+            {section === 'products' ? '大厂上新按官方发布日期筛选近 7 天 · 具体型号与版本 · 热度不等于质量' : '按你的标准直接给关注分 · 模型升级 / 架构变化 / 产品热度 / 关注匹配 · 证据状态单独展示'}
           </p>
         </div>
       </footer>

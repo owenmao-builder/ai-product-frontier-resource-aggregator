@@ -8,12 +8,13 @@ export interface NewsRating {
   version?: string
   category?: string
   evidenceLevel?: string
-  dimensions?: {key:string; value:number; reason:string}[]
+  dimensions?: {key:string; value:number; reason:string; weight?:number}[]
   sources?: {url:string; title:string; quote:string}[]
   comparison?: string | null
   gaps?: string[]
   chineseTitle?: string
   highlights?: string[]
+  briefBasis?: string
   release?: {kind:string; publisher:string; url:string; quote:string; reason:string} | null
 }
 

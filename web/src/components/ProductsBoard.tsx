@@ -75,7 +75,7 @@ export function ProductsBoard({board, discovery, loading, onRefresh}: {board?: P
     <details className="text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 pt-4 leading-relaxed">
       <summary className="cursor-pointer font-medium">入选标准与覆盖范围</summary>
       <p className="mt-3">大厂上新只收录官方确认的具体模型、版本或新功能，按官方公告的首发日期筛选最近 7 个自然日（含今天），不使用抓取日期、文章更新时间或旧模型被再次报道的日期。超过时限、只有品牌名或日期未核实的条目不展示；新模型优先排列。</p>
-      <p className="mt-2">近期热门满足任一条件：进入 GitHub 周趋势榜且本周新增至少 500 星，或最近 7 天相关 HN 话题达到 100 赞。大厂条目在此也必须满足发布时限；其他工具可以较早发布、最近走红。热度不等于质量，不与新闻评分混算，超过 24 小时未更新的热度停止计入。</p>
+      <p className="mt-2">近期热门满足任一条件：进入 GitHub 周趋势榜且本周新增至少 500 星，或最近 7 天相关 HN 话题达到 100 赞。大厂条目在此也必须满足发布时限；其他工具可以较早发布、最近走红。热度会参与新闻关注分，不代表产品质量或事实已核实；超过 24 小时未更新的热度停止计入。</p>
       <p className="mt-2">每轮从新闻识别具体发布，核对支持的官方来源后自动入栏，并关联今日报道；未核实的显示原因，过期条目自动移出。内置编辑资料补充说明，覆盖不等于全网。核对官方发布不代表已独立验证其性能宣称。</p>
     </details>
   </section>

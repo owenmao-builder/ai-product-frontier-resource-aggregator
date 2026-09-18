@@ -129,6 +129,8 @@ struct NewsRating: Codable, Equatable {
     var release: ReleaseSignal? = nil
     var chineseTitle: String? = nil
     var highlights: [String]? = nil
+    var briefBasis: String? = nil
+    var isInterest: Bool { version == InterestScore.version }
     var baseScore: Double? { dimensions.flatMap { Scoring.total($0) } }
     var releaseBonus: Double { Scoring.releaseBonus(for: self) }
     var hasChineseBrief: Bool {
@@ -136,13 +138,14 @@ struct NewsRating: Codable, Equatable {
               let points = highlights, (2...4).contains(points.count) else { return false }
         return points.allSatisfy { Scoring.matches($0, "[\\p{Han}]") && !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
     }
-    var isScored: Bool { version == Scoring.version && score != nil }
+    var isScored: Bool { (version == Scoring.version || isInterest) && score.map { $0.isFinite && (0...10).contains($0) } == true }
     var sortScore: Double { isScored ? score! : -1 }
     var displayScore: String { isScored ? String(format: "%.1f", score!) : "—" }
     var categoryLabel: String { NewsCategory(rawValue: category ?? "other")?.label ?? "待分类" }
-    var statusLabel: String { !isScored ? "C 不足" : evidenceLevel == "A" ? "A 充分" : "B 待验" }
+    var statusLabel: String { evidenceLevel == "A" ? "A 充分" : evidenceLevel == "B" ? "B 待验" : "C 不足" }
+    var scoreLabel: String { isInterest ? "关注分" : statusLabel }
     var evidenceExplanation: String {
-        if !isScored { return "材料不足，只有标题或缺少关键依据；暂不评分，等待补充材料。" }
+        if evidenceLevel != "A" && evidenceLevel != "B" { return "目前主要依据标题或有限材料，原文及比较结论尚未核实；不影响关注分。" }
         return evidenceLevel == "A" ? "关键判断有充分直接材料支持；涉及性能比较时有相应对照。" : "有原文依据，但关键收益、影响或适用范围仍有待验证。"
     }
 }
@@ -159,6 +162,7 @@ struct RatingDimension: Codable, Equatable {
     var key: String
     var value: Double
     var reason: String
+    var weight: Double? = nil
 }
 
 struct RatingSource: Codable, Equatable {

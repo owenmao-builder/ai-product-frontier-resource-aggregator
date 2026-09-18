@@ -43,7 +43,7 @@ struct MenuContent: View {
                 filter("今天", "today")
                 filter("全部", "all")
                 filter("7 分以上", "high")
-                filter("待评估", "pending")
+                filter("未评分", "pending")
                 filter("未读", "unread")
                 Spacer()
                 Text("关注优先 ↓").font(.system(size: 12)).foregroundStyle(.secondary).help(Priority.method)
@@ -79,7 +79,7 @@ struct MenuContent: View {
                     Button("评分说明") { expanded = expanded == "rubric" ? nil : "rubric" }.buttonStyle(.borderless)
                 }.font(.system(size: 12)).foregroundStyle(.secondary)
                 if expanded == "rubric" {
-                    Text(Scoring.rubric + " A：关键判断有充分直接材料；B：有原文但仍存在未核实部分；C：材料不足。")
+                    Text(InterestScore.method + " A：材料充分；B：部分待验；C：材料不足。证据状态不限制关注分。")
                         .font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 }
                 HStack {
@@ -147,10 +147,10 @@ struct MenuContent: View {
                 Button { expanded = expanded == item.id ? nil : item.id } label: {
                     VStack(spacing: 2) {
                         Text(rating.displayScore).font(.system(size: 21, weight: .bold, design: .rounded)).monospacedDigit()
-                        Text(rating.statusLabel).font(.system(size: 10))
+                        Text(rating.scoreLabel).font(.system(size: 10))
                     }.foregroundStyle(rating.sortScore >= 7 ? Color.indigo : Color.secondary).frame(width: 56, height: 53)
                         .background((rating.sortScore >= 7 ? Color.indigo : Color.secondary).opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
-                }.buttonStyle(.plain).help("证据 \(rating.statusLabel)：\(rating.evidenceExplanation)\n点击\(rating.sortScore >= 7 ? "展开中文重点" : "查看评分理由")").accessibilityLabel("\(rating.displayScore)，证据 \(rating.statusLabel)，\(rating.sortScore >= 7 ? "展开重点" : "查看评估依据")")
+                }.buttonStyle(.plain).help("\(rating.isInterest ? "关注分按你的标准直接计算。" : "")证据 \(rating.statusLabel)：\(rating.evidenceExplanation)\n点击\(rating.sortScore >= 7 ? "展开中文重点" : "查看评分理由")").accessibilityLabel("\(rating.displayScore)，\(rating.scoreLabel)，\(rating.sortScore >= 7 ? "展开重点" : "查看评分依据")")
             }
             if rating.sortScore >= 7 {
                 Button { expanded = expanded == item.id ? nil : item.id } label: {
@@ -161,7 +161,7 @@ struct MenuContent: View {
             if expanded == item.id {
                 VStack(alignment: .leading, spacing: 6) {
                     if rating.sortScore >= 7 {
-                        Text("新闻重点").font(.system(size: 13, weight: .semibold))
+                        Text(rating.briefBasis == "headline" ? "标题要点" : "新闻重点").font(.system(size: 13, weight: .semibold))
                         if let points = rating.highlights, !points.isEmpty {
                             ForEach(Array(points.enumerated()), id: \.offset) { _, point in
                                 Text("• " + point).font(.system(size: 12)).lineSpacing(3).fixedSize(horizontal: false, vertical: true)
@@ -185,10 +185,9 @@ struct MenuContent: View {
                     Text("证据 \(rating.statusLabel) · \(rating.evidenceExplanation)").font(.system(size: 11)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                     Text(rating.reason).font(.system(size: 12)).lineSpacing(3).fixedSize(horizontal: false, vertical: true)
                     if let dimensions = rating.dimensions, !dimensions.isEmpty {
-                        ForEach(Scoring.keys.indices, id: \.self) { index in
-                            if let dimension = dimensions.first(where: { $0.key == Scoring.keys[index] }) {
-                                Text("\(Scoring.names[index]) \(String(format: "%.0f", dimension.value))/5 · \(dimension.reason)").font(.system(size: 11)).fixedSize(horizontal: false, vertical: true)
-                            }
+                        ForEach(dimensions, id: \.key) { dimension in
+                            let name = InterestScore.names[dimension.key] ?? Scoring.keys.firstIndex(of:dimension.key).map { Scoring.names[$0] } ?? dimension.key
+                            Text("\(name) \(String(format: "%.1f", dimension.value))/5\(dimension.weight.map { " · 权重 \(Int($0))" } ?? "") · \(dimension.reason)").font(.system(size: 11)).fixedSize(horizontal: false, vertical: true)
                         }
                     }
                     if let comparison = rating.comparison, !comparison.isEmpty { Text("相对变化：" + comparison).font(.system(size: 12)).fixedSize(horizontal: false, vertical: true) }
@@ -237,13 +236,13 @@ struct SettingsContent: View {
             }
             GroupBox {
                 VStack(alignment: .leading, spacing: 12) {
-                    Toggle("自动读取正文并使用 AI 评估", isOn: $draft.aiEnabled)
-                    Text("按类型评估；官方大厂新模型或新架构发布加 1 分。7 分及以上生成中文标题和重点。默认仅处理今天的消息，保留历史结果。")
+                    Toggle("可选：用 AI 补充正文分析", isOn: $draft.aiEnabled)
+                    Text("关注分始终按你的标准立即计算，无需 API。高分消息先显示标题要点；此选项用于补充更完整的中文重点和原文分析，不会挡住评分。")
                         .font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                     TextField("API Base URL（兼容 Chat Completions，含 /v1 如需）", text: $draft.apiBaseURL).textFieldStyle(.roundedBorder)
                     TextField("模型名称", text: $draft.model).textFieldStyle(.roundedBorder)
                     SecureField("API Key（留空保留已保存的密钥）", text: $key).textFieldStyle(.roundedBorder).onChange(of: key) { _ in keyChanged = true }
-                    Text("密钥保存在 macOS 钥匙串。启用后每轮最多评估今天的 5 条，向所配模型发送新闻、公开原文和可用历史对照片段，可能产生费用。读不到正文或依据不完整时保留待评估。")
+                    Text("密钥保存在 macOS 钥匙串。启用后每轮最多分析今天的 5 条，向所配模型发送公开新闻、正文与对照片段，可能产生费用。分析失败仍保留关注分。未翻译的高分公开标题会通过原项目使用的 Google 翻译服务分批翻译，每轮最多 5 条。")
                         .font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 }.padding(8)
             }

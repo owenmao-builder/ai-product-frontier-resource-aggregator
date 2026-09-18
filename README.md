@@ -17,33 +17,18 @@ Screenshots are examples captured on September 17, 2026. The interface and edito
 ## What it does
 
 - **One menu bar icon:** open ✦ for news previews, scores, expandable highlights, and manual refresh.
-- **Evidence-aware prioritization:** scores reflect substantive changes and useful information, with source links and unresolved questions.
-- **Chinese highlights for scores of 7+:** see what happened, what changed, why it matters, and the limitations.
+- **Direct interest scores:** model upgrades, architecture changes, product popularity and your watchlist determine reading priority; evidence status is shown separately.
+- **Chinese reading for scores of 7+:** existing summaries are preserved; headline-only outlines are labeled. Up to five high-score public headlines per refresh are translated using the Google service already used by the upstream project.
 - **Major-vendor releases from the last 7 days:** specific model, version, feature, or architecture names; official publication dates; expired entries disappear. Generic brand mentions do not qualify.
 - **Recently trending tools:** GitHub weekly growth and recent Hacker News discussion provide visible popularity evidence.
 - **A full dashboard:** search, source and category filters, favorites, reading history, and dark mode.
 - **Direct sources:** OpenAI, Google AI, DeepMind, Hugging Face, Xinzhiyuan and 苔藓之火 / Mossfire are fetched directly from their original RSS feeds, independently of the aggregate snapshot.
 
-## How importance is scored
+## How interest is scored
 
-| Criterion | Weight | Question |
-| --- | ---: | --- |
-| Substantive novelty | 30% | What has actually changed compared with prior work? |
-| Practical impact | 30% | Who is affected, and by how much? |
-| Explanatory value | 20% | Does the material explain mechanisms, conditions, and trade-offs? |
-| Decision relevance | 20% | Does it help someone evaluate, adopt, research, or act? |
+Today's news receives a numeric **interest score immediately**, without requiring a model API key, original-body verification, comparisons or evidence A/B. It uses model upgrades (weight 30), architecture changes (30), product popularity (25) and watchlist relevance (15). Only applicable dimensions enter the weighted average, normalized to 0–10; ordinary product/technical progress replaces the two technical dimensions when neither applies. Missing heat is explicitly marked as a neutral 2.5/5 estimate.
 
-Official major-vendor **new model or substantive architecture releases receive +1 point**, capped at 10. Brand names, buzzwords, rumors, and old models being integrated elsewhere do not receive that bonus.
-
-Evidence is displayed separately:
-
-| Label | Meaning |
-| --- | --- |
-| **A 充分** | Direct material sufficiently supports the key judgments. |
-| **B 待验** | Original material exists; important benefits or implications remain unverified. |
-| **C 不足** | Insufficient material; pending assessment, with no numeric score. |
-
-An official announcement establishes a release, but does not by itself prove superiority over competitors. Read the [full policy](macos/SCORE_POLICY.md) for category-specific criteria and higher-score requirements.
+Evidence remains separate: **A 充分** means sufficient direct material, **B 待验** means partially unverified, and **C 不足** means limited material. C does not suppress the score. Plain brand mentions, rumors and old-model integrations are not new model releases. Expand a score to see its dimension values and weights. Read the [current policy](macos/SCORE_POLICY.md) for the formula and examples.
 
 ## Install on a Mac
 
@@ -57,8 +42,7 @@ The app runs the complete collector locally every 15 minutes by default, checkin
 
 ## Data and assessment behavior
 
-- Default **interest-first ranking** weights model upgrades (30%), architecture/framework changes (30%), observed product popularity (25%) and the editable product watchlist (15%). Evidence scores and publication time break ties. Title-based upgrade clues are labeled as provisional; they do not create evidence scores. Heat uses fresh GitHub weekly star growth and recent HN discussions, and expires after 24 hours without a successful refresh. Ordinary brand mentions, rumors and funding news do not receive release priority.
-- Weighted ranking points: verified model release 30 / provisional clue 18; verified architecture release 30 / structural change clue 22 / framework clue 14 / interface update 6; popularity 10–25 on a logarithmic scale above the GitHub/HN thresholds; watchlist match 15 only with a technical/product event. Popularity uses the stronger signal rather than adding both. Optional AI assessment uses this priority to select at most five of today's unassessed articles.
+- **Interest-first ranking** orders today's articles by the direct interest score, then event priority and source time. Scores update with current preferences and fresh product heat; historical saved scores and evidence assessments remain intact. No verification work blocks scoring.
 - News platforms (including AIbase, Info Flow, Xinzhiyuan, TechURLs, Buzzing and NewsNow) and the public RSS catalog are checked directly by the bundled collector. Live updates no longer depend on a third-party JSON snapshot being regenerated. Source details show each collection entry's check time, success/failure, last successful fetch and latest publication. Platform/feed entry counts are distinct from the author/source count in the article list.
 - News times use **Beijing time (UTC+8)**. Today's Xinzhiyuan articles are checked against the publisher's WordPress API in one batch; verified publication times are cached and take priority over upstream timestamps. Only missing or unreliable publication times fall back to a collection time labeled **收录**; hover for the reason. Within the same score, known publication times sort ahead of collection-only times. Original upstream fields are preserved.
 - Official RSS and product popularity signals refresh independently while the complete collection runs. HTTP errors, unparseable source pages and timeouts remain visible; failed sources retain cached articles without blocking successful sources. A successful check means content was received, not that its publisher released something new. Recent posts survive a short feed rotating them out; articles age out of the selected time window.
@@ -66,7 +50,7 @@ The app runs the complete collector locally every 15 minutes by default, checkin
 - Every local collection also discovers specific model, architecture, feature and product releases from news. It verifies supported official sources, follows original links in supported news outlets, and merges confirmed releases into both product views without editing the bundled catalog. Major-vendor entries require a specific name and a verified first-release date within the last 7 **Beijing calendar days**, including today. Undated or unavailable announcements remain visible as pending leads with source links and reasons; a recent report or page modification never renews an old release. Verification has bounded requests, caches, retries and failure isolation from news collection.
 - `data/products.json` supplies additional maintainer-verified descriptions (including official pages that block automatic reads). Discovery currently recognizes specific release names from Qwen, Zhipu, OpenAI, Anthropic, Google, DeepSeek, Meta, Mistral and NVIDIA; coverage is not exhaustive. It needs no model API key and does not assign news evidence scores or validate vendors' performance claims.
 - Trending means GitHub's weekly Trending list with at least 500 new stars, or a matching HN story from the last 7 days with at least 100 points. Evidence older than 24 hours no longer qualifies. Popularity is not a quality score.
-- The app includes a dated editorial assessment snapshot. Automatic new assessments are **optional**: configure an HTTPS Chat Completions-compatible endpoint, model, and API key in settings. Each pass handles at most five of today's items; unassessed items remain **C 不足**.
+- Historical editorial assessments remain available. Optional model-based body analysis can add fuller Chinese highlights for at most five of today's items per pass; it never gates the direct interest score. Configure an HTTPS Chat Completions-compatible endpoint, model and key only if this enrichment is wanted.
 - With automatic assessment enabled, limited public article excerpts and comparison material are sent to the configured model provider. API usage may incur charges. Keys stay in macOS Keychain; preferences, reading state, and caches stay on the Mac.
 - The standalone web dashboard can read JSON snapshots; native refresh, model assessment, and live product popularity are supplied by the Mac app.
 

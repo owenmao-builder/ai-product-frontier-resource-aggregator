@@ -71,6 +71,8 @@ final class NewsStore: ObservableObject {
     private var cachedAI: RatingCache
     private var ruleCache: [String: NewsRating] = [:]
     private var priorities: [String: NewsPriority] = [:]
+    private var interestRatings: [String: ReviewedEntry] = [:]
+    private var titleTranslations: [String: String] = [:]
     private var reviewed: [String: ReviewedEntry] = [:]
     private var documents: [String: ArticleDocument] = [:]
     private var apiKey: String?
@@ -97,6 +99,8 @@ final class NewsStore: ObservableObject {
         cacheDirectory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("AINewsMenu", isDirectory: true)
         try? FileManager.default.createDirectory(at: cacheDirectory, withIntermediateDirectories: true)
         cachedAI = (try? Data(contentsOf: cacheDirectory.appendingPathComponent("ratings.json"))).flatMap { try? JSONDecoder().decode(RatingCache.self, from: $0) } ?? RatingCache(profile: "", ratings: [:], fingerprints: [:])
+        interestRatings = (try? Data(contentsOf:cacheDirectory.appendingPathComponent("interest-ratings.json"))).flatMap { try? JSONDecoder().decode([String:ReviewedEntry].self,from:$0) } ?? [:]
+        titleTranslations = (try? Data(contentsOf:cacheDirectory.appendingPathComponent("headline-translations.json"))).flatMap { try? JSONDecoder().decode([String:String].self,from:$0) } ?? [:]
         let config = URLSessionConfiguration.ephemeral
         config.timeoutIntervalForRequest = 25
         config.timeoutIntervalForResource = 35
@@ -169,10 +173,10 @@ final class NewsStore: ObservableObject {
             if filter == "unread" && seen.contains(item.url) { return false }
             return query.isEmpty || (title(for: item) + " " + item.displayTitle + " " + item.title + " " + item.source).localizedCaseInsensitiveContains(query)
         }.sorted { first, second in
-            let pa = priority(for: first).value, pb = priority(for: second).value
-            if pa != pb { return pa > pb }
             let a = rating(for: first).sortScore, b = rating(for: second).sortScore
             if a != b { return a > b }
+            let pa = priority(for: first).value, pb = priority(for: second).value
+            if pa != pb { return pa > pb }
             return first.newsTime().orderedBefore(second.newsTime())
         }
     }
@@ -198,7 +202,9 @@ final class NewsStore: ObservableObject {
             for item in snapshot.items where next[item.id] == nil {
                 let rule = Scoring.rule(item)
                 ruleCache[item.id] = rule
-                if let saved = reviewed[item.id], saved.fingerprint == fingerprint(item), let valid = Scoring.validated(saved.rating) {
+                if !Self.isToday(item), let saved = interestRatings[item.id], saved.fingerprint == fingerprint(item), saved.rating.isInterest {
+                    next[item.id] = saved.rating
+                } else if let saved = reviewed[item.id], saved.fingerprint == fingerprint(item), let valid = Scoring.validated(saved.rating) {
                     next[item.id] = valid
                 } else if preferences.aiEnabled, cachedAI.profile == profile, cachedAI.fingerprints[item.id] == fingerprint(item), let ai = cachedAI.ratings[item.id], let valid = Scoring.validated(ai) {
                     next[item.id] = valid
@@ -210,9 +216,18 @@ final class NewsStore: ObservableObject {
         let priorityContext = Priority.Context(products: productCatalog.items, pulse: productPulse, watchlist: preferences.watchedProducts ?? Priority.defaultWatchlist)
         for snapshot in snapshots.values {
             for item in snapshot.items where priorities[item.id] == nil {
-                priorities[item.id] = Priority.rank(item, rating: rating(for: item), context: priorityContext)
+                let priority = Priority.rank(item, rating: rating(for: item), context: priorityContext)
+                priorities[item.id] = priority
+                if Self.isToday(item) {
+                    let direct = InterestScore.rating(item,priority:priority,previous:rating(for:item),translatedTitle:titleTranslations[item.title])
+                    ratings[item.id] = direct
+                    interestRatings[item.id] = ReviewedEntry(id:item.id,fingerprint:fingerprint(item),rating:direct)
+                }
             }
         }
+        let currentIDs = Set(snapshots.values.flatMap(\.items).map(\.id))
+        interestRatings = interestRatings.filter { currentIDs.contains($0.key) }
+        if let bytes = try? JSONEncoder().encode(interestRatings) { try? bytes.write(to:cacheDirectory.appendingPathComponent("interest-ratings.json"),options:.atomic) }
         productBoard = Products.board(catalog: productCatalog, pulse: productPulse, news: todayItems.map { item in
             var value = item; value.title_zh = title(for: item); return value
         })
@@ -279,7 +294,24 @@ final class NewsStore: ObservableObject {
         lastChecked = Date()
         UserDefaults.standard.set(lastChecked, forKey: "last-checked")
         recalculate()
+        await translateTodayHeadlines()
         if range == "24h" { startScoring() }
+    }
+
+    private func translateTodayHeadlines() async {
+        let candidates = todayItems.filter { rating(for:$0).sortScore >= 7 && !rating(for:$0).hasChineseBrief }
+            .sorted { rating(for:$0).sortScore > rating(for:$1).sortScore }.prefix(5)
+        let session = self.session
+        let translations = await withTaskGroup(of:(String,String?).self) { group in
+            for item in candidates { group.addTask { (item.title, await InterestScore.translate(item.title,session:session)) } }
+            var result:[String:String] = [:]
+            for await (title,translated) in group { if let translated { result[title] = translated } }
+            return result
+        }
+        guard !translations.isEmpty else { return }
+        titleTranslations.merge(translations) { _, new in new }
+        if let bytes = try? JSONEncoder().encode(titleTranslations) { try? bytes.write(to:cacheDirectory.appendingPathComponent("headline-translations.json"),options:.atomic) }
+        recalculate()
     }
 
     private func mergeSourceTimes() {
@@ -319,7 +351,7 @@ final class NewsStore: ObservableObject {
         // Scoring must not depend on the currently selected UI filter.
         let candidates = items.filter { item in
             guard Self.isToday(item) else { return false }
-            guard !rating(for: item).isScored else { return false }
+            guard rating(for:item).sortScore >= 7, rating(for:item).briefBasis == "headline" || !rating(for:item).hasChineseBrief else { return false }
             if cachedAI.profile == profile, cachedAI.fingerprints[item.id] == fingerprint(item),
                let previous = cachedAI.ratings[item.id], previous.method == "ai",
                let attemptedAt = parseDate(previous.assessedAt), Date().timeIntervalSince(attemptedAt) < 6 * 3600 { return false }
@@ -335,7 +367,7 @@ final class NewsStore: ObservableObject {
         }.prefix(5))
         guard !batch.isEmpty else { return }
         if apiKey == nil { apiKey = KeyStore.read() }
-        guard let key = apiKey, !key.isEmpty else { aiError = "尚未配置 API Key；已评估结果保留，其余资讯显示待评估。"; onUpdate?(); return }
+        guard let key = apiKey, !key.isEmpty else { aiError = "尚未配置 API Key；关注分已显示，暂不补充正文分析。"; onUpdate?(); return }
         scoring = true; aiError = nil; onUpdate?()
         let requestGeneration = generation
         defer { if requestGeneration == generation { scoring = false; onUpdate?() } }
