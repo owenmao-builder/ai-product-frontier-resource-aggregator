@@ -65,7 +65,8 @@ export function parseRelativeTimeZh(text: string, now: Date): Date | null {
   }
 
   if (s.includes('刚刚')) {
-    return now;
+    // A relative hint (or a headline containing it) is not an exact publication timestamp.
+    return null;
   }
 
   if (s.includes('昨天')) {

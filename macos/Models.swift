@@ -26,12 +26,14 @@ struct NewsItem: Codable, Identifiable {
         }
         let published = parseDate(published_at)
         let collected = parseDate(first_seen_at)
+        // These upstream scrapers turn the relative hint "刚刚" into their fetch timestamp.
+        let collectionProxy = ["aibase", "tophub"].contains(site_id) && published != nil && published == collected
         // Allow small source-clock skew, but never display a future publication.
         let afterCollection = published.flatMap { date in collected.map { date.timeIntervalSince($0) > 300 } } ?? false
-        if let published, published <= now, !afterCollection {
+        if let published, published <= now, !afterCollection, !collectionProxy {
             return NewsTime(date: published, isCollection: false, explanation: "信息源发布时间，按北京时间（UTC+8）显示。")
         }
-        let reason = afterCollection ? "来源发布时间晚于收录时间" : published != nil ? "来源发布时间在未来" : "来源未提供有效发布时间"
+        let reason = collectionProxy ? "来源仅提供相对时间，尚无准确发布时间" : afterCollection ? "来源发布时间晚于收录时间" : published != nil ? "来源发布时间在未来" : "来源未提供有效发布时间"
         if let collected, collected <= now {
             return NewsTime(date: collected, isCollection: true, explanation: "\(reason)，暂显示收录时间；不代表发布时间。")
         }

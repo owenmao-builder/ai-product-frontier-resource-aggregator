@@ -17,6 +17,12 @@ enum SourceTimeTests {
         precondition(resolved.newsTime(now: now).date == parseDate("2026-09-18T00:03:39Z"))
         precondition(resolved.published_at == raw.published_at && Scoring.fingerprint(resolved) == Scoring.fingerprint(raw))
         precondition(resolved.newsTime(now: now).orderedBefore(raw.newsTime(now: now)), "Batch collection time must not rank ahead of known publication time")
+        var approximate = raw; approximate.site_id = "aibase"; approximate.published_at = approximate.first_seen_at
+        precondition(approximate.newsTime(now: now).isCollection, "Do not label a scraped 'just now' hint as exact publication time")
+        approximate.site_id = "tophub"
+        precondition(approximate.newsTime(now: now).isCollection)
+        approximate.site_id = "directrss"
+        precondition(!approximate.newsTime(now: now).isCollection, "Keep an explicit RSS timestamp even if collection happened simultaneously")
         precondition(NewsStore.isToday(resolved, now: now))
         precondition(SourceTimes.requestedPosts([raw], cached: verified, now: now).isEmpty, "Reuse verified time instead of fetching on every refresh")
         let persisted = try JSONDecoder().decode([String: SourcePublication].self, from: JSONEncoder().encode(verified))

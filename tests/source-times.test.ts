@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { NewsData, NewsItem } from '../web/src/types'
 import { resolveSourceTimes } from '../web/src/lib/sourceTimes'
 import { formatBeijingTime, newsTime, compareNewsTimes } from '../web/src/lib/newsTime'
+import { parseRelativeTimeZh } from '../src/utils/date'
 
 const now = Date.parse('2026-09-18T06:00:00Z')
 const item = (id: number): NewsItem => ({ id: String(id), site_id: 'xinzhiyuan', site_name: '新智元', source: '新智元', title: '时间测试', url: `https://aiera.com.cn/asi-post.html?id=${id}`, published_at: '2026-09-18T08:03:39Z', first_seen_at: '2026-09-18T02:06:03Z', last_seen_at: '2026-09-18T02:06:03Z', title_original: '', title_en: null, title_zh: null, title_bilingual: '' })
@@ -9,6 +10,14 @@ const snapshot = (items: NewsItem[]) => ({ items } as NewsData)
 const response = (data: unknown) => new Response(JSON.stringify(data), { status: 200 })
 
 describe('verified source publication times', () => {
+  it('does not present a scraped just-now hint as exact publication time', () => {
+    const approximate = { ...item(300), site_id: 'aibase', published_at: '2026-09-18T02:06:03Z' }
+    expect(newsTime(approximate, now).isCollection).toBe(true)
+    expect(newsTime({ ...approximate, site_id: 'tophub' }, now).isCollection).toBe(true)
+    expect(newsTime({ ...approximate, site_id: 'directrss' }, now).isCollection).toBe(false)
+    expect(parseRelativeTimeZh('刚刚', new Date(now))).toBeNull()
+    expect(parseRelativeTimeZh('刚刚，Claude Code大重构！', new Date(now))).toBeNull()
+  })
   it('reads real source time, preserves input and rating identity, reuses cache after refresh', async () => {
     const source = item(114307)
     const fetcher = vi.fn<typeof fetch>().mockResolvedValue(response([{ id: 114307, date: '2026-09-18T08:03:39', date_gmt: '2026-09-18T00:03:39', link: source.url }]))
