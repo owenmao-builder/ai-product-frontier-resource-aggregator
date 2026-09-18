@@ -5,7 +5,7 @@ short example of the behavior you want to change.
 
 ## Development
 
-Follow the build commands in [README.md](README.md). Run `npm run typecheck`
+Follow the build commands in [README.md](README.md). Run `npm test`, `npm run typecheck`
 and `npm --prefix web run build`; for native or scoring changes, also run
 `npm run test:macos` on a Mac.
 
@@ -20,6 +20,9 @@ are optional diagnostics, not the automated regression suite.
   `releaseKind`, and a first-party announcement in `sourceURL`.
 - Do not replace the release date with the day it was scraped or mentioned
   in a later article. A brand name alone is not a release.
+- Parse source-local dates with an explicit timezone. Use WordPress `date_gmt`
+  as UTC where available. Future or inconsistent cached publication times use
+  a clearly labeled collection time in the UI; never silently relabel it as publication.
 - Keep summaries short, explain the change, and distinguish vendor claims
   from verified results. Popularity evidence is refreshed separately.
 

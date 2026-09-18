@@ -129,7 +129,7 @@ final class NewsStore: ObservableObject {
     var items: [NewsItem] { snapshots["24h"]?.items ?? [] }
     var todayItems: [NewsItem] { items.filter { Self.isToday($0) } }
     static func isToday(_ item: NewsItem, now: Date = Date(), calendar: Calendar = .current) -> Bool {
-        item.date.map { calendar.isDate($0, inSameDayAs: now) } ?? false
+        item.newsTime(now: now).date.map { $0 <= now && calendar.isDate($0, inSameDayAs: now) } ?? false
     }
     var unreadCount: Int { items.filter { !seen.contains($0.url) }.count }
     var visible: [NewsItem] {

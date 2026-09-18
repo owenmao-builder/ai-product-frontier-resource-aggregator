@@ -4,12 +4,24 @@ import { BaseFetcher } from './base.js';
 interface WPPost {
   id: number;
   date: string;
+  date_gmt?: string;
   title: { rendered: string };
   link: string;
 }
 
 const WINDOW_DAYS = 7;
 const MAX_PER_PAGE = 100;
+
+export function xinzhiyuanPublishedAt(post: Pick<WPPost, 'date' | 'date_gmt'>): Date | null {
+  // WordPress date is site-local; date_gmt is UTC, but neither includes an offset.
+  // Never let the collector machine's timezone decide how to interpret them.
+  for (const [raw, offset] of [[post.date_gmt, 'Z'], [post.date, '+08:00']]) {
+    if (!raw || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?$/.test(raw)) continue;
+    const date = new Date(/(?:Z|[+-]\d{2}:\d{2})$/.test(raw) ? raw : raw + offset);
+    if (Number.isFinite(date.getTime())) return date;
+  }
+  return null;
+}
 
 export class XinzhiyuanFetcher extends BaseFetcher {
   siteId = 'xinzhiyuan';
@@ -34,7 +46,8 @@ export class XinzhiyuanFetcher extends BaseFetcher {
       if (posts.length === 0) break;
 
       for (const post of posts) {
-        const publishedAt = new Date(post.date);
+        const publishedAt = xinzhiyuanPublishedAt(post);
+        if (!publishedAt || publishedAt > now) continue;
 
         if (publishedAt < windowStart) {
           hasMore = false;

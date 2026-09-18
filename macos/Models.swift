@@ -16,11 +16,32 @@ struct NewsItem: Codable, Identifiable {
     var title_bilingual: String?
     var rating: NewsRating?
     var displayTitle: String { ([title_zh, title_en, title_bilingual, title].compactMap { $0 }.first { !$0.isEmpty } ?? title).replacingOccurrences(of: #"\s+"#, with: " ", options: .regularExpression).trimmingCharacters(in: .whitespacesAndNewlines) }
-    var date: Date? { parseDate(published_at) ?? parseDate(first_seen_at) }
+    var date: Date? { newsTime().date }
+    func newsTime(now: Date = Date()) -> NewsTime {
+        let published = parseDate(published_at)
+        let collected = parseDate(first_seen_at)
+        // Allow small source-clock skew, but never display a future publication.
+        let afterCollection = published.flatMap { date in collected.map { date.timeIntervalSince($0) > 300 } } ?? false
+        if let published, published <= now, !afterCollection {
+            return NewsTime(date: published, isCollection: false, explanation: "发布时间，按本机时区显示。")
+        }
+        let reason = afterCollection ? "来源发布时间晚于收录时间" : published != nil ? "来源发布时间在未来" : "来源未提供有效发布时间"
+        if let collected, collected <= now {
+            return NewsTime(date: collected, isCollection: true, explanation: "\(reason)，暂显示收录时间；不代表发布时间。")
+        }
+        return NewsTime(date: nil, isCollection: false, explanation: "发布时间和收录时间均缺失或异常。")
+    }
     var safeURL: URL? {
         guard let value = URL(string: url), ["https", "http"].contains(value.scheme?.lowercased() ?? ""), value.host != nil else { return nil }
         return value
     }
+}
+
+struct NewsTime {
+    var date: Date?
+    var isCollection: Bool
+    var explanation: String
+    var label: String { (isCollection ? "收录 " : "") + timeLabel(date: date) }
 }
 
 struct SiteStat: Codable {
@@ -124,7 +145,11 @@ func parseDate(_ text: String?) -> Date? {
 func timestamp(_ date: Date = Date()) -> String { ISO8601DateFormatter().string(from: date) }
 
 func timeLabel(_ text: String?) -> String {
-    guard let date = parseDate(text) else { return "时间未提供" }
+    timeLabel(date: parseDate(text))
+}
+
+func timeLabel(date: Date?) -> String {
+    guard let date else { return "时间未提供" }
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "zh_CN")
     formatter.dateFormat = Calendar.current.isDateInToday(date) ? "HH:mm" : "MM-dd HH:mm"

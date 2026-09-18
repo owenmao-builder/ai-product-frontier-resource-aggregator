@@ -202,7 +202,7 @@ async function main(): Promise<number> {
       existing.source = raw.source;
       existing.title = title;
       existing.url = url;
-      if (raw.publishedAt && !existing.published_at) {
+      if (raw.publishedAt && (!existing.published_at || raw.siteId === 'xinzhiyuan')) {
         existing.published_at = toISOString(raw.publishedAt);
       }
       existing.last_seen_at = toISOString(now)!;
@@ -227,7 +227,7 @@ async function main(): Promise<number> {
 
     for (const record of archive.values()) {
       const ts = eventTime(record);
-      if (!ts || ts < windowStart) continue;
+      if (!ts || ts < windowStart || ts > now) continue;
 
       const normalized = { ...record };
       normalized.title = maybeFixMojibake(normalized.title || '');

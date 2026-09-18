@@ -21,6 +21,7 @@ jobs:
           version: 7.33.7
       - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck
+      - run: pnpm test
       - run: pnpm --dir web install --frozen-lockfile
       - run: pnpm --dir web run build
 

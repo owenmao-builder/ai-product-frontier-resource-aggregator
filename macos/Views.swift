@@ -112,13 +112,14 @@ struct MenuContent: View {
     private func newsRow(_ item: NewsItem) -> some View {
         let rating = store.rating(for: item)
         let read = store.seen.contains(item.url)
+        let newsTime = item.newsTime()
         return VStack(alignment: .leading, spacing: 9) {
             HStack(alignment: .top, spacing: 12) {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(spacing: 5) {
                         if !read { Circle().fill(Color.indigo).frame(width: 5, height: 5) }
                         Text(item.source).lineLimit(1)
-                        Text("· \(timeLabel(item.published_at ?? item.first_seen_at))").lineLimit(1)
+                        Text("· \(newsTime.label)").lineLimit(1).help(newsTime.explanation)
                     }.font(.system(size: 11)).foregroundStyle(.secondary)
                     Button {
                         guard let url = item.safeURL else { return }

@@ -58,6 +58,7 @@ The app checks for updates every 15 minutes by default. Closing the dashboard ke
 ## Data and assessment behavior
 
 - News snapshots come from the original project's public JSON endpoint by default. Change the HTTPS data directory in settings to use your own collector. Refreshing checks the current snapshot; it does not force the upstream collector to run.
+- Times use your Mac/browser timezone. Missing, future, or inconsistent publication times fall back to a valid collection time labeled **收录**; hover for the reason. If neither timestamp is usable, the time stays unknown. Source timestamps are preserved.
 - Custom RSS and product popularity signals refresh independently in the Mac app. Source failures retain cached data and display their status.
 - Product release entries in `data/products.json` are **maintainer-verified**, not an automatic discovery feed. Major-vendor entries require a specific release name, an official announcement, and a verified date within the last 7 local calendar days, including today.
 - Trending means GitHub's weekly Trending list with at least 500 new stars, or a matching HN story from the last 7 days with at least 100 points. Evidence older than 24 hours no longer qualifies. Popularity is not a quality score.
@@ -82,6 +83,7 @@ Run the existing checks:
 
 ```bash
 npm run typecheck
+npm test
 npm --prefix web run build
 npm run test:macos
 ```

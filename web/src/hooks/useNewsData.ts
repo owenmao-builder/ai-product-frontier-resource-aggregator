@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import type { NewsData, NewsItem, SiteStat } from '../types'
 import { matchesScore, scoreOf, ratingFor } from '../lib/ratings'
+import { newsTime } from '../lib/newsTime'
 
 export interface SourceStat {
   source: string
@@ -207,7 +208,7 @@ export function useNewsData(): UseNewsDataReturn {
     
     items = [...items].sort((a, b) => {
       if (sortBy === 'score' && (scoreOf(a) ?? -1) !== (scoreOf(b) ?? -1)) return (scoreOf(b) ?? -1) - (scoreOf(a) ?? -1)
-      return Date.parse(b.published_at || b.first_seen_at) - Date.parse(a.published_at || a.first_seen_at)
+      return (newsTime(b).timestamp ?? 0) - (newsTime(a).timestamp ?? 0)
     })
     return items.slice(0, displayCount)
   }, [data, selectedSite, selectedSource, searchQuery, displayCount, minScore, sortBy, selectedCategory])

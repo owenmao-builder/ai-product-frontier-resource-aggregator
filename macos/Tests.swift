@@ -97,6 +97,32 @@ enum ScoringTests {
         dated.published_at = "2026-09-16T15:59:59Z"
         precondition(!NewsStore.isToday(dated, now: sampleNow, calendar: calendar), "Today follows local midnight, not a rolling 24-hour window")
 
+        let clockNow = parseDate("2026-09-18T06:00:00Z")! // 14:00 Shanghai
+        dated.published_at = "2026-09-18T08:03:39Z" // Misparsed source-local 08:03
+        dated.first_seen_at = "2026-09-18T02:06:03.931Z"
+        let sourceTimestamp = dated.published_at
+        let corrected = dated.newsTime(now: clockNow)
+        precondition(corrected.isCollection && corrected.date == parseDate(dated.first_seen_at))
+        precondition(corrected.label.hasPrefix("收录 ") && corrected.explanation.contains("不代表发布时间"))
+        precondition(dated.published_at == sourceTimestamp, "Preserve the original source timestamp")
+        precondition(NewsStore.isToday(dated, now: clockNow, calendar: calendar))
+        precondition(dated.newsTime(now: clockNow.addingTimeInterval(8 * 3600)).isCollection, "A bad timestamp remains invalid after the clock catches up")
+        dated.published_at = "2026-09-18T00:03:39Z"
+        precondition(!dated.newsTime(now: clockNow).isCollection && dated.newsTime(now: clockNow).date == parseDate(dated.published_at))
+        for missing in [nil, "invalid"] as [String?] {
+            dated.published_at = missing
+            precondition(dated.newsTime(now: clockNow).isCollection)
+        }
+        dated.published_at = "2026-09-18T08:03:39Z"
+        dated.first_seen_at = "2026-09-18T08:04:00Z"
+        precondition(dated.newsTime(now: clockNow).date == nil && !NewsStore.isToday(dated, now: clockNow, calendar: calendar))
+        dated.first_seen_at = "2026-09-17T15:59:59Z"
+        precondition(!NewsStore.isToday(dated, now: clockNow, calendar: calendar), "A future publication cannot move yesterday's collected item into today")
+        dated.published_at = "2026-09-18T02:05:00Z"; dated.first_seen_at = "2026-09-18T02:00:00Z"
+        precondition(!dated.newsTime(now: clockNow).isCollection)
+        dated.published_at = "2026-09-18T02:05:01Z"
+        precondition(dated.newsTime(now: clockNow).isCollection)
+
         if CommandLine.arguments.count > 1 {
             let archive = try JSONDecoder().decode(ReviewedArchive.self, from: Data(contentsOf: URL(fileURLWithPath: CommandLine.arguments[1])))
             for entry in archive.entries {
@@ -118,6 +144,6 @@ enum ScoringTests {
         let snapshot = NewsData(generated_at: now, window_hours: 24, total_items: 3, source_count: 1, site_stats: [], items: [item, item, variant])
         let decoded = try NewsStore.decode(JSONEncoder().encode(snapshot))
         precondition(decoded.items.count == 1 && decoded.total_items == 1)
-        print("PASS: scoring and evidence validation, release bonus and ownership, Chinese high-score briefs, local-day scope, bundled assessments, HTML extraction and deduplication")
+        print("PASS: scoring and evidence validation, release bonus and ownership, Chinese high-score briefs, local-day scope and timestamp fallback, bundled assessments, HTML extraction and deduplication")
     }
 }
