@@ -49,6 +49,11 @@ enum EventTests {
             item("p2","Claude Code relaunches Projects to manage multiple AI agents in the cloud","https://theverge.com/news/projects")
         ]
         precondition(NewsEvents.groups(projects,now:now).count == 1)
+        let clone = item("clone","Open-source version of Claude Projects that gives you context ownership","https://myproject.test","Hacker News")
+        precondition(NewsEvents.groups(projects+[clone],now:now).count == 2,"A third-party alternative is not coverage of the original release")
+        precondition(NewsEvents.publisher(clone).kind == "aggregator","A direct link to an unknown project from HN is not an additional media outlet")
+        var knownMedia = a; knownMedia.source = "Hacker News"
+        precondition(NewsEvents.publisher(knownMedia).id == "aibase.com","Known original publishers still count when reached through aggregators")
         let vague = item("p3","刚刚，Claude Code 大重构！内部 Agent 管理技术开放","https://qbitai.com/projects")
         let projectDoc = ArticleDocument(url:vague.url,title:vague.title,text:"Claude Code 这次重构的重点是 Projects，可以拆分任务并行执行。" + String(repeating:"补充公开正文。",count:65),fetchedAt:timestamp(now),truncated:false)
         precondition(NewsEvents.groups(projects+[vague],documents:[vague.url:projectDoc],now:now).count == 1,"A body-named feature can connect an otherwise ambiguous title")

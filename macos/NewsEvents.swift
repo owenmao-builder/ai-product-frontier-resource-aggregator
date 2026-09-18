@@ -104,6 +104,7 @@ enum NewsEvents {
         else if has("宕机|中断|故障|泄露|漏洞|事故|outage|breach|vulnerability|incident") { kind = "incident" }
         else if has("融资|收购|诉讼|估值|funding|acquisition|lawsuit") { kind = "business" }
         else if has("教程|如何使用|入门指南|how to|tutorial|step.by.step") { kind = "tutorial" }
+        else if has("复刻|平替|替代品|open.source.version.of|open.source.alternative|alternative to|clone of") { kind = "derivative" }
         else if has("降价|涨价|调整价格|price cut|price increase|pricing change") && !has("发布|推出|launch|releas|introduc") { kind = "pricing" }
         else if has(#"\bvs\.?\b|对比评测|横向对比|versus"#) { kind = "comparison" }
         var subject: String?
@@ -193,8 +194,11 @@ enum NewsEvents {
             return Publisher(id:entry.key,name:entry.value,kind:"media")
         }
         if let maker = Scoring.majorPublisher(at:item.url) { return Publisher(id:maker,name:maker + " 官方",kind:"official") }
+        if Scoring.matches(item.source,"Hacker News|Techmeme|Readhub|TopHub") {
+            return Publisher(id:"aggregator:" + clean(item.source),name:item.source,kind:"aggregator")
+        }
         // Distinguish authors on shared hosting without counting social posts as separate media.
-        if ["mp.weixin.qq.com","medium.com","zhihu.com","bilibili.com","youtube.com"].contains(host) {
+        if ["mp.weixin.qq.com","medium.com","zhihu.com","bilibili.com","youtube.com","reddit.com","v2ex.com","github.com","huggingface.co"].contains(host) {
             return Publisher(id:host + ":" + item.source,name:item.source,kind:"community")
         }
         return Publisher(id:host,name:item.source,kind:"media")
