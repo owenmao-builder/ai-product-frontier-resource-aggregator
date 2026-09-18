@@ -17,6 +17,8 @@ struct NewsItem: Codable, Identifiable {
     var rating: NewsRating?
     var source_publication: SourcePublication? = nil
     var priority: NewsPriority? = nil
+    var event: NewsEvent? = nil
+    var presentationID: String { event?.id ?? id }
     var displayTitle: String { ([title_zh, title_en, title_bilingual, title].compactMap { $0 }.first { !$0.isEmpty } ?? title).replacingOccurrences(of: #"\s+"#, with: " ", options: .regularExpression).trimmingCharacters(in: .whitespacesAndNewlines) }
     var date: Date? { newsTime().date }
     func newsTime(now: Date = Date()) -> NewsTime {

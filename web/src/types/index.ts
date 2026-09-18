@@ -41,6 +41,14 @@ export interface NewsItem {
   rating?: NewsRating
   source_publication?: SourcePublication
   priority?: {value:number; modelChange:number; architectureChange:number; heat:number; focus:number; reasons:string[]; provisional:boolean}
+  event?: NewsEvent
+}
+
+export interface EventArticle { id:string; title:string; url:string; source:string; siteID:string }
+export interface EventReport { id:string; name:string; kind:string; focus:string[]; points:string[]; basis:string; articles:EventArticle[] }
+export interface NewsEvent {
+  id:string; title:string; articleCount:number; mediaCount:number; baseScore?:number; bonus:number
+  reports:EventReport[]; insights:{title:string;text:string}[]; memberIDs:string[]; urls:string[]; latestAt?:string; read:boolean
 }
 
 export interface SiteStat {

@@ -1,11 +1,13 @@
 import { useState } from 'react'
-import { ExternalLink, Clock, BadgeCheck, Star, ChevronDown } from 'lucide-react'
+import { ExternalLink, Clock, BadgeCheck, Star, ChevronDown, Flame } from 'lucide-react'
 import type { NewsItem } from '../types'
 import { SourceBadge } from './SourceBadge'
 import { formatDateTime } from '../utils/formatDate'
 import { ratingFor, scoreOf, evidenceFor, categories, dimensionNames, publicSourceURL } from '../lib/ratings'
 import { Analytics } from '../utils/analytics'
 import { newsTime, formatBeijingTime } from '../lib/newsTime'
+import {eventLabel} from '../lib/events'
+import {EventCoverage} from './EventCoverage'
 
 interface NewsCardProps {
   item: NewsItem
@@ -20,10 +22,12 @@ export function NewsCard({ item, index, isVisited = false, isFavorite = false, o
   const [expanded, setExpanded] = useState(false)
   const score = ratingFor(item)
   const value = scoreOf(item)
-  const displayTitle = ((value ?? -1) >= 7 && score.chineseTitle) || item.title_zh || item.title_en || item.title_bilingual || item.title
+  const displayTitle = item.event?.title || ((value ?? -1) >= 7 && score.chineseTitle) || item.title_zh || item.title_en || item.title_bilingual || item.title
   const evidence = evidenceFor(item)
   const isInterest = score.version === 'interest-v1'
   const time = newsTime(item)
+  const event = item.event && item.event.articleCount > 1 ? item.event : undefined
+  const toggle = () => { if (!expanded) onVisit?.(item.url,displayTitle); setExpanded(!expanded) }
   return (
     <article className={`card card-hover p-4 animate-slide-up group relative transition-all duration-300 ${isVisited ? 'visited-card' : ''}`} style={{ animationDelay: `${Math.min(index * 20, 200)}ms` }}>
       <div className="flex items-start gap-4">
@@ -33,18 +37,19 @@ export function NewsCard({ item, index, isVisited = false, isFavorite = false, o
             <span className="text-xs truncate max-w-[240px] text-slate-500 dark:text-slate-400">{item.source}</span>
             {isVisited && <span className="inline-flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400"><BadgeCheck className="w-3.5 h-3.5"/><span className="text-xs">已读</span></span>}
           </div>
-          <a href={item.url} target="_blank" rel="noopener noreferrer" onClick={() => { Analytics.trackNewsClick(displayTitle, item.source, item.site_id); onVisit?.(item.url, displayTitle) }} className="block text-base font-medium leading-relaxed text-slate-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400">
+          <a href={item.url} target="_blank" rel="noopener noreferrer" onClick={(click) => { if(event){click.preventDefault();toggle();return} Analytics.trackNewsClick(displayTitle, item.source, item.site_id); onVisit?.(item.url, displayTitle) }} className="block text-base font-medium leading-relaxed text-slate-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400">
             {displayTitle}<ExternalLink className="inline-block w-3.5 h-3.5 ml-2 text-slate-400"/>
           </a>
           <div className="flex items-center gap-3 mt-3 text-xs text-slate-500 dark:text-slate-400 flex-wrap">
-            <span className="flex items-center gap-1" title={time.explanation}><Clock className="w-3.5 h-3.5"/>{time.isCollection ? '收录 ' : ''}{formatBeijingTime(time.timestamp)}</span>
+            <span className="flex items-center gap-1" title={event ? '事件内最新报道时间，北京时间' : time.explanation}><Clock className="w-3.5 h-3.5"/>{event ? '最新报道 ' : time.isCollection ? '收录 ' : ''}{formatBeijingTime(event?.latestAt ? Date.parse(event.latestAt) : time.timestamp)}</span>
+            {event && <span className="inline-flex items-center gap-1 rounded-md px-2 py-1 font-semibold bg-amber-50 text-amber-700 dark:bg-amber-900/25 dark:text-amber-300"><Flame className="w-3.5 h-3.5"/>{eventLabel(item)}</span>}
             {item.priority?.reasons.slice(0,2).map(reason => <span key={reason} title={`关注依据：${item.priority?.reasons.join('；')}；按当前信息估分，证据状态单独展示。`} className="rounded px-1.5 py-0.5 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">{reason}</span>)}
             {[categories[score.category || "other"], ...score.tags].slice(0,3).map((tag,i) => <span key={`${tag}-${i}`} className="rounded px-1.5 py-0.5 bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-300">{tag}</span>)}
           </div>
-          {(value ?? -1) >= 7 && <button onClick={() => setExpanded(!expanded)} className="mt-3 text-xs font-medium text-primary-600 dark:text-primary-300">{expanded ? '收起重点 ↑' : '展开重点 ↓'}</button>}
+          {((value ?? -1) >= 7 || event) && <button onClick={toggle} className="mt-3 text-xs font-medium text-primary-600 dark:text-primary-300">{expanded ? '收起重点 ↑' : event ? '展开重点分析 ↓' : '展开重点 ↓'}</button>}
         </div>
         <div className="flex items-center gap-3 flex-shrink-0">
-          {score && <button onClick={() => setExpanded(!expanded)} aria-expanded={expanded} aria-label={`${value?.toFixed(1) || "待评估"}，证据 ${evidence.label}，查看评估依据`} title={`证据 ${evidence.label}：${evidence.explanation}`} className={`w-16 rounded-xl px-1 py-2 transition-colors ${(value ?? -1)>=7 ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-300'}`}>
+          {score && <button onClick={toggle} aria-expanded={expanded} aria-label={`${value?.toFixed(1) || "待评估"}，证据 ${evidence.label}，查看评估依据`} title={`证据 ${evidence.label}：${evidence.explanation}`} className={`w-16 rounded-xl px-1 py-2 transition-colors ${(value ?? -1)>=7 ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-300'}`}>
             <span className="block text-2xl font-bold tabular-nums leading-7">{value?.toFixed(1) || "—"}</span>
             <span className="flex items-center justify-center gap-0.5 text-[11px] mt-0.5">{isInterest ? '关注分' : evidence.label}<ChevronDown className={`w-3 h-3 ${expanded ? 'rotate-180' : ''}`}/></span>
           </button>}
@@ -54,13 +59,14 @@ export function NewsCard({ item, index, isVisited = false, isFavorite = false, o
         </div>
       </div>
       {expanded && score && <div className="mt-4 border-t border-slate-100 dark:border-slate-700 pt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-        {(value ?? -1) >= 7 && <div className="mb-4">
+        {event ? <EventCoverage event={event} onVisit={onVisit}/> : (value ?? -1) >= 7 && <div className="mb-4">
           <strong className="text-slate-900 dark:text-white">{score.briefBasis === 'headline' ? '标题要点' : '新闻重点'}</strong>
           {score.highlights?.length ? <ul className="mt-2 space-y-1.5 list-disc pl-5">{score.highlights.map((point,i) => <li key={i}>{point}</li>)}</ul> : <p className="mt-2">中文重点尚未补充，可先查看已有依据。</p>}
           {score.release && <p className="mt-3 text-primary-600 dark:text-primary-300">发布优先 +1.0 · {score.release.reason}</p>}
         </div>}
         <details open={(value ?? -1) < 7 ? true : undefined}>
         <summary className="cursor-pointer text-xs text-slate-500">评分依据与来源</summary>
+        {event && event.bonus>0 && <p className="mt-2 font-medium text-amber-700 dark:text-amber-300">基础关注分 {event.baseScore?.toFixed(1)} + 媒体关注 {event.bonus.toFixed(1)} = {value?.toFixed(1)}（10 分封顶）</p>}
         <p className="mt-2 mb-2 text-xs text-slate-500 dark:text-slate-400">证据 {evidence.label} · {evidence.explanation}</p>
         <strong className="text-slate-900 dark:text-white">{value === null ? '待评估原因' : '评估依据'}</strong><p className="mt-1">{score.reason}</p>
         {score.dimensions?.map(d => <p key={d.key} className="mt-2 text-xs"><strong>{dimensionNames[d.key]} {d.value}/5{d.weight ? ` · 权重 ${d.weight}` : ''}</strong> · {d.reason}</p>)}

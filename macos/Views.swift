@@ -14,7 +14,7 @@ struct MenuContent: View {
                 Image(systemName: "sparkle.magnifyingglass").font(.system(size: 23, weight: .semibold)).foregroundStyle(.indigo)
                 VStack(alignment: .leading, spacing: 3) {
                     Text("AI 资讯聚合").font(.system(size: 17, weight: .bold))
-                    Text(store.section == "products" ? "\(store.productBoard.items.count) 款产品 · \(store.productBoard.items.filter(\.isHot).count) 款近期热门" : store.filter == "today" ? "今天 \(store.todayItems.count) 条 · \(store.todayItems.filter { store.rating(for: $0).sortScore >= 7 }.count) 条重点" : "\(store.items.count) 条资讯 · \(store.assessedCount) 条已评估").font(.system(size: 12)).foregroundStyle(.secondary)
+                    Text(store.section == "products" ? "\(store.productBoard.items.count) 款产品 · \(store.productBoard.items.filter(\.isHot).count) 款近期热门" : store.filter == "today" ? "今天 \(store.todayEvents.count) 个事件 · \(store.todayEvents.filter { store.rating(for:$0).sortScore >= 7 }.count) 个重点" : "\(store.newsItems.count) 个事件 · \(store.items.count) 篇报道").font(.system(size: 12)).foregroundStyle(.secondary)
                 }
                 Spacer()
                 Button { Task { await store.refresh() } } label: {
@@ -61,7 +61,7 @@ struct MenuContent: View {
                             Button("显示全部") { store.filter = "all"; store.query = "" }.buttonStyle(.borderless)
                         }.frame(maxWidth: .infinity).padding(.vertical, 70)
                     }
-                    ForEach(Array(store.visible.prefix(40))) { item in
+                    ForEach(Array(store.visible.prefix(40)),id:\.presentationID) { item in
                         newsRow(item)
                         Divider().padding(.leading, 17)
                     }
@@ -79,7 +79,7 @@ struct MenuContent: View {
                     Button("评分说明") { expanded = expanded == "rubric" ? nil : "rubric" }.buttonStyle(.borderless)
                 }.font(.system(size: 12)).foregroundStyle(.secondary)
                 if expanded == "rubric" {
-                    Text(InterestScore.method + " A：材料充分；B：部分待验；C：材料不足。证据状态不限制关注分。")
+                    Text(InterestScore.method + "\n" + NewsEvents.method + "\nA：材料充分；B：部分待验；C：材料不足。证据状态不限制关注分。")
                         .font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 }
                 HStack {
@@ -114,7 +114,9 @@ struct MenuContent: View {
     }
     private func newsRow(_ item: NewsItem) -> some View {
         let rating = store.rating(for: item)
-        let read = store.seen.contains(item.url)
+        let read = store.isRead(item)
+        let key = item.presentationID
+        let event = item.event.flatMap { $0.articleCount > 1 ? $0 : nil }
         let newsTime = item.newsTime()
         let priority = store.priority(for: item)
         return VStack(alignment: .leading, spacing: 9) {
@@ -122,17 +124,25 @@ struct MenuContent: View {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(spacing: 5) {
                         if !read { Circle().fill(Color.indigo).frame(width: 5, height: 5) }
-                        Text(item.source).lineLimit(1)
-                        Text("· \(newsTime.label)").lineLimit(1).help(newsTime.explanation)
+                        Text(event == nil ? item.source : "事件追踪").lineLimit(1)
+                        Text("· \(event.flatMap { parseDate($0.latestAt) }.map { "最新报道 " + beijingTimeLabel(date:$0) } ?? newsTime.label)").lineLimit(1).help(event == nil ? newsTime.explanation : "事件内最新报道时间，北京时间。各家原文均保留在展开内容中。")
                     }.font(.system(size: 11)).foregroundStyle(.secondary)
                     Button {
+                        if event != nil { toggle(item); return }
                         guard let url = item.safeURL else { return }
                         store.markRead(item); NSWorkspace.shared.open(url)
                     } label: {
                         Text(store.title(for: item)).font(.system(size: 14, weight: .medium)).lineSpacing(3).lineLimit(3)
                             .multilineTextAlignment(.leading).frame(maxWidth: .infinity, alignment: .leading)
                             .foregroundStyle(read ? Color.secondary : Color.primary)
-                    }.buttonStyle(.plain).help("在默认浏览器阅读原文")
+                    }.buttonStyle(.plain).help(event == nil ? "在默认浏览器阅读原文" : "展开事件重点与各家媒体关注点")
+                    if let event {
+                        Label(event.label + (event.bonus > 0 ? " · +\(String(format:"%.1f",event.bonus))" : ""),systemImage:event.mediaCount >= 2 ? "flame.fill" : "square.stack")
+                            .font(.system(size:11,weight:.semibold)).foregroundStyle(event.mediaCount >= 2 ? Color.orange : Color.secondary)
+                            .padding(.horizontal,7).padding(.vertical,4)
+                            .background((event.mediaCount >= 2 ? Color.orange : Color.secondary).opacity(0.09),in:RoundedRectangle(cornerRadius:5))
+                            .help(NewsEvents.method)
+                    }
                     if !priority.reasons.isEmpty {
                         Text(priority.reasons.prefix(2).joined(separator: " · "))
                             .font(.system(size: 10, weight: .medium)).foregroundStyle(.orange).lineLimit(1)
@@ -144,7 +154,7 @@ struct MenuContent: View {
                         } }
                     }
                 }
-                Button { expanded = expanded == item.id ? nil : item.id } label: {
+                Button { toggle(item) } label: {
                     VStack(spacing: 2) {
                         Text(rating.displayScore).font(.system(size: 21, weight: .bold, design: .rounded)).monospacedDigit()
                         Text(rating.scoreLabel).font(.system(size: 10))
@@ -152,15 +162,23 @@ struct MenuContent: View {
                         .background((rating.sortScore >= 7 ? Color.indigo : Color.secondary).opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
                 }.buttonStyle(.plain).help("\(rating.isInterest ? "关注分按你的标准直接计算。" : "")证据 \(rating.statusLabel)：\(rating.evidenceExplanation)\n点击\(rating.sortScore >= 7 ? "展开中文重点" : "查看评分理由")").accessibilityLabel("\(rating.displayScore)，\(rating.scoreLabel)，\(rating.sortScore >= 7 ? "展开重点" : "查看评分依据")")
             }
-            if rating.sortScore >= 7 {
-                Button { expanded = expanded == item.id ? nil : item.id } label: {
-                    Label(expanded == item.id ? "收起重点" : "展开重点", systemImage: expanded == item.id ? "chevron.up" : "chevron.down")
+            if rating.sortScore >= 7 || event != nil {
+                Button { toggle(item) } label: {
+                    Label(expanded == key ? "收起重点" : event == nil ? "展开重点" : "展开重点分析", systemImage: expanded == key ? "chevron.up" : "chevron.down")
                         .font(.system(size: 12, weight: .medium)).foregroundStyle(.indigo)
                 }.buttonStyle(.plain)
             }
-            if expanded == item.id {
+            if expanded == key {
                 VStack(alignment: .leading, spacing: 6) {
-                    if rating.sortScore >= 7 {
+                    if let event {
+                        EventBrief(event:event) { article in
+                            guard let url = publicArticleURL(article.url) else { return }
+                            store.markRead(item); NSWorkspace.shared.open(url)
+                        }
+                        Button(showEvidence.contains(key) ? "收起评分依据" : "评分依据") {
+                            if showEvidence.contains(key) { showEvidence.remove(key) } else { showEvidence.insert(key) }
+                        }.buttonStyle(.borderless).font(.system(size:12))
+                    } else if rating.sortScore >= 7 {
                         Text(rating.briefBasis == "headline" ? "标题要点" : "新闻重点").font(.system(size: 13, weight: .semibold))
                         if let points = rating.highlights, !points.isEmpty {
                             ForEach(Array(points.enumerated()), id: \.offset) { _, point in
@@ -176,12 +194,16 @@ struct MenuContent: View {
                         HStack {
                             if let source = rating.sources?.first, let url = publicArticleURL(source.url) { Link("阅读依据原文 ↗", destination: url).font(.system(size: 12)) }
                             Spacer()
-                            Button(showEvidence.contains(item.id) ? "收起评分依据" : "评分依据") {
-                                if showEvidence.contains(item.id) { showEvidence.remove(item.id) } else { showEvidence.insert(item.id) }
+                            Button(showEvidence.contains(key) ? "收起评分依据" : "评分依据") {
+                                if showEvidence.contains(key) { showEvidence.remove(key) } else { showEvidence.insert(key) }
                             }.buttonStyle(.borderless).font(.system(size: 12))
                         }.padding(.top, 4)
                     }
-                    if rating.sortScore < 7 || showEvidence.contains(item.id) {
+                    if (rating.sortScore < 7 && event == nil) || showEvidence.contains(key) {
+                    if let event, let base = event.baseScore, event.bonus > 0 {
+                        Text("基础关注分 \(String(format:"%.1f",base)) + 媒体关注 \(String(format:"%.1f",event.bonus)) = \(rating.displayScore)（10 分封顶）")
+                            .font(.system(size:12,weight:.medium)).foregroundStyle(.orange)
+                    }
                     Text("证据 \(rating.statusLabel) · \(rating.evidenceExplanation)").font(.system(size: 11)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                     Text(rating.reason).font(.system(size: 12)).lineSpacing(3).fixedSize(horizontal: false, vertical: true)
                     if let dimensions = rating.dimensions, !dimensions.isEmpty {
@@ -202,6 +224,10 @@ struct MenuContent: View {
                 }.padding(10).frame(maxWidth: .infinity, alignment: .leading).background(Color.indigo.opacity(0.05), in: RoundedRectangle(cornerRadius: 8))
             }
         }.padding(.horizontal, 17).padding(.vertical, 13)
+    }
+    private func toggle(_ item:NewsItem) {
+        if expanded == item.presentationID { expanded = nil }
+        else { expanded = item.presentationID; store.markRead(item) }
     }
 }
 

@@ -3,6 +3,7 @@ import type { NewsData, NewsItem, SiteStat } from '../types'
 import { matchesScore, scoreOf, ratingFor } from '../lib/ratings'
 import { compareNewsTimes } from '../lib/newsTime'
 import { resolveSourceTimes } from '../lib/sourceTimes'
+import {eventArticles, matchesEvent} from '../lib/events'
 
 export interface SourceStat {
   source: string
@@ -175,8 +176,8 @@ export function useNewsData(): UseNewsDataReturn {
     if (!data?.items || selectedSite === 'all') return []
     
     const sourceMap = new Map<string, number>()
-    data.items
-      .filter(item => item.site_id === selectedSite)
+    data.items.flatMap(eventArticles)
+      .filter(item => item.siteID === selectedSite)
       .forEach(item => {
         sourceMap.set(item.source, (sourceMap.get(item.source) || 0) + 1)
       })
@@ -191,22 +192,7 @@ export function useNewsData(): UseNewsDataReturn {
     
     let items = data.items.filter(item => matchesScore(item, minScore) && (selectedCategory === 'all' || ratingFor(item).category === selectedCategory))
     
-    if (selectedSite !== 'all') {
-      items = items.filter(item => item.site_id === selectedSite)
-    }
-
-    if (selectedSource !== 'all') {
-      items = items.filter(item => item.source === selectedSource)
-    }
-    
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase()
-      items = items.filter(item => 
-        item.title.toLowerCase().includes(query) ||
-        item.source.toLowerCase().includes(query) ||
-        (item.title_zh && item.title_zh.toLowerCase().includes(query))
-      )
-    }
+    items = items.filter(item => matchesEvent(item,selectedSite,selectedSource,searchQuery))
     
     items = [...items].sort((a, b) => {
       if (sortBy === 'score' && (scoreOf(a) ?? -1) !== (scoreOf(b) ?? -1)) return (scoreOf(b) ?? -1) - (scoreOf(a) ?? -1)
@@ -221,22 +207,7 @@ export function useNewsData(): UseNewsDataReturn {
     
     let items = data.items.filter(item => matchesScore(item, minScore) && (selectedCategory === 'all' || ratingFor(item).category === selectedCategory))
     
-    if (selectedSite !== 'all') {
-      items = items.filter(item => item.site_id === selectedSite)
-    }
-
-    if (selectedSource !== 'all') {
-      items = items.filter(item => item.source === selectedSource)
-    }
-    
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase()
-      items = items.filter(item => 
-        item.title.toLowerCase().includes(query) ||
-        item.source.toLowerCase().includes(query) ||
-        (item.title_zh && item.title_zh.toLowerCase().includes(query))
-      )
-    }
+    items = items.filter(item => matchesEvent(item,selectedSite,selectedSource,searchQuery))
     
     return items.length
   }, [data, selectedSite, selectedSource, searchQuery, minScore, selectedCategory])

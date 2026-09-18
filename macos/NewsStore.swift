@@ -66,6 +66,9 @@ final class NewsStore: ObservableObject {
     @Published var query = ""
     @Published var section = "news" { didSet { onUpdate?() } }
     @Published var productBoard = ProductBoard(verifiedAt: "", items: [])
+    @Published private(set) var groupedSnapshots: [String:[NewsItem]] = [:]
+    private var seenEvents = Set<String>()
+    private var eventByArticle: [String:NewsEvent] = [:]
     var onUpdate: (() -> Void)?
     private var timer: Timer?
     private var cachedAI: RatingCache
@@ -95,6 +98,7 @@ final class NewsStore: ObservableObject {
         let defaults = UserDefaults.standard
         preferences = defaults.data(forKey: "preferences").flatMap { try? JSONDecoder().decode(Preferences.self, from: $0) } ?? Preferences()
         seen = Set(defaults.stringArray(forKey: "seen-urls") ?? [])
+        seenEvents = Set(defaults.stringArray(forKey:"seen-events") ?? [])
         lastChecked = defaults.object(forKey: "last-checked") as? Date
         cacheDirectory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("AINewsMenu", isDirectory: true)
         try? FileManager.default.createDirectory(at: cacheDirectory, withIntermediateDirectories: true)
@@ -146,10 +150,12 @@ final class NewsStore: ObservableObject {
 
     var items: [NewsItem] { snapshots["24h"]?.items ?? [] }
     var todayItems: [NewsItem] { items.filter { Self.isToday($0) } }
+    var newsItems: [NewsItem] { groupedSnapshots["24h"] ?? items }
+    var todayEvents: [NewsItem] { newsItems.filter { Self.isToday($0) } }
     static func isToday(_ item: NewsItem, now: Date = Date(), calendar: Calendar = beijingCalendar) -> Bool {
-        item.newsTime(now: now).date.map { $0 <= now && calendar.isDate($0, inSameDayAs: now) } ?? false
+        (item.event.flatMap { parseDate($0.latestAt) } ?? item.newsTime(now: now).date).map { $0 <= now && calendar.isDate($0, inSameDayAs: now) } ?? false
     }
-    var unreadCount: Int { items.filter { !seen.contains($0.url) }.count }
+    var unreadCount: Int { newsItems.filter { !isRead($0) }.count }
     var directRefreshLabel: String {
         let sources = snapshots["24h"]?.direct_sources ?? []
         let ready = sources.filter { $0.error == nil && $0.fetchedAt != nil }.count
@@ -165,13 +171,14 @@ final class NewsStore: ObservableObject {
     }
     func stop() { timer?.invalidate(); collector.cancel(); scoringTask?.cancel() }
     var visible: [NewsItem] {
-        items.filter { item in
+        newsItems.filter { item in
             let rating = rating(for: item)
             if filter == "today" && !Self.isToday(item) { return false }
             if filter == "high" && rating.sortScore < 7 { return false }
             if filter == "pending" && rating.isScored { return false }
-            if filter == "unread" && seen.contains(item.url) { return false }
-            return query.isEmpty || (title(for: item) + " " + item.displayTitle + " " + item.title + " " + item.source).localizedCaseInsensitiveContains(query)
+            if filter == "unread" && isRead(item) { return false }
+            let coverage = item.event?.reports.flatMap { $0.articles.map { $0.title + " " + $0.source } }.joined(separator:" ") ?? ""
+            return query.isEmpty || (title(for: item) + " " + item.displayTitle + " " + item.title + " " + item.source + " " + coverage).localizedCaseInsensitiveContains(query)
         }.sorted { first, second in
             let a = rating(for: first).sortScore, b = rating(for: second).sortScore
             if a != b { return a > b }
@@ -181,11 +188,12 @@ final class NewsStore: ObservableObject {
         }
     }
     var lead: NewsItem? { visible.first }
-    func rating(for item: NewsItem) -> NewsRating { ratings[item.id] ?? ruleCache[item.id] ?? Scoring.rule(item) }
+    func rating(for item: NewsItem) -> NewsRating { (item.event == nil ? nil : item.rating) ?? ratings[item.id] ?? ruleCache[item.id] ?? Scoring.rule(item) }
     func priority(for item: NewsItem) -> NewsPriority {
         priorities[item.id] ?? Priority.rank(item, rating: rating(for: item), products: productCatalog.items, pulse: productPulse, watchlist: preferences.watchedProducts ?? Priority.defaultWatchlist)
     }
     func title(for item: NewsItem) -> String {
+        if let event = item.event { return event.title }
         let rating = rating(for: item)
         if rating.sortScore >= 7, let title = rating.chineseTitle, Scoring.matches(title, "[\\p{Han}]") { return title }
         return item.displayTitle
@@ -228,6 +236,30 @@ final class NewsStore: ObservableObject {
             }
         }
         ratings = calculated
+        var allByID: [String:NewsItem] = [:]
+        for range in ["24h","7d"] {
+            for item in snapshots[range]?.items ?? [] where allByID[item.id] == nil { allByID[item.id] = item }
+        }
+        let groups = NewsEvents.groups(Array(allByID.values),products:productCatalog.items,documents:documents)
+        let rows = groups.flatMap { group -> [NewsItem] in
+            // Only today's active events get new analysis; preserve older article assessments.
+            guard group.members.contains(where:{ Self.isToday($0) }) else { return group.members }
+            return [NewsEvents.present(group,ratings:calculated,documents:documents,translations:titleTranslations)]
+        }
+        var grouped: [String:[NewsItem]] = [:]
+        for (range,snapshot) in snapshots {
+            let ids = Set(snapshot.items.map(\.id))
+            grouped[range] = rows.filter { row in row.event?.memberIDs.contains(where:{ ids.contains($0) }) ?? ids.contains(row.id) }
+        }
+        eventByArticle = [:]
+        for row in rows {
+            guard let event = row.event else { continue }
+            for id in event.memberIDs { eventByArticle[id] = event }
+            if NewsEvents.isRead(event,seenURLs:seen,seenEvents:seenEvents) { seenEvents.insert(event.id) }
+        }
+        groupedSnapshots = grouped
+        seenEvents.formIntersection(Set(rows.compactMap { $0.event?.id }))
+        UserDefaults.standard.set(Array(seenEvents),forKey:"seen-events")
         let currentIDs = Set(snapshots.values.flatMap(\.items).map(\.id))
         interestRatings = interestRatings.filter { currentIDs.contains($0.key) }
         if let bytes = try? JSONEncoder().encode(interestRatings) { try? bytes.write(to:cacheDirectory.appendingPathComponent("interest-ratings.json"),options:.atomic) }
@@ -249,15 +281,24 @@ final class NewsStore: ObservableObject {
         if let timer { RunLoop.main.add(timer, forMode: .common) }
     }
     func markRead(_ item: NewsItem) {
-        seen.insert(item.url)
+        if let event = item.event ?? eventByArticle[item.id] {
+            seen.formUnion(event.urls); seenEvents.insert(event.id)
+            UserDefaults.standard.set(Array(seenEvents),forKey:"seen-events")
+        } else { seen.insert(item.url) }
         let retained = Array(seen.intersection(Set(snapshots.values.flatMap { $0.items.map(\.url) })))
         UserDefaults.standard.set(Array(retained.prefix(15000)), forKey: "seen-urls")
         onUpdate?()
     }
     func markAllRead() {
         seen.formUnion(items.map(\.url))
+        seenEvents.formUnion(newsItems.compactMap { $0.event?.id })
+        UserDefaults.standard.set(Array(seenEvents),forKey:"seen-events")
         UserDefaults.standard.set(Array(seen.prefix(15000)), forKey: "seen-urls")
         onUpdate?()
+    }
+    func isRead(_ item: NewsItem) -> Bool {
+        if let event = item.event ?? eventByArticle[item.id] { return NewsEvents.isRead(event,seenURLs:seen,seenEvents:seenEvents) }
+        return seen.contains(item.url)
     }
 
     func refresh(range: String = "24h") async {
@@ -298,7 +339,60 @@ final class NewsStore: ObservableObject {
         UserDefaults.standard.set(lastChecked, forKey: "last-checked")
         recalculate()
         await translateTodayHeadlines()
+        await enrichTodayEvents()
         if range == "24h" { startScoring() }
+    }
+
+    private func enrichTodayEvents() async {
+        // Small daily batch; grouping and scores are visible before any body retrieval.
+        func needsReading(_ article:EventArticle) -> Bool {
+            guard let fetched = documents[article.url].flatMap({parseDate($0.fetchedAt)}) else { return true }
+            return Date().timeIntervalSince(fetched) >= 6 * 3600
+        }
+        func needsBody(_ row:NewsItem) -> Bool {
+            row.event?.reports.contains { $0.kind == "media" && $0.articles.first.map(needsReading) == true } == true
+        }
+        let leaders = todayEvents.filter { row in
+            guard rating(for:row).sortScore >= 7 else { return false }
+            return row.event?.reports.contains { report in
+                (report.kind == "media" && report.articles.first.map(needsReading) == true) ||
+                report.points.contains { !Scoring.matches($0,#"[\p{Han}]"#) && titleTranslations[$0] == nil }
+            } == true
+        }.sorted { a,b in
+            if needsBody(a) != needsBody(b) { return needsBody(a) }
+            return rating(for:a).sortScore > rating(for:b).sortScore
+        }.prefix(3)
+        let articles = leaders.flatMap { row in
+            (row.event?.reports ?? []).filter { $0.kind == "media" }.prefix(3).compactMap { $0.articles.first }
+        }
+        let candidates = articles.filter(needsReading)
+        if !candidates.isEmpty {
+            let fetched = await withTaskGroup(of:ArticleDocument.self) { group in
+                for article in candidates { group.addTask { await ArticleDocument.fetch(url:article.url,title:article.title) } }
+                var values: [ArticleDocument] = []
+                for await document in group { values.append(document) }
+                return values
+            }
+            for document in fetched { documents[document.url] = document }
+            if let bytes = try? JSONEncoder().encode(documents) { try? bytes.write(to:cacheDirectory.appendingPathComponent("documents-v2.json"),options:.atomic) }
+            recalculate()
+        }
+        let selectedIDs = Set(leaders.flatMap { $0.event?.memberIDs ?? [$0.id] })
+        let points = NewsEvents.unique(todayEvents.filter { row in row.event?.memberIDs.contains(where:{selectedIDs.contains($0)}) == true }
+            .flatMap { $0.event?.reports.flatMap(\.points) ?? [] })
+            .filter { !Scoring.matches($0,#"[\p{Han}]"#) && titleTranslations[$0] == nil }.prefix(6)
+        let session = self.session
+        let translated = await withTaskGroup(of:(String,String?).self) { group in
+            for point in points { group.addTask { (point,await InterestScore.translate(point,session:session)) } }
+            var values:[String:String] = [:]
+            for await (point,value) in group { if let value { values[point] = value } }
+            return values
+        }
+        if !translated.isEmpty {
+            titleTranslations.merge(translated) { _,new in new }
+            if let bytes = try? JSONEncoder().encode(titleTranslations) { try? bytes.write(to:cacheDirectory.appendingPathComponent("headline-translations.json"),options:.atomic) }
+            recalculate()
+        }
     }
 
     private func translateTodayHeadlines() async {
@@ -442,7 +536,14 @@ final class NewsStore: ObservableObject {
     func dashboardData(range: String) -> NewsData? {
         guard var result = snapshots[range] else { return nil }
         result.product_board = productBoard
-        result.items = result.items.map { item in var item = item; item.rating = rating(for: item); item.priority = priority(for: item); if (item.rating?.sortScore ?? -1) >= 7 { item.title_zh = title(for: item) }; return item }
+        result.items = (groupedSnapshots[range] ?? result.items).map { item in
+            var item = item; item.rating = rating(for:item); item.priority = priority(for:item)
+            let read = isRead(item)
+            if item.event != nil { item.event?.read = read }
+            if (item.rating?.sortScore ?? -1) >= 7 { item.title_zh = title(for:item) }
+            return item
+        }
+        result.total_items = result.items.count
         return result
     }
 }

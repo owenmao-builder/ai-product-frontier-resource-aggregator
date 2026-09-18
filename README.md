@@ -17,6 +17,7 @@ Screenshots are examples captured on September 17, 2026. The interface and edito
 ## What it does
 
 - **One menu bar icon:** open ✦ for news previews, scores, expandable highlights, and manual refresh.
+- **One event, one card:** repeated coverage is merged in the menu and integrated dashboard. Distinct original media outlets earn a capped coverage bonus; expanded cards compare attributed angles, core implications and original links. Reading an event keeps later coverage read.
 - **Direct interest scores:** model upgrades, architecture changes, product popularity and your watchlist determine reading priority; evidence status is shown separately.
 - **Chinese reading for scores of 7+:** existing summaries are preserved; headline-only outlines are labeled. Up to five high-score public headlines per refresh are translated using the Google service already used by the upstream project.
 - **Major-vendor releases from the last 7 days:** specific model, version, feature, or architecture names; official publication dates; expired entries disappear. Generic brand mentions do not qualify.
@@ -52,7 +53,7 @@ The app runs the complete collector locally every 15 minutes by default, checkin
 - Trending means GitHub's weekly Trending list with at least 500 new stars, or a matching HN story from the last 7 days with at least 100 points. Evidence older than 24 hours no longer qualifies. Popularity is not a quality score.
 - Historical editorial assessments remain available. Optional model-based body analysis can add fuller Chinese highlights for at most five of today's items per pass; it never gates the direct interest score. Configure an HTTPS Chat Completions-compatible endpoint, model and key only if this enrichment is wanted.
 - With automatic assessment enabled, limited public article excerpts and comparison material are sent to the configured model provider. API usage may incur charges. Keys stay in macOS Keychain; preferences, reading state, and caches stay on the Mac.
-- The standalone web dashboard can read JSON snapshots; native refresh, model assessment, and live product popularity are supplied by the Mac app.
+- The standalone web dashboard can read JSON snapshots, including optional event metadata. Native refresh, event grouping and coverage analysis, model assessment, and live product popularity are supplied by the Mac app.
 
 ## Build and develop
 

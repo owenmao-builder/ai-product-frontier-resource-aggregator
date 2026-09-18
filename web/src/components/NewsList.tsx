@@ -5,6 +5,7 @@ import { LoadingState } from './LoadingState'
 import { EmptyState } from './EmptyState'
 import { ChevronDown } from 'lucide-react'
 import { Analytics } from '../utils/analytics'
+import {eventIsRead} from '../lib/events'
 
 interface NewsListProps {
   items: NewsItem[]
@@ -19,7 +20,7 @@ interface NewsListProps {
 }
 
 export function NewsList({ items, loading, error, hasMore, onLoadMore, visitedLinks, onVisit, isFavorite, onToggleFavorite }: NewsListProps) {
-  const isVisited = (url: string) => url in visitedLinks
+  const isVisited = (item:NewsItem) => eventIsRead(item,visitedLinks)
   const visitedCount = Object.keys(visitedLinks).length
 
   if (loading && items.length === 0) {
@@ -39,7 +40,7 @@ export function NewsList({ items, loading, error, hasMore, onLoadMore, visitedLi
     return <EmptyState />
   }
 
-  const visitedInList = items.filter(item => isVisited(item.url)).length
+  const visitedInList = items.filter(isVisited).length
 
   return (
     <div className="space-y-3">
@@ -50,10 +51,10 @@ export function NewsList({ items, loading, error, hasMore, onLoadMore, visitedLi
       )}
       {items.map((item, index) => (
         <NewsCard 
-          key={item.id} 
+          key={item.event?.id || item.id}
           item={item} 
           index={index}
-          isVisited={isVisited(item.url)}
+          isVisited={isVisited(item)}
           isFavorite={isFavorite?.(item.url)}
           onVisit={onVisit}
           onToggleFavorite={onToggleFavorite}
