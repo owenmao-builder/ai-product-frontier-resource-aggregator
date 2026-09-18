@@ -109,7 +109,8 @@ enum NewsEvents {
         var subject: String?
         let context = document?.readable == true ? String(document!.text.prefix(2400)) : ""
         // Explicit features are more specific than models mentioned as their foundations.
-        if has("claude") && (has(#"\bprojects?\b|项目功能|项目管理"#) ||
+        if has(#"(?<![a-z])astra(?![a-z])|阿斯特拉"#) && has("法律|法务|for law") && has("openai|gpt") { subject = "Astra for Law" }
+        else if has("claude") && (has(#"\bprojects?\b|项目功能|项目管理"#) ||
             (has("claude code") && has("重构|改版|redesign|relaunch") && Scoring.matches(context,#"\bProjects\b|项目功能"#))) { subject = "Claude Code Projects" }
         else if has("deepseek|深度求索") && has("harness") { subject = "DeepSeek Harness" }
         else {

@@ -18,6 +18,8 @@ enum EventTests {
         let members = [a,b,c,repost,social,aggregation]
         let groups = NewsEvents.groups(members,products:[law],now:now)
         precondition(groups.count == 1 && groups[0].members.count == 6,"Cross-language coverage must collapse to one event")
+        let translatedAlias = item("alias","OpenAI推出面向法律行业的AI工具Astra","https://techinasia.com/news/astra-law")
+        precondition(NewsEvents.groups([a,translatedAlias],products:[law],now:now).count == 1,"A translated use-case qualifier should still identify the same named product")
         let scores = Dictionary(uniqueKeysWithValues:members.map { value in
             let rule = Scoring.rule(value)
             return (value.id,InterestScore.rating(value,priority:Priority.rank(value,rating:rule,products:[law],pulse:ProductPulse(),now:now),previous:rule,now:now))
