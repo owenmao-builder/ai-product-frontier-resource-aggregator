@@ -22,7 +22,7 @@ Screenshots are examples captured on September 17, 2026. The interface and edito
 - **Major-vendor releases from the last 7 days:** specific model, version, feature, or architecture names; official publication dates; expired entries disappear. Generic brand mentions do not qualify.
 - **Recently trending tools:** GitHub weekly growth and recent Hacker News discussion provide visible popularity evidence.
 - **A full dashboard:** search, source and category filters, favorites, reading history, and dark mode.
-- **Direct subscriptions:** includes 苔藓之火 / Mossfire's public Substack feed alongside the upstream news snapshot.
+- **Direct sources:** OpenAI, Google AI, DeepMind, Hugging Face, Xinzhiyuan and 苔藓之火 / Mossfire are fetched directly from their original RSS feeds, independently of the aggregate snapshot.
 
 ## How importance is scored
 
@@ -53,13 +53,13 @@ An official announcement establishes a release, but does not by itself prove sup
 
 Requires **Apple Silicon and macOS 13 or later**. The downloadable build is ad-hoc signed, not Apple-notarized; building from source is also supported. Intel binaries are not provided.
 
-The app checks for updates every 15 minutes by default. Closing the dashboard keeps the menu bar app running; quitting the app stops refreshes. It does not register itself to launch at login.
+The app fetches its configured original-source feeds every 15 minutes by default, in parallel, and also checks the aggregate snapshot. Closing the dashboard keeps the menu bar app running; quitting the app stops refreshes. It does not register itself to launch at login.
 
 ## Data and assessment behavior
 
-- News snapshots come from the original project's public JSON endpoint by default. Change the HTTPS data directory in settings to use your own collector. Refreshing checks the current snapshot; it does not force the upstream collector to run.
+- Supplemental news snapshots come from the original project's public JSON endpoint by default. Change the HTTPS data directory in settings to use your own collector. Refreshing cannot force that external collector to run; the interface shows its generation time separately and flags snapshots older than an hour.
 - News times use **Beijing time (UTC+8)**. Today's Xinzhiyuan articles are checked against the publisher's WordPress API in one batch; verified publication times are cached and take priority over upstream timestamps. Only missing or unreliable publication times fall back to a collection time labeled **收录**; hover for the reason. Within the same score, known publication times sort ahead of collection-only times. Original upstream fields are preserved.
-- Custom RSS and product popularity signals refresh independently in the Mac app. Source failures retain cached data and display their status.
+- Original-source RSS and product popularity signals refresh independently in the Mac app. New direct-feed articles are added even when the aggregate snapshot is stale or unavailable. One failed source retains its cache without blocking the other sources. Recent posts survive a short feed rotating them out; articles age out of the selected time window.
 - Product release entries in `data/products.json` are **maintainer-verified**, not an automatic discovery feed. Major-vendor entries require a specific release name, an official announcement, and a verified date within the last 7 local calendar days, including today.
 - Trending means GitHub's weekly Trending list with at least 500 new stars, or a matching HN story from the last 7 days with at least 100 points. Evidence older than 24 hours no longer qualifies. Popularity is not a quality score.
 - The app includes a dated editorial assessment snapshot. Automatic new assessments are **optional**: configure an HTTPS Chat Completions-compatible endpoint, model, and API key in settings. Each pass handles at most five of today's items; unassessed items remain **C 不足**.

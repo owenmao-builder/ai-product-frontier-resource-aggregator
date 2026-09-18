@@ -83,10 +83,13 @@ struct MenuContent: View {
                         .font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 }
                 HStack {
-                    Text("北京时间 · 更新 \(beijingTimeLabel(date: parseDate(store.snapshots["24h"]?.generated_at)))")
+                    Text(store.directRefreshLabel)
                     Spacer()
-                    Text("每 \(store.preferences.refreshMinutes) 分钟检查")
+                    Text("每 \(store.preferences.refreshMinutes) 分钟直采")
                 }.font(.system(size: 12)).foregroundStyle(.secondary)
+                Text("\(store.snapshotLabel) · 北京时间")
+                    .font(.system(size: 11)).foregroundStyle(.secondary)
+                    .help("原站订阅直接抓取最新消息；其余聚合平台随上游快照更新。检查成功不代表上游发布了新快照。")
                 HStack {
                     Button(action: openDashboard) { Label("打开完整看板", systemImage: "macwindow") }.buttonStyle(.borderless).font(.system(size: 14, weight: .medium))
                     Spacer()
@@ -217,7 +220,7 @@ struct SettingsContent: View {
                     Text("点开符号即可预览消息和评分。关闭此项后，菜单栏会显示新闻标题及分数。应用运行时持续检查；退出应用后停止。")
                         .font(.system(size: 12)).foregroundStyle(.secondary)
                     TextField("资讯数据目录（HTTPS）", text: $draft.dataBaseURL).textFieldStyle(.roundedBorder)
-                    Text("默认读取原项目公开数据，原项目约每 2 小时采集一次。自选订阅（苔藓之火）由本机直接拉取，跟随上方检查频率。来源状态见完整看板的「信息源」。")
+                    Text("上方频率控制官方博客、新智元和苔藓之火等原站订阅的直接抓取。此地址提供补充聚合内容，更新时间由上游决定；各来源的检查时间、发布情况与失败原因可在「信息源」查看。")
                         .font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 }.padding(8)
             }

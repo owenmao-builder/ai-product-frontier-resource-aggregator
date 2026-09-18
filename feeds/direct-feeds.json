@@ -1,5 +1,40 @@
 [
   {
+    "id": "openai",
+    "name": "OpenAI 官方",
+    "feedURL": "https://openai.com/news/rss.xml",
+    "homeURL": "https://openai.com/news/",
+    "description": "直接读取 OpenAI 官方新闻 RSS，包含模型、产品与研究发布"
+  },
+  {
+    "id": "google-ai",
+    "name": "Google AI 官方",
+    "feedURL": "https://blog.google/technology/ai/rss/",
+    "homeURL": "https://blog.google/innovation-and-ai/technology/ai/",
+    "description": "直接读取 Google 官方 AI 博客 RSS"
+  },
+  {
+    "id": "deepmind",
+    "name": "Google DeepMind 官方",
+    "feedURL": "https://deepmind.google/blog/rss.xml",
+    "homeURL": "https://deepmind.google/blog/",
+    "description": "直接读取 DeepMind 官方模型与研究发布 RSS"
+  },
+  {
+    "id": "huggingface",
+    "name": "Hugging Face 官方",
+    "feedURL": "https://huggingface.co/blog/feed.xml",
+    "homeURL": "https://huggingface.co/blog",
+    "description": "直接读取 Hugging Face 官方技术博客 RSS"
+  },
+  {
+    "id": "xinzhiyuan",
+    "name": "新智元",
+    "feedURL": "https://aiera.com.cn/feed/",
+    "homeURL": "https://aiera.com.cn/",
+    "description": "直接读取新智元原站 RSS，及时补入聚合快照尚未收录的消息"
+  },
+  {
     "id": "mossfire",
     "name": "苔藓之火",
     "feedURL": "https://mossfirepodcast.substack.com/feed",

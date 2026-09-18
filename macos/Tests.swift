@@ -2,8 +2,9 @@ import Foundation
 
 @main
 enum ScoringTests {
-    @MainActor static func main() throws {
+    @MainActor static func main() async throws {
         try DirectFeedTests.run()
+        try await DirectFeedTests.refreshTests()
         try SourceTimeTests.run()
         try ProductTests.run()
         let now = timestamp()

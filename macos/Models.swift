@@ -78,6 +78,13 @@ func beijingTimeLabel(date: Date?, now: Date = Date()) -> String {
     return formatter.string(from: date)
 }
 
+func aggregateSnapshotLabel(_ raw: String?, now: Date = Date()) -> String {
+    guard let date = parseDate(raw) else { return "聚合内容暂未取得" }
+    let age = now.timeIntervalSince(date)
+    guard age >= 0 else { return "聚合快照时间异常" }
+    return "聚合快照 \(beijingTimeLabel(date: date, now: now))" + (age >= 3600 ? " · \(Int(age / 3600))小时未更新" : "")
+}
+
 struct SiteStat: Codable {
     var site_id: String
     var site_name: String

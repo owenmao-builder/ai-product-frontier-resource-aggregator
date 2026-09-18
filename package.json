@@ -1,6 +1,6 @@
 {
   "name": "ai-product-frontier-resource-aggregator",
-  "version": "1.3.5",
+  "version": "1.3.6",
   "description": "Curates important AI technology and product updates using novelty, impact, explanatory value, and decision relevance, with key insights in the macOS menu bar.",
   "type": "module",
   "main": "dist/index.js",

@@ -1,5 +1,5 @@
 import { Sun, Moon, Bot, Clock, Info, Github, History, Star, Loader2, RefreshCw, Settings } from 'lucide-react'
-import { formatDateTime } from '../utils/formatDate'
+import { formatBeijingTime } from '../lib/newsTime'
 import type { TimeRange } from '../hooks/useNewsData'
 import { Analytics } from '../utils/analytics'
 
@@ -121,7 +121,7 @@ export function Header({
             {generatedAt && !productsView && (
               <div className="hidden lg:flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full">
                 <Clock className="w-3.5 h-3.5" />
-                <span>更新于 {formatDateTime(generatedAt)}</span>
+                <span>聚合快照 {formatBeijingTime(Date.parse(generatedAt))}</span>
                 {windowHours && (
                   <span className="text-slate-400 dark:text-slate-500">· {windowHours}h</span>
                 )}

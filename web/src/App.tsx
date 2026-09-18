@@ -14,6 +14,7 @@ import { useTheme } from './hooks/useTheme'
 import { useNewsData } from './hooks/useNewsData'
 import { useVisitedLinks } from './hooks/useVisitedLinks'
 import { useFavorites } from './hooks/useFavorites'
+import { newsFreshness } from './lib/freshness'
 
 function App() {
   const { theme, toggleTheme } = useTheme()
@@ -58,6 +59,7 @@ function App() {
     isSwitching,
     minScore, setMinScore, selectedCategory, setSelectedCategory, sortBy, setSortBy, scoring, aiError, lastChecked,
   } = useNewsData()
+  const freshness = newsFreshness(data?.generated_at, data?.direct_sources)
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
@@ -93,6 +95,11 @@ function App() {
           siteStats={siteStats}
           onShowSources={() => setShowSourceModal(true)}
         />
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-slate-500 dark:text-slate-400" role="status">
+          <span>{freshness.directLabel}</span>
+          <span className={freshness.isStale ? 'text-amber-700 dark:text-amber-400' : ''}>{freshness.snapshotLabel}</span>
+          <button onClick={() => setShowSourceModal(true)} className="text-primary-600 dark:text-primary-400">各来源更新状态 →</button>
+        </div>
         
         <FilterBar
           siteStats={siteStats}

@@ -2,6 +2,7 @@ import { X, Rss, Globe, CheckCircle, XCircle, Clock, ExternalLink } from 'lucide
 import { useEffect, useState } from 'react'
 import type { DirectFeedStatus, SiteStat } from '../types'
 import directFeeds from '../../../feeds/direct-feeds.json'
+import { formatBeijingTime } from '../lib/newsTime'
 
 interface SourceModalProps {
   isOpen: boolean
@@ -36,7 +37,7 @@ interface OpmlGroup {
 
 const SITE_INFO: Record<string, { description: string; url: string }> = {
   directrss: {
-    description: '你添加的作者订阅源，由 Mac 应用直接读取公开 RSS，随每次刷新更新',
+    description: '官方博客、媒体原站和作者订阅，由 Mac 应用直接读取 RSS，不等待聚合快照更新',
     url: '',
   },
   aihot: {
@@ -158,11 +159,11 @@ export function SourceModal({ isOpen, onClose, siteStats, sourceCount, windowHou
 
         <div className="px-6 py-4 overflow-y-auto max-h-[calc(85vh-80px)]">
           <section className="mb-6" aria-label="我的信息源">
-            <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">我的信息源</h3>
+            <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">原站直采 · 随 Mac 应用每轮刷新</h3>
             {directFeeds.map(feed => {
               const status = directSources.find(source => source.id === feed.id)
-              const dateLabel = status?.latestPublishedAt && new Date(status.latestPublishedAt).toLocaleDateString('zh-CN', {month: 'long', day: 'numeric'})
-              return <div key={feed.id} className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-900/10 p-4">
+              const dateLabel = status?.latestPublishedAt && formatBeijingTime(Date.parse(status.latestPublishedAt))
+              return <div key={feed.id} className="mb-3 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-900/10 p-4">
                 <div className="flex items-center justify-between gap-3">
                   <a href={feed.homeURL} target="_blank" rel="noopener noreferrer" className="font-semibold text-slate-900 dark:text-white inline-flex items-center gap-2">{feed.name}<ExternalLink className="w-3.5 h-3.5" /></a>
                   <span className={`text-xs ${status?.error ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
@@ -170,7 +171,7 @@ export function SourceModal({ isOpen, onClose, siteStats, sourceCount, windowHou
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">{feed.description}</p>
-                {status && <p className="text-xs text-slate-600 dark:text-slate-300 mt-3">最近 {windowHours} 小时：{status.windowCount} 条{status.checkedAt && ` · 刚检查 ${new Date(status.checkedAt).toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'})}`}</p>}
+                {status && <p className="text-xs text-slate-600 dark:text-slate-300 mt-3">最近 {windowHours} 小时：{status.windowCount} 条{status.checkedAt && ` · 检查 ${formatBeijingTime(Date.parse(status.checkedAt))}`}</p>}
                 {status?.latestTitle && status.latestURL && <a href={status.latestURL} target="_blank" rel="noopener noreferrer" className="block text-sm text-primary-600 dark:text-primary-400 mt-2 leading-relaxed">最近发布 · {dateLabel}<br />{status.latestTitle}</a>}
                 {status?.error && <p role="status" className="text-xs text-amber-700 dark:text-amber-400 mt-2">{status.error}{status.fetchedAt ? ' · 已保留上次内容' : ' · 下次刷新重试'}</p>}
               </div>
@@ -202,11 +203,13 @@ export function SourceModal({ isOpen, onClose, siteStats, sourceCount, windowHou
             <Globe className="w-4 h-4" />
             数据平台详情
           </h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">聚合平台状态来自其公布的快照{sourceStatus?.generated_at ? `（${formatBeijingTime(Date.parse(sourceStatus.generated_at))}）` : ''}，不代表本轮原站直采的检查结果。</p>
           
           <div className="space-y-3">
             {sortedSiteStats.map((stat) => {
               const siteInfo = sourceStatus?.sites.find(s => s.site_id === stat.site_id)
               const isOk = stat.site_id === 'directrss' ? !directSources.some(source => source.error) : siteInfo?.ok !== false
+              const statusKnown = stat.site_id === 'directrss' ? directSources.some(source => source.checkedAt) : Boolean(siteInfo)
               const info = SITE_INFO[stat.site_id]
               const isOpml = stat.site_id === 'opmlrss'
               
@@ -214,7 +217,7 @@ export function SourceModal({ isOpen, onClose, siteStats, sourceCount, windowHou
                 <div key={stat.site_id} className="rounded-lg border border-slate-200 dark:border-slate-600 overflow-hidden">
                   <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-700/50">
                     <div className="flex items-center gap-3">
-                      {isOk ? (
+                      {!statusKnown ? <Clock className="w-4 h-4 text-slate-400 flex-shrink-0" /> : isOk ? (
                         <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0" />
                       ) : (
                         <XCircle className="w-4 h-4 text-red-500 flex-shrink-0" />

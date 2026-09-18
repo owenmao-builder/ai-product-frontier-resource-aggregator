@@ -135,6 +135,13 @@ final class NewsStore: ObservableObject {
         item.newsTime(now: now).date.map { $0 <= now && calendar.isDate($0, inSameDayAs: now) } ?? false
     }
     var unreadCount: Int { items.filter { !seen.contains($0.url) }.count }
+    var directRefreshLabel: String {
+        let sources = snapshots["24h"]?.direct_sources ?? []
+        let ready = sources.filter { $0.error == nil && $0.fetchedAt != nil }.count
+        let checked = sources.compactMap { parseDate($0.checkedAt) }.max()
+        return "原站直采 \(ready)/\(directFeeds.count) · 检查 \(beijingTimeLabel(date: checked))"
+    }
+    var snapshotLabel: String { aggregateSnapshotLabel(snapshots["24h"]?.generated_at) }
     var visible: [NewsItem] {
         items.filter { item in
             let rating = rating(for: item)
@@ -225,19 +232,25 @@ final class NewsStore: ObservableObject {
             let parsed = try Self.decode(bytes)
             snapshots[range] = SourceTimes.apply(parsed, cached: sourceTimes)
             try? bytes.write(to: cacheDirectory.appendingPathComponent("latest-\(range).json"), options: .atomic)
-            lastChecked = Date()
-            UserDefaults.standard.set(lastChecked, forKey: "last-checked")
         } catch { self.error = "拉取失败：\(error.localizedDescription)" }
+        directFeedCache = await directUpdates
+        // Show newly fetched original-source news even if the aggregate host is stale or failed.
+        if snapshots[range] == nil {
+            snapshots[range] = NewsData(generated_at: "", window_hours: range == "24h" ? 24 : 168,
+                total_items: 0, source_count: 0, site_stats: [], items: [])
+        }
+        mergeDirectFeeds()
         sourceTimes = await SourceTimes.refresh(snapshots[range]?.items ?? [], cached: sourceTimes, session: session)
         if let bytes = try? JSONEncoder().encode(sourceTimes) { try? bytes.write(to: cacheDirectory.appendingPathComponent("source-times.json"), options: .atomic) }
         mergeSourceTimes()
-        directFeedCache = await directUpdates
         productPulse = await productUpdates
         if let bytes = try? JSONEncoder().encode(productPulse) { try? bytes.write(to: cacheDirectory.appendingPathComponent("product-pulse.json"), options: .atomic) }
         if let bytes = try? JSONEncoder().encode(directFeedCache) {
             try? bytes.write(to: cacheDirectory.appendingPathComponent("direct-feeds.json"), options: .atomic)
         }
         mergeDirectFeeds()
+        lastChecked = Date()
+        UserDefaults.standard.set(lastChecked, forKey: "last-checked")
         recalculate()
         if range == "24h" { startScoring() }
     }
