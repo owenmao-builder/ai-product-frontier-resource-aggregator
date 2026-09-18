@@ -211,20 +211,23 @@ final class NewsStore: ObservableObject {
                 } else { next[item.id] = rule }
             }
         }
-        ratings = next
+        // Publish the completed batch once; per-article @Published mutations stall the menu.
+        var calculated = next
         priorities = [:]
         let priorityContext = Priority.Context(products: productCatalog.items, pulse: productPulse, watchlist: preferences.watchedProducts ?? Priority.defaultWatchlist)
         for snapshot in snapshots.values {
             for item in snapshot.items where priorities[item.id] == nil {
-                let priority = Priority.rank(item, rating: rating(for: item), context: priorityContext)
+                let base = next[item.id] ?? Scoring.rule(item)
+                let priority = Priority.rank(item, rating: base, context: priorityContext)
                 priorities[item.id] = priority
                 if Self.isToday(item) {
-                    let direct = InterestScore.rating(item,priority:priority,previous:rating(for:item),translatedTitle:titleTranslations[item.title])
-                    ratings[item.id] = direct
+                    let direct = InterestScore.rating(item,priority:priority,previous:base,translatedTitle:titleTranslations[item.title])
+                    calculated[item.id] = direct
                     interestRatings[item.id] = ReviewedEntry(id:item.id,fingerprint:fingerprint(item),rating:direct)
                 }
             }
         }
+        ratings = calculated
         let currentIDs = Set(snapshots.values.flatMap(\.items).map(\.id))
         interestRatings = interestRatings.filter { currentIDs.contains($0.key) }
         if let bytes = try? JSONEncoder().encode(interestRatings) { try? bytes.write(to:cacheDirectory.appendingPathComponent("interest-ratings.json"),options:.atomic) }
