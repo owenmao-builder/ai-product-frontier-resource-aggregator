@@ -32,6 +32,7 @@ struct ProductSignal: Codable {
     var title: String
     var url: String
     var observedAt: String
+    var sourceCount: Int? = nil
 }
 
 struct ProductNews: Codable {
@@ -91,7 +92,7 @@ struct ProductPulse: Codable {
 
 enum Products {
     static let trendingURL = "https://github.com/trending?since=weekly"
-    static let method = "每轮从新闻发现具体模型、版本、产品与功能，读取官方发布页核对名称及日期，自动同步入栏。大厂上新只展示最近 7 个北京时间自然日（含今天）的已核实发布；未取得官方日期的消息列为待核验线索。近期热门：GitHub 周增 ≥500 星或近 7 天 HN ≥100 赞，超过 24 小时的热度失效；大厂条目仍须满足发布时限。"
+    static let method = "每轮从新闻发现具体模型、版本、产品与功能，读取官方发布页核对名称及日期，自动同步入栏。大厂上新只展示最近 7 个北京时间自然日（含今天）的已核实发布；未取得官方日期的消息列为待核验线索。近期热门：当天活跃事件在 48 小时内有至少 2 家集中报道，或 GitHub 周增 ≥500 星、近 7 天 HN ≥100 赞；新闻热度同步到对应的具体产品。超过 24 小时的热度失效；大厂条目仍须满足发布时限。"
 
     static func mergedCatalog(_ bundled: ProductBoard, discovery: ProductDiscovery?, now: Date = Date()) -> ProductBoard {
         guard let discovery else { return bundled }
@@ -213,7 +214,22 @@ enum Products {
         url.trimmingCharacters(in: CharacterSet(charactersIn: "/")) == product.sourceURL.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
     }
 
-    static func board(catalog: ProductBoard, pulse: ProductPulse, news: [NewsItem], now: Date = Date()) -> ProductBoard {
+    static func reportingSignal(_ product: AIProduct, events: [NewsItem], now: Date = Date()) -> ProductSignal? {
+        let names = Set(([product.name] + product.aliases).map(NewsEvents.compact))
+        // Use the event's subject, not incidental competitor mentions or all articles about a brand.
+        let matching = events.compactMap { row -> NewsEvent? in
+            guard let event = row.event, let coverage = event.coverage, coverage.sourceCount >= 2,
+                  let date = parseDate(event.latestAt), date <= now, beijingCalendar.isDate(date,inSameDayAs:now) else { return nil }
+            let ownSubject = event.subject.map { names.contains(NewsEvents.compact($0)) } ?? false
+            return ownSubject || event.urls.contains(where:{ isAnnouncement($0,product:product) }) ? event : nil
+        }.sorted { ($0.coverage!.sourceCount,$0.latestAt ?? "") > ($1.coverage!.sourceCount,$1.latestAt ?? "") }
+        guard let event = matching.first, let coverage = event.coverage,
+              let url = event.urls.first(where:{ publicArticleURL($0) != nil }), let date = event.latestAt else { return nil }
+        return ProductSignal(kind:"coverage",label:coverage.label,title:"报道来源：" + coverage.sourceNames.joined(separator:"、"),
+                             url:url,observedAt:date,sourceCount:coverage.sourceCount)
+    }
+
+    static func board(catalog: ProductBoard, pulse: ProductPulse, news: [NewsItem], events:[NewsItem] = [], now: Date = Date()) -> ProductBoard {
         func fresh(_ value: String?) -> Bool {
             guard let date = parseDate(value) else { return false }
             return date <= now && date >= now.addingTimeInterval(-86400)
@@ -227,7 +243,7 @@ enum Products {
         board.checkedAt = pulse.checkedAt; board.githubFetchedAt = pulse.githubFetchedAt; board.hnFetchedAt = pulse.hnFetchedAt; board.errors = pulse.errors
         board.items = catalog.items.filter { !$0.major || isRecentRelease($0, now: now) }.map { product in
             var value = product
-            var signals: [ProductSignal] = []
+            var signals: [ProductSignal] = [reportingSignal(product,events:events,now:now)].compactMap { $0 }
             if fresh(pulse.githubFetchedAt), let repo = product.repository,
                let trend = pulse.github.first(where: { $0.repository.lowercased() == repo.lowercased() && $0.weeklyStars >= 500 }) {
                 signals.append(ProductSignal(kind: "github", label: "本周 +\(trend.weeklyStars.formatted()) 星", title: "GitHub 本周趋势榜 · " + trend.repository, url: trendingURL, observedAt: pulse.githubFetchedAt!))
@@ -252,6 +268,9 @@ enum Products {
                 .map { ProductNews(title: $0.item.displayTitle, url: $0.item.url, date: timestamp($0.date)) }
             return value
         }.filter { $0.major || $0.isHot }.sorted {
+            let a = $0.signals?.first(where:{ $0.kind == "coverage" })?.sourceCount ?? 0
+            let b = $1.signals?.first(where:{ $0.kind == "coverage" })?.sourceCount ?? 0
+            if a != b { return a > b }
             if $0.major != $1.major { return $0.major }
             if ($0.releaseKind == "新模型") != ($1.releaseKind == "新模型") { return $0.releaseKind == "新模型" }
             if $0.releasedOn != $1.releasedOn { return ($0.releasedOn ?? "") > ($1.releasedOn ?? "") }

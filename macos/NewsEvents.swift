@@ -52,6 +52,7 @@ struct NewsEvent: Codable, Equatable {
     var latestAt: String?
     var read: Bool = false
     var coverage: CoverageSignal? = nil
+    var subject: String? = nil
     var isWidelyCovered: Bool { (coverage?.sourceCount ?? mediaCount) >= 2 }
     var label: String {
         if let coverage { return coverage.sourceCount >= 2 ? coverage.label : "\(articleCount) 篇报道合并" }
@@ -397,7 +398,7 @@ enum NewsEvents {
         let event = NewsEvent(id:group.id,title:title,articleCount:Set(group.members.map { canonicalURL($0.url) }).count,
             mediaCount:count,baseScore:base,bonus:boost.rounded() / 10,reports:reports,insights:Array(insights.prefix(3)),
             memberIDs:group.members.map(\.id),urls:group.members.map(\.url),
-            latestAt:group.members.compactMap { $0.newsTime(now:now).date }.max().map { timestamp($0) },coverage:coverage)
+            latestAt:group.members.compactMap { $0.newsTime(now:now).date }.max().map { timestamp($0) },coverage:coverage,subject:group.subject)
         lead.event = event; lead.rating = rating
         return lead
     }

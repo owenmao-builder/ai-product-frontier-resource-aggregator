@@ -88,7 +88,7 @@ function App() {
       {isSwitching && <SwitchingOverlay timeRange={timeRange} />}
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        {section === 'products' ? <ProductsBoard board={data?.product_board} discovery={data?.product_discovery} loading={loading} onRefresh={refresh} /> : <>
+        {section === 'products' ? <ProductsBoard board={data?.product_board} discovery={data?.product_discovery} news={data?.items} loading={loading} onRefresh={refresh} /> : <>
         <StatsCards
           totalItems={data?.total_items || 0}
           sourceCount={data?.source_count || 0}

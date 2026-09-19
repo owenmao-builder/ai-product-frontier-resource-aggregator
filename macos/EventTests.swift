@@ -136,11 +136,17 @@ enum EventTests {
         }
         let todayIDs = Set(sample.map(\.id))
         let related = snapshot.items.filter { Scoring.matches($0.title,"\\bJev\\b") }
+        var todayRows:[NewsItem] = []
         for group in NewsEvents.groups(related,products:catalog.items,now:now).filter({ $0.members.contains { todayIDs.contains($0.id) } }).prefix(3) {
             let row = NewsEvents.present(group,ratings:saved.mapValues(\.rating),products:catalog.items,now:now)
+            todayRows.append(row)
             let withoutDetails = NewsEvents.present(group,ratings:[:],products:catalog.items,now:now)
             let names = row.event!.reports.map { $0.name + ":" + $0.kind }.joined(separator:", ")
             print("SAMPLE \(row.event!.articleCount) articles, \(row.event!.coverage?.sourceCount ?? 0) counted sources, score \(row.rating!.displayScore), without technical details \(withoutDetails.rating!.displayScore): \(group.subject ?? row.title)\n\(names)\nCounted: \(row.event!.coverage?.sourceNames.joined(separator:", ") ?? "")")
         }
+        let board = Products.board(catalog:catalog,pulse:ProductPulse(),news:sample,events:todayRows,now:now)
+        if let jev = board.items.first(where:{ $0.id == "typesafe-jev" }) {
+            print("PRODUCT SAMPLE without GitHub/HN: \(jev.name), hot=\(jev.isHot), \(jev.signals?.first?.label ?? "no signal"), \(jev.releaseKind ?? ""), released \(jev.releasedOn ?? "")")
+        } else { print("PRODUCT SAMPLE: Jev has no current reporting signal") }
     }
 }

@@ -54,6 +54,7 @@ export interface NewsEvent {
   id:string; title:string; articleCount:number; mediaCount:number; baseScore?:number; bonus:number
   reports:EventReport[]; insights:{title:string;text:string}[]; memberIDs:string[]; urls:string[]; latestAt?:string; read:boolean
   coverage?:CoverageSignal
+  subject?:string
 }
 
 export interface SiteStat {
@@ -121,9 +122,11 @@ export interface AIProduct {
   discoveredAutomatically?: boolean
   verifiedAt?: string
   dateBasis?: string
-  signals?: {kind: string; label: string; title: string; url: string; observedAt: string}[]
+  signals?: ProductSignal[]
   relatedNews?: {title: string; url: string; date: string}[]
 }
+
+export interface ProductSignal {kind: string; label: string; title: string; url: string; observedAt: string; sourceCount?:number}
 
 export interface ProductBoard {
   verifiedAt: string

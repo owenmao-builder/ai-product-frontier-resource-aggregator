@@ -54,6 +54,27 @@ enum ProductTests {
         let indieCatalog = ProductBoard(verifiedAt:timestamp(now),items:[indie])
         precondition(Products.board(catalog:indieCatalog,pulse:pulse,news:[],now:now).items.count == 1, "An older independent tool can trend this week")
         precondition(Products.board(catalog:indieCatalog,pulse:pulse,news:[],now:now.addingTimeInterval(86401)).items.isEmpty, "Do not retain a non-trending tool as a permanent directory")
+        var firstReport = item; firstReport.title = "AlphaAI 模型发布"; firstReport.url = "https://first-media.test/release"
+        var secondReport = firstReport; secondReport.id = "second-report"; secondReport.title = "新模型 AlphaAI 开放使用"; secondReport.url = "https://second-media.test/release"
+        let releaseGroup = NewsEvents.groups([firstReport,secondReport],products:[indie],now:now)[0]
+        let releaseEvent = NewsEvents.present(releaseGroup,ratings:[:],products:[indie],now:now)
+        let reportingBoard = Products.board(catalog:indieCatalog,pulse:ProductPulse(),news:[firstReport],events:[releaseEvent],now:now)
+        precondition(reportingBoard.items.first?.isHot == true && reportingBoard.items.first?.signals?.first?.sourceCount == 2,
+                     "An independent model with concentrated reporting must appear in products without GitHub/HN data")
+        precondition(reportingBoard.items.first?.signals?.first?.label == "2 家集中报道")
+        var competitorEvent = releaseEvent; competitorEvent.event?.subject = "AlphaAI Next"
+        precondition(Products.reportingSignal(indie,events:[competitorEvent],now:now) == nil, "Do not borrow a different version's heat through a mention of this product")
+        var datedEvent = releaseEvent; datedEvent.event?.latestAt = timestamp(now.addingTimeInterval(-86400))
+        precondition(Products.reportingSignal(indie,events:[datedEvent],now:now) == nil, "Yesterday's event does not become today's product heat by refreshing")
+        datedEvent.event?.latestAt = timestamp(now.addingTimeInterval(3600))
+        precondition(Products.reportingSignal(indie,events:[datedEvent],now:now) == nil)
+        var singleSource = releaseEvent; singleSource.event?.coverage?.sourceCount = 1
+        precondition(Products.reportingSignal(indie,events:[singleSource],now:now) == nil)
+        precondition(Products.board(catalog:ProductBoard(verifiedAt:timestamp(now),items:[oldMajor]),pulse:ProductPulse(),news:[],events:[releaseEvent],now:now).items.isEmpty,
+                     "Reporting heat still cannot bypass a major vendor's seven-day release window")
+        var otherMajor = product; otherMajor.id = "other-major"; otherMajor.name = "Other Model"; otherMajor.aliases = [otherMajor.name]
+        let ranked = Products.board(catalog:ProductBoard(verifiedAt:timestamp(now),items:[otherMajor,indie]),pulse:ProductPulse(),news:[],events:[releaseEvent],now:now)
+        precondition(ranked.items.first?.id == indie.id, "Concentrated reporting is not buried below all major-vendor entries")
         var exactRelease = product; exactRelease.name = "AlphaAI Docs"; exactRelease.aliases = ["AlphaAI Docs"]; exactRelease.sourceURL = base["url"] as! String
         precondition(Products.board(catalog:ProductBoard(verifiedAt:timestamp(now),items:[exactRelease]),pulse:pulse,news:[],now:now).items[0].isHot, "A linked official announcement can cover a specifically named feature without generic brand aliases")
         var timezone = Calendar(identifier: .gregorian); timezone.timeZone = TimeZone(secondsFromGMT:8 * 3600)!

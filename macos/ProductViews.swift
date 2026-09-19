@@ -3,7 +3,7 @@ import SwiftUI
 struct ProductMenuContent: View {
     @ObservedObject var store: NewsStore
     var openDashboard: () -> Void
-    @State private var filter = "major"
+    @State private var filter = "all"
     @State private var query = ""
     @State private var expanded: String?
     @State private var showMethod = false
@@ -103,7 +103,7 @@ struct ProductMenuContent: View {
                     }
                 }
                 Spacer()
-                if product.major { Text(product.releaseKind ?? "大厂上新").font(.system(size: 10)).foregroundStyle(.indigo).padding(5).background(Color.indigo.opacity(0.07), in: Capsule()) }
+                if let kind = product.releaseKind, Products.isRecentRelease(product) { Text(kind).font(.system(size: 10)).foregroundStyle(.indigo).padding(5).background(Color.indigo.opacity(0.07), in: Capsule()) }
                 Button { expanded = expanded == product.id ? nil : product.id } label: {
                     Image(systemName: expanded == product.id ? "chevron.up" : "chevron.down").font(.system(size: 12)).frame(width: 25, height: 25)
                 }.buttonStyle(.plain).foregroundStyle(.secondary).accessibilityLabel("\(product.name)的产品重点")
@@ -127,6 +127,7 @@ struct ProductMenuContent: View {
                         if let url = publicArticleURL(signal.url) {
                             Link("热度依据 · " + signal.label + " ↗", destination: url).font(.system(size: 11))
                         }
+                        if signal.kind == "coverage" { Text(signal.title).font(.system(size:11)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true) }
                     }
                     if let news = product.relatedNews?.first, let url = publicArticleURL(news.url) {
                         Link("今日相关 · " + news.title, destination: url).font(.system(size: 11)).lineLimit(3)

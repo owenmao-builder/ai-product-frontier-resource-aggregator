@@ -267,7 +267,7 @@ final class NewsStore: ObservableObject {
         if let bytes = try? JSONEncoder().encode(interestRatings) { try? bytes.write(to:cacheDirectory.appendingPathComponent("interest-ratings.json"),options:.atomic) }
         productBoard = Products.board(catalog: productCatalog, pulse: productPulse, news: todayItems.map { item in
             var value = item; value.title_zh = title(for: item); return value
-        })
+        }, events:todayEvents)
         onUpdate?()
     }
 
