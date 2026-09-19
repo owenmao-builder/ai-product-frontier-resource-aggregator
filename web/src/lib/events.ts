@@ -16,5 +16,6 @@ export function eventIsRead(item:NewsItem, visited:Record<string,unknown>): bool
 export function eventLabel(item:NewsItem): string {
   const event = item.event
   if (!event || event.articleCount < 2) return ''
+  if (event.coverage) return event.coverage.sourceCount >= 2 ? `${event.coverage.sourceCount} 方集中关注 · 至少 ${event.coverage.minimumScore.toFixed(1)} 分 · ${event.articleCount} 篇合并` : `${event.articleCount} 篇合并`
   return (event.mediaCount >= 2 ? event.mediaCount + ' 家媒体关注 · ' : '') + event.articleCount + ' 篇合并' + (event.bonus > 0 ? ' · +' + event.bonus.toFixed(1) : '')
 }

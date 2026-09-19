@@ -1,9 +1,22 @@
 import SwiftUI
 
+struct CoverageOverview: View {
+    var coverage: CoverageSignal
+    var body: some View {
+        VStack(alignment:.leading,spacing:5) {
+            Label(coverage.label,systemImage:"flame.fill").font(.system(size:13,weight:.semibold)).foregroundStyle(.orange)
+            Text(coverage.explanation).font(.system(size:12)).fixedSize(horizontal:false,vertical:true)
+            Text("计入来源：" + coverage.sourceNames.joined(separator:"、"))
+                .font(.system(size:11)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true)
+        }.padding(9).frame(maxWidth:.infinity,alignment:.leading)
+            .background(Color.orange.opacity(0.06),in:RoundedRectangle(cornerRadius:6))
+    }
+}
+
 struct EventBrief: View {
     var event: NewsEvent
     var open: (EventArticle) -> Void
-    private let kinds = ["media":"媒体","official":"官方","community":"作者","aggregator":"聚合平台"]
+    private let kinds = ["media":"媒体","official":"官方","community":"作者/社区","aggregator":"聚合平台"]
     var body: some View {
         VStack(alignment:.leading,spacing:10) {
             Text("核心分析").font(.system(size:13,weight:.semibold))
@@ -29,6 +42,9 @@ struct EventBrief: View {
             HStack(alignment:.firstTextBaseline) {
                 Text(report.name).font(.system(size:12,weight:.semibold))
                 Text(kinds[report.kind] ?? "来源").font(.system(size:10)).foregroundStyle(.secondary)
+                if event.coverage?.sourceIDs.contains(report.id) == true {
+                    Text("计入热度").font(.system(size:10)).foregroundStyle(.orange)
+                }
                 Spacer()
                 Text(report.basis).font(.system(size:10)).foregroundStyle(.secondary)
             }

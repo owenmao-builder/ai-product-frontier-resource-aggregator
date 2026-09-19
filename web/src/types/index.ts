@@ -46,9 +46,14 @@ export interface NewsItem {
 
 export interface EventArticle { id:string; title:string; url:string; source:string; siteID:string }
 export interface EventReport { id:string; name:string; kind:string; focus:string[]; points:string[]; basis:string; articles:EventArticle[] }
+export interface CoverageSignal {
+  sourceCount:number; mediaCount:number; authorCount:number; windowHours:number; minimumScore:number
+  sourceIDs:string[]; sourceNames:string[]
+}
 export interface NewsEvent {
   id:string; title:string; articleCount:number; mediaCount:number; baseScore?:number; bonus:number
   reports:EventReport[]; insights:{title:string;text:string}[]; memberIDs:string[]; urls:string[]; latestAt?:string; read:boolean
+  coverage?:CoverageSignal
 }
 
 export interface SiteStat {

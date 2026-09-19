@@ -25,9 +25,9 @@ enum EventTests {
             return (value.id,InterestScore.rating(value,priority:Priority.rank(value,rating:rule,products:[law],pulse:ProductPulse(),now:now),previous:rule,now:now))
         })
         let row = NewsEvents.present(groups[0],ratings:scores,now:now)
-        precondition(row.event?.mediaCount == 3 && row.event?.articleCount == 6 && row.event?.bonus == 0.5,"Original outlet, not aggregator labels or official tweets, determines coverage bonus")
+        precondition(row.event?.mediaCount == 3 && row.event?.articleCount == 6 && row.event?.coverage?.sourceCount == 3,"Count original outlets, not aggregator labels or official tweets")
         precondition(row.event?.reports.first(where:{$0.id == "aibase.com"})?.articles.count == 2)
-        precondition(row.rating!.score == min(10,row.event!.baseScore! + 0.5))
+        precondition(row.rating!.score == max(8,row.event!.baseScore!))
         precondition(NewsEvents.present(groups[0],ratings:scores,now:now).rating?.score == row.rating?.score,"Refreshes must not compound coverage bonuses")
         let historical = NewsEvents.present(groups[0],ratings:scores,now:now.addingTimeInterval(86400))
         precondition(historical.event?.bonus == 0,"Do not rescore old articles")
@@ -78,9 +78,9 @@ enum EventTests {
         precondition(duplicateRow.event?.articleCount == 1 && duplicateRow.event?.bonus == 0)
         let old = item("old",a.title,"https://aibase.com/old",age:4*86400)
         precondition(NewsEvents.groups([old,a],products:[law],now:now).count == 2,"Unrelated release cycles outside the merge window remain separate")
-        precondition(NewsEvents.bonus(mediaCount:100) == 1)
+        precondition(NewsEvents.coverageMinimum(sourceCount:100) == 9.5)
         var maxScores = scores; for key in maxScores.keys { maxScores[key]?.score = 9.8 }
-        precondition(NewsEvents.present(groups[0],ratings:maxScores,now:now).rating?.score == 10)
+        precondition(NewsEvents.present(groups[0],ratings:maxScores,now:now).rating?.score == 9.8,"Coverage must not dilute a higher content score or compound into an automatic 10")
         precondition(NewsEvents.isRead(row.event!,seenURLs:[a.url],seenEvents:[]))
         var refreshed = row.event!; refreshed.urls = [c.url]
         precondition(NewsEvents.isRead(refreshed,seenURLs:[],seenEvents:[row.event!.id]),"New coverage must not reset read status")
@@ -93,6 +93,34 @@ enum EventTests {
         var withNavigation = doc
         withNavigation.text = "首页 RSS订阅 法律新产品 Astra for Law 来源 IT之家 责编 评论 感谢网友线索投递。" + doc.text
         precondition(NewsEvents.excerpts(withNavigation,item:a).allSatisfy { !$0.contains("首页") },"Do not mistake a publisher navigation/header block for an article insight")
+        let unknown = [
+            item("n1","发布新模型 NebulaX：结构化决策","https://aibase.com/news/n"),
+            item("n2","NebulaX 模型发布，开发者开始讨论","https://ithome.com/n"),
+            item("n3","Introducing the model NebulaX","https://x.com/analyst/status/n","分析作者")
+        ]
+        let unknownGroups = NewsEvents.groups(unknown,now:now)
+        precondition(unknownGroups.count == 1,"New model names can group before a catalog entry exists")
+        precondition(NewsEvents.identity(item("new-compare","NebulaX 模型发布，领先 GPT-6 Astra","https://new.test/news"),products:[gpt]).subject == "nebulax", "A new model is the subject, not its known competitor")
+        precondition(NewsEvents.namedModel(in:"模型 API 新增费用说明") == nil && NewsEvents.namedModel(in:"world model advances") == nil, "Technical categories are not product names")
+        let noDetails = NewsEvents.present(unknownGroups[0],ratings:[:],now:now)
+        precondition(noDetails.rating?.score == 8 && noDetails.rating?.evidenceLevel == "C", "Concentrated coverage alone must surface an event without performance, cost, API or documents")
+        precondition(noDetails.event?.coverage?.mediaCount == 2 && noDetails.event?.coverage?.authorCount == 1)
+        let many = (0..<8).map { item("wave\($0)","NebulaX 模型发布 · 第\($0)家独立报道","https://publisher\($0).test/news") }
+        precondition(NewsEvents.present(NewsEvents.groups(many,now:now)[0],ratings:[:],now:now).rating?.score == 9)
+        let copies = (0..<8).map { item("copy\($0)","NebulaX 模型发布 · 相同转载标题","https://publisher\($0).test/repost") }
+        precondition(NewsEvents.coverage(copies,now:now).sourceCount == 1,"Identical syndicated headlines must not manufacture a reporting wave")
+        let sameOutlet = (0..<8).map { item("same\($0)","NebulaX 模型发布 · 跟进\($0)","https://aibase.com/news/\($0)","RSS \($0)") }
+        precondition(NewsEvents.coverage(sameOutlet,now:now).sourceCount == 1)
+        let staleWave = (0..<8).map { item("old-wave\($0)","NebulaX 模型发布 · 较早报道\($0)","https://older\($0).test/news",age:49*3600) }
+        precondition(NewsEvents.coverage(staleWave+[unknown[0]],now:now).minimumScore == 0)
+        precondition(NewsEvents.coverage([social,aggregation],now:now).sourceCount == 0)
+        let retweet = item("retweet","RT @analyst: NebulaX 模型发布","https://x.com/retweeter/status/2")
+        precondition(NewsEvents.coverage([retweet],now:now).sourceCount == 0)
+        var future = unknown[0]; future.published_at = timestamp(now.addingTimeInterval(3600)); future.first_seen_at = future.published_at!; future.last_seen_at = future.published_at!
+        precondition(NewsEvents.coverage([future],now:now).sourceCount == 0)
+        precondition(NewsEvents.groups([unknown[0],item("other-version","NebulaX2 模型发布","https://other.test/news")],now:now).count == 2)
+        precondition(NewsEvents.coverageMinimum(sourceCount:2) == 7 && NewsEvents.coverageMinimum(sourceCount:5) == 8.5)
+        print("PASS: coverage alone lifts unknown models, counts media/authors, deduplicates reposts, expires old attention and preserves historical scores")
         print("PASS: event deduplication, versions/actions, origin-based coverage bonus, cap/idempotence, read persistence, source attribution and body-vs-title labels")
     }
     static func sampleToday(cachePath:String) throws {
@@ -104,12 +132,15 @@ enum EventTests {
         let now = Date()
         let sample = snapshot.items.filter { item in
             guard let date = item.newsTime(now:now).date, beijingCalendar.isDate(date,inSameDayAs:now) else { return false }
-            return Scoring.matches(item.title,"Astra for Law|Qwen3.8-Omni-Flash|GLM-5.3-FlashX|Claude.*Projects|Projects.*Claude")
+            return Scoring.matches(item.title,"\\bJev\\b")
         }
-        for group in NewsEvents.groups(sample,products:catalog.items,now:now) {
-            let row = NewsEvents.present(group,ratings:saved.mapValues(\.rating),now:now)
+        let todayIDs = Set(sample.map(\.id))
+        let related = snapshot.items.filter { Scoring.matches($0.title,"\\bJev\\b") }
+        for group in NewsEvents.groups(related,products:catalog.items,now:now).filter({ $0.members.contains { todayIDs.contains($0.id) } }).prefix(3) {
+            let row = NewsEvents.present(group,ratings:saved.mapValues(\.rating),products:catalog.items,now:now)
+            let withoutDetails = NewsEvents.present(group,ratings:[:],products:catalog.items,now:now)
             let names = row.event!.reports.map { $0.name + ":" + $0.kind }.joined(separator:", ")
-            print("SAMPLE \(row.event!.articleCount) articles, \(row.event!.mediaCount) media, +\(row.event!.bonus), score \(row.rating!.displayScore): \(group.subject ?? row.title)\n\(names)")
+            print("SAMPLE \(row.event!.articleCount) articles, \(row.event!.coverage?.sourceCount ?? 0) counted sources, score \(row.rating!.displayScore), without technical details \(withoutDetails.rating!.displayScore): \(group.subject ?? row.title)\n\(names)\nCounted: \(row.event!.coverage?.sourceNames.joined(separator:", ") ?? "")")
         }
     }
 }

@@ -1,10 +1,18 @@
-import type {NewsEvent, EventReport} from '../types'
+import type {NewsEvent, EventReport, CoverageSignal} from '../types'
 import {publicSourceURL} from '../lib/ratings'
 
+export function CoverageOverview({coverage}:{coverage:CoverageSignal}) {
+  return <div className="mb-4 space-y-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 p-3">
+    <strong className="text-amber-700 dark:text-amber-300">{coverage.sourceCount} 方集中关注 · 至少 {coverage.minimumScore.toFixed(1)} 分</strong>
+    <p>{coverage.windowHours} 小时内，{coverage.mediaCount} 家媒体、{coverage.authorCount} 个作者/社区来源集中关注，无需等到技术细节齐全。</p>
+    <p className="text-xs text-slate-500">计入来源：{coverage.sourceNames.join('、')}</p>
+  </div>
+}
+
 export function EventCoverage({event,onVisit}:{event:NewsEvent;onVisit?:(url:string,title?:string)=>void}) {
-  const kinds:Record<string,string> = {media:'媒体',official:'官方',community:'作者',aggregator:'聚合平台'}
+  const kinds:Record<string,string> = {media:'媒体',official:'官方',community:'作者/社区',aggregator:'聚合平台'}
   const reportCard = (report:EventReport) => <div key={report.id} className="rounded-lg bg-slate-50 dark:bg-slate-800 p-3 space-y-2">
-    <div className="flex gap-2 items-baseline"><strong className="text-slate-900 dark:text-white">{report.name}</strong><span className="text-xs text-slate-500">{kinds[report.kind] || '来源'}</span><span className="ml-auto text-xs text-slate-500">{report.basis}</span></div>
+    <div className="flex gap-2 items-baseline flex-wrap"><strong className="text-slate-900 dark:text-white">{report.name}</strong><span className="text-xs text-slate-500">{kinds[report.kind] || '来源'}</span>{event.coverage?.sourceIDs.includes(report.id) && <span className="text-xs text-amber-700 dark:text-amber-300">计入热度</span>}<span className="ml-auto text-xs text-slate-500">{report.basis}</span></div>
     <div className="text-xs font-medium text-amber-700 dark:text-amber-300">{report.focus.join(' · ')}</div>
     <ul className="list-disc pl-5 space-y-1">{report.points.map((point,index)=><li key={index}>{point}</li>)}</ul>
     {report.articles.filter(article=>publicSourceURL(article.url)).map(article=><a key={article.id} href={article.url} target="_blank" rel="noopener noreferrer" onClick={()=>onVisit?.(article.url,article.title)} className="block text-xs text-primary-600 dark:text-primary-300">原文 ↗ {article.title}</a>)}

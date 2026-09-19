@@ -17,7 +17,7 @@ Screenshots are examples captured on September 17, 2026. The interface and edito
 ## What it does
 
 - **One menu bar icon:** open ✦ for news previews, scores, expandable highlights, and manual refresh.
-- **One event, one card:** repeated coverage is merged in the menu and integrated dashboard. Distinct original media outlets earn a capped coverage bonus; expanded cards compare attributed angles, core implications and original links. Reading an event keeps later coverage read.
+- **Concentrated coverage comes first:** distinct media and author/community coverage can independently make an event important, before technical details are available. Expanded cards show the counted sources, their angles and original links. Reading an event keeps later coverage read.
 - **Direct interest scores:** model upgrades, architecture changes, speed/cost gains, product popularity and your watchlist determine reading priority; evidence status is shown separately.
 - **Chinese reading for scores of 7+:** existing summaries are preserved; headline-only outlines are labeled. Up to five high-score public headlines per refresh are translated using the Google service already used by the upstream project.
 - **Major-vendor releases from the last 7 days:** specific model, version, feature, or architecture names; official publication dates; expired entries disappear. Generic brand mentions do not qualify.
@@ -26,6 +26,8 @@ Screenshots are examples captured on September 17, 2026. The interface and edito
 - **Direct sources:** OpenAI, Google AI, DeepMind, Hugging Face, Xinzhiyuan and 苔藓之火 / Mossfire are fetched directly from their original RSS feeds, independently of the aggregate snapshot.
 
 ## How interest is scored
+
+An event's coverage establishes a minimum interest score independently of its technical claims. Within 48 hours, 2/3/5/8/12 distinct external sources imply at least 7/8/8.5/9/9.5. The final score is the greater of this minimum and the content score below. Media and author/community counts are displayed separately. Repeated articles from one source, identical URLs/headlines, pure reposts, vendor announcements and aggregator entries do not inflate external coverage. Previously unknown models can group from explicit names in headlines without a catalog entry.
 
 Today's news receives a numeric **interest score immediately**, without requiring a model API key, original-body verification, comparisons or evidence A/B. It uses model upgrades (weight 30), architecture changes (30), speed gains (25), cost reductions (25), product popularity (25) and relevance (15). Only applicable dimensions enter the weighted average, normalized to 0–10; ordinary product/technical progress replaces the two technical dimensions when neither applies. Missing heat is explicitly marked as a neutral 2.5/5 estimate. Efficiency claims are binned by magnitude, using the lower endpoint of ranges. New products matching model/architecture/efficiency interests earn 3/5 relevance outside the watchlist, or 5/5 for a matched watchlist event.
 

@@ -2,7 +2,7 @@ import Foundation
 
 enum InterestScore {
     static let version = "interest-v2"
-    static let method = "关注分：模型升级、架构变化各权重 30，速度提升、成本下降各 25，热度 25，关注匹配 15；仅计算适用维度，归一到 10 分。速度/成本按报道宣称的变化幅度估分，区间取较小倍数，不等待证据核验。新产品命中模型、架构或效率兴趣时关注匹配 3/5，关注名单命中 5/5。热度未知取 2.5/5 中性估值。分数表示阅读优先级，证据状态单独显示。"
+    static let method = "优先看事件的集中报道：48 小时内，2/3/5/8/12 个独立来源分别至少 7/8/8.5/9/9.5 分，无需技术细节齐全。最终分取该最低分与内容关注分的较高值。内容按模型升级、架构各 30，速度、成本、产品热度各 25，关注匹配 15，只计算适用维度。媒体、资讯作者及社区分别展示，同源转载不重复计数；证据状态单独显示。"
     static let names = ["model_change":"模型升级", "architecture_change":"架构变化", "product_change":"产品/技术进展", "speed_gain":"速度提升", "cost_gain":"成本下降", "heat":"产品热度", "focus":"关注匹配"]
 
     static func rating(_ item: NewsItem, priority: NewsPriority, previous: NewsRating, signals: TechnicalSignals = TechnicalSignals(), translatedTitle: String? = nil, now: Date = Date()) -> NewsRating {

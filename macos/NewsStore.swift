@@ -401,7 +401,8 @@ final class NewsStore: ObservableObject {
     }
 
     private func translateTodayHeadlines() async {
-        let candidates = todayItems.filter { rating(for:$0).sortScore >= 7 && !rating(for:$0).hasChineseBrief }
+        // Coverage alone can lift an event above 7 even when each raw headline scores low.
+        let candidates = todayEvents.filter { rating(for:$0).sortScore >= 7 && !rating(for:$0).hasChineseBrief }
             .sorted { rating(for:$0).sortScore > rating(for:$1).sortScore }.prefix(5)
         let session = self.session
         let translations = await withTaskGroup(of:(String,String?).self) { group in

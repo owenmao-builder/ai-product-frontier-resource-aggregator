@@ -24,6 +24,20 @@ struct EventInsight: Codable, Equatable {
     var text: String
 }
 
+struct CoverageSignal: Codable, Equatable {
+    var sourceCount: Int
+    var mediaCount: Int
+    var authorCount: Int
+    var windowHours: Int
+    var minimumScore: Double
+    var sourceIDs: [String]
+    var sourceNames: [String]
+    var label: String { "\(sourceCount) 方集中关注 · 至少 \(String(format:"%.1f",minimumScore)) 分" }
+    var explanation: String {
+        "\(windowHours) 小时内，\(mediaCount) 家媒体、\(authorCount) 个作者/社区来源集中关注，事件至少 \(String(format:"%.1f",minimumScore)) 分；无需等到技术细节齐全。"
+    }
+}
+
 struct NewsEvent: Codable, Equatable {
     var id: String
     var title: String
@@ -37,13 +51,16 @@ struct NewsEvent: Codable, Equatable {
     var urls: [String]
     var latestAt: String?
     var read: Bool = false
+    var coverage: CoverageSignal? = nil
+    var isWidelyCovered: Bool { (coverage?.sourceCount ?? mediaCount) >= 2 }
     var label: String {
-        mediaCount >= 2 ? "\(mediaCount) 家媒体关注 · \(articleCount) 篇合并" : "\(articleCount) 篇报道合并"
+        if let coverage { return coverage.sourceCount >= 2 ? coverage.label + " · \(articleCount) 篇合并" : "\(articleCount) 篇报道合并" }
+        return mediaCount >= 2 ? "\(mediaCount) 家媒体关注 · \(articleCount) 篇合并" : "\(articleCount) 篇报道合并"
     }
 }
 
 enum NewsEvents {
-    static let method = "同一事件合并展示。按原始媒体去重：2 家 +0.3，3 家 +0.5，4 家 +0.7，5 家及以上 +1.0，最高 10 分；同一家多篇、聚合转载、官方通告与社交转发不重复计为媒体。基础分取事件中最高关注分，不叠加文章分数；媒体热度不代表说法已证实。"
+    static let method = "先按同一事件的集中报道确定最低关注级别：48 小时内，2 个独立来源至少 7 分、3 个 8 分、5 个 8.5 分、8 个 9 分、12 个 9.5 分。媒体和资讯作者/社区分别计数；同一来源多篇、相同原文/标题、纯转载、官方自述和聚合入口不重复扩大报道面。最终分取热度最低分与内容关注分的较高值，不等待正文、技术指标或证据核验。"
     struct Group {
         var id: String
         var subject: String?
@@ -131,6 +148,8 @@ enum NewsEvents {
             if let regex = try? NSRegularExpression(pattern:pattern,options:.caseInsensitive),
                let match = regex.firstMatch(in:text,range:NSRange(text.startIndex...,in:text)),
                let range = Range(match.range,in:text) { candidates.append((String(text[range]),match.range.location,match.range.length)) }
+            // A newly named model can attract broad coverage before it enters the catalog.
+            if let discovered = namedModel(in:text) { candidates.append(discovered) }
             // Prefer the headline's subject over a longer competitor name later in the sentence.
             subject = candidates.sorted {
                 if $0.offset != $1.offset { return $0.offset < $1.offset }
@@ -159,6 +178,27 @@ enum NewsEvents {
         }
         // Exact translated/original headlines across feeds; no fuzzy brand-level merge.
         return Identity(key:"headline|" + compact(item.title),subject:nil,kind:kind)
+    }
+
+    static func namedModel(in text:String) -> (name:String,offset:Int,length:Int)? {
+        guard Scoring.matches(text,#"模型|\bmodels?\b"#) else { return nil }
+        let token = #"([a-z][a-z0-9]*(?:[-.][a-z0-9]+)*)"#
+        let patterns = [
+            #"(?:模型|\bmodels?\b\s+(?:called|named))\s*[“\"「:：]?\s*"# + token,
+            #"\b"# + token + #"\s*(?:模型|(?:AI\s+)?model\b)"#,
+            #"(?:发布|推出|上线|\bintroduc(?:ing|es)|\breleases?|\blaunches|\bdebuts|\bunveils)\s*(?:全新|新一代|新模型|模型|a new model|the model)?\s*"# + token
+        ]
+        let generic = Set("ai llm model models new large language old latest frontier open source weights architecture system one using with from for and the a an release released team training is are that context update framework agent fast microsoft google openai anthropic deepseek claude gpt qwen glm gemini api sdk mcp gpu cpu code tool tools inference performance world foundation small decision multimodal transformer diffusion embedding embeddings vision video audio speech".split(separator:" ").map(String.init))
+        for pattern in patterns {
+            guard let regex = try? NSRegularExpression(pattern:pattern,options:.caseInsensitive) else { continue }
+            for match in regex.matches(in:text,range:NSRange(text.startIndex...,in:text)) {
+                guard let range = Range(match.range(at:1),in:text) else { continue }
+                let name = String(text[range])
+                guard (3...48).contains(name.count), !generic.contains(name.lowercased()) else { continue }
+                return (name,match.range(at:1).location,match.range(at:1).length)
+            }
+        }
+        return nil
     }
 
     static func groups(_ items: [NewsItem], products: [AIProduct] = [], documents:[String:ArticleDocument] = [:], now: Date = Date()) -> [Group] {
@@ -213,14 +253,38 @@ enum NewsEvents {
         if Scoring.matches(item.source,"Hacker News|Techmeme|Readhub|TopHub") {
             return Publisher(id:"aggregator:" + clean(item.source),name:item.source,kind:"aggregator")
         }
+        if ["v2ex.com","juejin.cn"].contains(host) {
+            return Publisher(id:host,name:host == "v2ex.com" ? "V2EX 社区" : "掘金社区",kind:"community")
+        }
         // Distinguish authors on shared hosting without counting social posts as separate media.
         if ["mp.weixin.qq.com","medium.com","zhihu.com","bilibili.com","youtube.com","reddit.com","v2ex.com","juejin.cn","github.com","huggingface.co"].contains(host) {
             return Publisher(id:host + ":" + item.source,name:item.source,kind:"community")
         }
         return Publisher(id:host,name:item.source,kind:"media")
     }
-    static func bonus(mediaCount: Int) -> Double {
-        switch mediaCount { case 0...1: return 0; case 2: return 0.3; case 3: return 0.5; case 4: return 0.7; default: return 1 }
+    static func coverageMinimum(sourceCount: Int) -> Double {
+        switch sourceCount { case 0...1: return 0; case 2: return 7; case 3...4: return 8; case 5...7: return 8.5; case 8...11: return 9; default: return 9.5 }
+    }
+    static func coverage(_ members:[NewsItem], products:[AIProduct] = [], now:Date = Date()) -> CoverageSignal {
+        var publishers: [String:Publisher] = [:]
+        var urls = Set<String>(), titles = Set<String>()
+        // Old reports cannot make a resurfacing article look like a current reporting wave.
+        for item in members.sorted(by:{ ($0.date ?? .distantPast,$0.id) < ($1.date ?? .distantPast,$1.id) }) {
+            guard let date = item.newsTime(now:now).date, (0...48 * 3600).contains(now.timeIntervalSince(date)) else { continue }
+            let source = publisher(item,products:products)
+            guard ["media","community"].contains(source.kind),
+                  !Scoring.matches(item.title,#"^\s*(?:RT\s+@|转发\s*[:：]|转载\s*[:：])"#) else { continue }
+            let url = canonicalURL(item.url)
+            let headline = compact(item.title)
+            guard !urls.contains(url), !titles.contains(headline) else { continue }
+            urls.insert(url); titles.insert(headline)
+            publishers[source.id] = source
+        }
+        let selected = publishers.values.sorted { ($0.kind == "media" ? 0 : 1,$0.name,$0.id) < ($1.kind == "media" ? 0 : 1,$1.name,$1.id) }
+        let media = selected.filter { $0.kind == "media" }.count
+        return CoverageSignal(sourceCount:selected.count,mediaCount:media,authorCount:selected.count-media,
+            windowHours:48,minimumScore:coverageMinimum(sourceCount:selected.count),
+            sourceIDs:selected.map(\.id),sourceNames:selected.map(\.name))
     }
     static func unique(_ values: [String]) -> [String] {
         var seen = Set<String>()
@@ -295,9 +359,15 @@ enum NewsEvents {
         let count = reports.filter { $0.kind == "media" }.count
         let base = rating.isScored ? rating.score : nil
         let today = group.members.contains { item in item.newsTime(now:now).date.map { beijingCalendar.isDate($0,inSameDayAs:now) } ?? false }
-        let boost = today && rating.isInterest ? bonus(mediaCount:count) : 0
-        if let base { rating.score = (min(10,base + boost) * 10).rounded() / 10 }
-        if boost > 0 { rating.reason += " 本事件 \(count) 家不同媒体报道，关注加分 +\(String(format:"%.1f",boost))（10 分封顶）。" }
+        let coverage = today ? coverage(group.members,products:products,now:now) : nil
+        let floor = coverage?.minimumScore ?? 0
+        let score = floor > 0 ? max(base ?? 0,floor) : base
+        let boost = ((score ?? 0) - (base ?? 0)) * 10
+        rating.score = score.map { (min(10,$0) * 10).rounded() / 10 }
+        if floor > 0, let coverage {
+            rating.method = "interest-rule"; rating.version = InterestScore.version
+            rating.reason = coverage.explanation + " 最终分取报道热度最低分与内容关注分的较高值。 " + rating.reason
+        }
         let title = rating.chineseTitle ?? translations[lead.title] ?? lead.displayTitle
         var insights: [EventInsight] = []
         var quotedPoints = Set<String>()
@@ -325,9 +395,9 @@ enum NewsEvents {
         }
         if insights.isEmpty { insights = [EventInsight(title:"事件进展",text:"各家围绕同一项产品或技术进展报道；具体侧重点见下方摘录。")] }
         let event = NewsEvent(id:group.id,title:title,articleCount:Set(group.members.map { canonicalURL($0.url) }).count,
-            mediaCount:count,baseScore:base,bonus:boost,reports:reports,insights:Array(insights.prefix(3)),
+            mediaCount:count,baseScore:base,bonus:boost.rounded() / 10,reports:reports,insights:Array(insights.prefix(3)),
             memberIDs:group.members.map(\.id),urls:group.members.map(\.url),
-            latestAt:group.members.compactMap { $0.newsTime(now:now).date }.max().map { timestamp($0) })
+            latestAt:group.members.compactMap { $0.newsTime(now:now).date }.max().map { timestamp($0) },coverage:coverage)
         lead.event = event; lead.rating = rating
         return lead
     }

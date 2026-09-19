@@ -7,7 +7,7 @@ import { ratingFor, scoreOf, evidenceFor, categories, dimensionNames, publicSour
 import { Analytics } from '../utils/analytics'
 import { newsTime, formatBeijingTime } from '../lib/newsTime'
 import {eventLabel} from '../lib/events'
-import {EventCoverage} from './EventCoverage'
+import {EventCoverage,CoverageOverview} from './EventCoverage'
 
 interface NewsCardProps {
   item: NewsItem
@@ -59,6 +59,7 @@ export function NewsCard({ item, index, isVisited = false, isFavorite = false, o
         </div>
       </div>
       {expanded && score && <div className="mt-4 border-t border-slate-100 dark:border-slate-700 pt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+        {event?.coverage && event.coverage.minimumScore > 0 && <CoverageOverview coverage={event.coverage}/>}
         {event && score.briefBasis === 'official-context' && <div className="mb-4">
           <strong className="text-slate-900 dark:text-white">官方发布重点 · 按官网宣称</strong>
           <ul className="mt-2 space-y-1.5 list-disc pl-5">{score.highlights?.map((point,i)=><li key={i}>{point}</li>)}</ul>
@@ -71,7 +72,7 @@ export function NewsCard({ item, index, isVisited = false, isFavorite = false, o
         </div>}
         <details open={(value ?? -1) < 7 ? true : undefined}>
         <summary className="cursor-pointer text-xs text-slate-500">评分依据与来源</summary>
-        {event && event.bonus>0 && <p className="mt-2 font-medium text-amber-700 dark:text-amber-300">基础关注分 {event.baseScore?.toFixed(1)} + 媒体关注 {event.bonus.toFixed(1)} = {value?.toFixed(1)}（10 分封顶）</p>}
+        {event?.coverage && event.coverage.minimumScore > 0 ? <p className="mt-2 font-medium text-amber-700 dark:text-amber-300">集中报道至少 {event.coverage.minimumScore.toFixed(1)} 分；内容关注分 {event.baseScore?.toFixed(1) || '尚未计算'}；取较高值 = {value?.toFixed(1)}</p> : event && event.bonus>0 && <p className="mt-2 font-medium text-amber-700 dark:text-amber-300">基础关注分 {event.baseScore?.toFixed(1)} + 媒体关注 {event.bonus.toFixed(1)} = {value?.toFixed(1)}（10 分封顶）</p>}
         <p className="mt-2 mb-2 text-xs text-slate-500 dark:text-slate-400">证据 {evidence.label} · {evidence.explanation}</p>
         <strong className="text-slate-900 dark:text-white">{value === null ? '待评估原因' : '评估依据'}</strong><p className="mt-1">{score.reason}</p>
         {score.dimensions?.map(d => <p key={d.key} className="mt-2 text-xs"><strong>{dimensionNames[d.key]} {d.value}/5{d.weight ? ` · 权重 ${d.weight}` : ''}</strong> · {d.reason}</p>)}
