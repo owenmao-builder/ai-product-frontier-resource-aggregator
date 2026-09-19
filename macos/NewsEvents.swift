@@ -32,7 +32,7 @@ struct CoverageSignal: Codable, Equatable {
     var minimumScore: Double
     var sourceIDs: [String]
     var sourceNames: [String]
-    var label: String { "\(sourceCount) 方集中关注 · 至少 \(String(format:"%.1f",minimumScore)) 分" }
+    var label: String { "\(sourceCount) 家集中报道" }
     var explanation: String {
         "\(windowHours) 小时内，\(mediaCount) 家媒体、\(authorCount) 个作者/社区来源集中关注，事件至少 \(String(format:"%.1f",minimumScore)) 分；无需等到技术细节齐全。"
     }
@@ -54,8 +54,8 @@ struct NewsEvent: Codable, Equatable {
     var coverage: CoverageSignal? = nil
     var isWidelyCovered: Bool { (coverage?.sourceCount ?? mediaCount) >= 2 }
     var label: String {
-        if let coverage { return coverage.sourceCount >= 2 ? coverage.label + " · \(articleCount) 篇合并" : "\(articleCount) 篇报道合并" }
-        return mediaCount >= 2 ? "\(mediaCount) 家媒体关注 · \(articleCount) 篇合并" : "\(articleCount) 篇报道合并"
+        if let coverage { return coverage.sourceCount >= 2 ? coverage.label : "\(articleCount) 篇报道合并" }
+        return mediaCount >= 2 ? "\(mediaCount) 家集中报道" : "\(articleCount) 篇报道合并"
     }
 }
 

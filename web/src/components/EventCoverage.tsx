@@ -3,9 +3,8 @@ import {publicSourceURL} from '../lib/ratings'
 
 export function CoverageOverview({coverage}:{coverage:CoverageSignal}) {
   return <div className="mb-4 space-y-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 p-3">
-    <strong className="text-amber-700 dark:text-amber-300">{coverage.sourceCount} 方集中关注 · 至少 {coverage.minimumScore.toFixed(1)} 分</strong>
-    <p>{coverage.windowHours} 小时内，{coverage.mediaCount} 家媒体、{coverage.authorCount} 个作者/社区来源集中关注，无需等到技术细节齐全。</p>
-    <p className="text-xs text-slate-500">计入来源：{coverage.sourceNames.join('、')}</p>
+    <strong className="text-amber-700 dark:text-amber-300">{coverage.sourceCount} 家集中报道</strong>
+    <p className="text-xs text-slate-500">报道来源：{coverage.sourceNames.join('、')}</p>
   </div>
 }
 

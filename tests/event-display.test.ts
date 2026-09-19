@@ -23,16 +23,16 @@ describe('event cards across search, filters and read state',()=>{
     expect(eventIsRead({...item,event:{...item.event!,read:true}},{})).toBe(true)
     expect(eventIsRead(item,{})).toBe(false)
   })
-  it('shows coverage and the bounded bonus while preserving old ungrouped news',()=>{
-    expect(eventLabel(item)).toBe('2 家媒体关注 · 3 篇合并 · +0.3')
+  it('shows the reporting count for legacy events while preserving ungrouped news',()=>{
+    expect(eventLabel(item)).toBe('2 家集中报道')
     const single={...item,event:undefined}
     expect(eventLabel(single)).toBe('')
     expect(matchesEvent(single,'rss','Leader','中文')).toBe(true)
     expect(eventIsRead(single,{'https://lead.test/1':{}})).toBe(true)
   })
-  it('shows the independent coverage minimum even when content already scores higher',()=>{
+  it('shows the reporting count without scoring details',()=>{
     const covered={...item,event:{...item.event!,bonus:0,coverage:{sourceCount:5,mediaCount:2,authorCount:3,windowHours:48,minimumScore:8.5,sourceIDs:['a','b'],sourceNames:['甲','乙']}}}
-    expect(eventLabel(covered)).toBe('5 方集中关注 · 至少 8.5 分 · 3 篇合并')
+    expect(eventLabel(covered)).toBe('5 家集中报道')
     expect(eventLabel(covered)).not.toContain('+0')
     expect(eventLabel({...covered,event:{...covered.event,coverage:{...covered.event.coverage,sourceCount:1,minimumScore:0}}})).toBe('3 篇合并')
   })

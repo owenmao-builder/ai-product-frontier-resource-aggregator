@@ -137,11 +137,11 @@ struct MenuContent: View {
                             .foregroundStyle(read ? Color.secondary : Color.primary)
                     }.buttonStyle(.plain).help(event == nil ? "在默认浏览器阅读原文" : "展开事件重点与各家媒体关注点")
                     if let event {
-                        Label(event.label + (event.coverage == nil && event.bonus > 0 ? " · +\(String(format:"%.1f",event.bonus))" : ""),systemImage:event.isWidelyCovered ? "flame.fill" : "square.stack")
+                        Label(event.label,systemImage:event.isWidelyCovered ? "flame.fill" : "square.stack")
                             .font(.system(size:11,weight:.semibold)).foregroundStyle(event.isWidelyCovered ? Color.orange : Color.secondary)
                             .padding(.horizontal,7).padding(.vertical,4)
                             .background((event.isWidelyCovered ? Color.orange : Color.secondary).opacity(0.09),in:RoundedRectangle(cornerRadius:5))
-                            .help(NewsEvents.method)
+                            .help("展开查看各家报道")
                     }
                     if !priority.reasons.isEmpty {
                         Text(priority.reasons.prefix(2).joined(separator: " · "))

@@ -5,8 +5,7 @@ struct CoverageOverview: View {
     var body: some View {
         VStack(alignment:.leading,spacing:5) {
             Label(coverage.label,systemImage:"flame.fill").font(.system(size:13,weight:.semibold)).foregroundStyle(.orange)
-            Text(coverage.explanation).font(.system(size:12)).fixedSize(horizontal:false,vertical:true)
-            Text("计入来源：" + coverage.sourceNames.joined(separator:"、"))
+            Text("报道来源：" + coverage.sourceNames.joined(separator:"、"))
                 .font(.system(size:11)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true)
         }.padding(9).frame(maxWidth:.infinity,alignment:.leading)
             .background(Color.orange.opacity(0.06),in:RoundedRectangle(cornerRadius:6))
