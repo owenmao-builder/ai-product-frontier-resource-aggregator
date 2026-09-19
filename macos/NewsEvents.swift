@@ -84,6 +84,7 @@ enum NewsEvents {
         var implication: String
     }
     static let facets = [
+        Facet(name:"发布计划与时点",pattern:"考虑.{0,50}(?:发布|推出)|considers?.{0,40}releas|IPO\\s*前|ahead of.{0,15}IPO",implication:"区分消息人士披露的发布考虑与正式公告，关注具体型号、发布时间和可用范围。"),
         Facet(name:"架构与 Agent",pattern:"架构|重构|编排|并行|线程|智能体|agent|harness|orchestrat|parallel|thread|architecture",implication:"关注任务如何拆分、执行与管理，以及相对既有工作流的变化。"),
         Facet(name:"模型与多模态",pattern:"全模态|多模态|音视频|音频|语音|omni|multimodal|audio|video",implication:"关注新增输入输出能力，以及这些能力能否在同一任务中协同。"),
         Facet(name:"性能与上下文",pattern:"上下文|评测|跑分|正确率|准确率|速度|tokens?/s|context|benchmark|accuracy|faster|latency",implication:"关注速度、上下文或评测收益的适用条件；不同指标不能直接相互替代。"),
@@ -177,8 +178,28 @@ enum NewsEvents {
             let suffix = ["release","pricing"].contains(kind) ? "" : "|" + compact(String(item.title.prefix(100)))
             return Identity(key:"subject|" + compact(subject) + "|" + kind + suffix,subject:subject,kind:kind)
         }
+        if let plan = plannedModelEvent(in:text) { return plan }
         // Exact translated/original headlines across feeds; no fuzzy brand-level merge.
         return Identity(key:"headline|" + compact(item.title),subject:nil,kind:kind)
+    }
+
+    static func plannedModelEvent(in text:String) -> Identity? {
+        let text = clean(text)
+        guard Scoring.matches(text,#"(?:ipo|上市|首次公开募股)\s*(?:之)?前|(?:ahead of|before)\s+(?:(?:an?|the|its|planned)\s+)*(?:ipo|initial public offering)|pre[- ]ipo"#),
+              !Scoring.matches(text,#"否认|并未|不会|den(?:y|ies|ied)|no plans|not considering"#) else { return nil }
+        let actors = ["anthropic":"Anthropic","openai":"OpenAI","deepseek":"DeepSeek","深度求索":"DeepSeek",
+                      "google":"Google","谷歌":"Google","meta":"Meta","mistral":"Mistral","xai":"xAI",
+                      "microsoft":"Microsoft","微软":"Microsoft","nvidia":"NVIDIA","英伟达":"NVIDIA"]
+        let names = actors.keys.sorted().map(NSRegularExpression.escapedPattern).joined(separator:"|")
+        let intent = #"\s*(?:公司\s*)?(?:(?:is|reportedly)\s+|正(?:在)?\s*)*(?:考虑|计划|拟|打算|considers?|considering|plans?|planning|weighs?|weighing)"#
+        let release = #"(?:发布|推出|上线)\s*(?:一款|一个)?新(?:的)?\s*(?:人工智能|AI|大语言|大)?\s*模型|(?:releas(?:e|es|ing)|launch(?:es|ing)?|introduc(?:e|es|ing))\s+(?:(?:a|the|its)\s+)?new\s+(?:(?:ai|artificial intelligence|language|large language)\s+)?models?\b"#
+        let pattern = "(?<![a-z0-9])(" + names + ")(?![a-z0-9])" + intent + #"([^。！？!?;；,:：]{0,90}?)(?:"# + release + ")"
+        guard let regex = try? NSRegularExpression(pattern:pattern,options:.caseInsensitive),
+              let match = regex.firstMatch(in:text,range:NSRange(text.startIndex...,in:text)),
+              let actorRange = Range(match.range(at:1),in:text), let gap = Range(match.range(at:2),in:text),
+              let actor = actors[String(text[actorRange])],
+              !Scoring.matches(String(text[gap]),"(?<![a-z0-9])(?:" + names + ")(?![a-z0-9])") else { return nil }
+        return Identity(key:"company|" + compact(actor) + "|planned-new-model|pre-ipo",subject:actor,kind:"rumor")
     }
 
     static func namedModel(in text:String) -> (name:String,offset:Int,length:Int)? {
@@ -238,6 +259,9 @@ enum NewsEvents {
         }
         if ["techmeme.com","news.ycombinator.com","readhub.cn","tophub.today","newsnow.busiyi.world"].contains(host) {
             return Publisher(id:host,name:item.source,kind:"aggregator")
+        }
+        if host == "reut.rs" || host == "reuters.com" || host.hasSuffix(".reuters.com") {
+            return Publisher(id:"reuters.com",name:"路透社 Reuters",kind:"media")
         }
         let known = ["ithome.com":"IT之家","aibase.com":"AIbase","thenextweb.com":"The Next Web","theverge.com":"The Verge","techcrunch.com":"TechCrunch","36kr.com":"36氪","jiqizhixin.com":"机器之心","qbitai.com":"量子位"]
         if let entry = known.first(where:{ host == $0.key || host.hasSuffix("." + $0.key) }) {

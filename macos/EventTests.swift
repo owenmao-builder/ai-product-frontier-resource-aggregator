@@ -63,6 +63,35 @@ enum EventTests {
         precondition(NewsEvents.excerpts(architectureDoc,item:vague).contains(where:{$0.contains("协调器")}),"Carry the named subject into adjacent architecture detail instead of repeating only the headline")
         let generic = [item("g1","OpenAI 更新产品政策","https://one.test/a"),item("g2","OpenAI 更新语音产品","https://two.test/b")]
         precondition(NewsEvents.groups(generic,now:now).count == 2,"Brand alone is insufficient")
+        let modelPlans = [
+            item("plan-short","独家：消息人士称，Anthropic正考虑在IPO前发布新的人工智能模型","https://reut.rs/fixture"),
+            item("plan-original","消息人士称，Anthropic正考虑在IPO前发布新的人工智能模型","https://www.reuters.com/business/model-ipo"),
+            item("plan-english","Sources: Anthropic considers releasing a new AI model to counter OpenAI's momentum since Astra's launch, ahead of an IPO and after Amodei's call for a slowdown (Reuters)","https://www.techmeme.com/260918/p38","Techmeme")
+        ]
+        let planGroups = NewsEvents.groups(modelPlans,now:now)
+        precondition(planGroups.count == 1 && planGroups[0].kind == "rumor" && planGroups[0].subject == "Anthropic",
+                     "Translated unnamed-model plans with the same actor, action and IPO context form one event")
+        let planRow = NewsEvents.present(planGroups[0],ratings:[:],now:now)
+        precondition(planRow.event?.articleCount == 3 && planRow.event?.reports.count == 2 && planRow.event?.coverage?.sourceCount == 1,
+                     "Keep every entry but count Reuters and its short URL as one outlet; Techmeme is an aggregator")
+        precondition(planRow.event?.reports.first(where:{$0.id == "reuters.com"})?.articles.count == 2)
+        precondition(NewsEvents.isRead(planRow.event!,seenURLs:[modelPlans[0].url],seenEvents:[]), "Merging an already-read headline preserves the event's read state")
+        for other in [
+            "Anthropic 计划将 IPO 推迟至 11 月",
+            "知情人士：Anthropic 今年年化收入预计超过 1000 亿美元，IPO 在即",
+            "Anthropic 已在 IPO 前发布新的人工智能模型",
+            "Anthropic 否认考虑在 IPO 前发布新模型",
+            "Anthropic 计划在 IPO 前发布 Claude 5 新模型",
+            "OpenAI considers releasing a new AI model ahead of its IPO"
+        ] {
+            precondition(NewsEvents.groups(modelPlans+[item("different",other,"https://other.test/ipo")],now:now).count == 2,
+                         "Do not merge another company, named version, confirmed release, denial or IPO finance story: " + other)
+        }
+        let oldPlan = item("old-plan",modelPlans[0].title,"https://reuters.com/older-plan",age:4*86400)
+        precondition(NewsEvents.groups(modelPlans+[oldPlan],now:now).count == 2)
+        let independent = item("independent","Anthropic plans to release a new AI model before its IPO","https://www.theverge.com/news/model-plan","The Verge")
+        let broaderPlan = NewsEvents.present(NewsEvents.groups(modelPlans+[independent],now:now)[0],ratings:[:],now:now)
+        precondition(broaderPlan.event?.coverage?.sourceCount == 2, "Actual additional outlets still increase reporting coverage")
         let integrations = [item("model","发布 GPT-6 Astra 新模型","https://one.test/model"),item("int","其他产品接入 GPT-6 Astra 模型","https://two.test/integration")]
         precondition(NewsEvents.groups(integrations,now:now).count == 2,"Integrations are separate from the model's original release")
         let gpt = AIProduct(id:"gpt",name:"GPT-6 Astra",maker:"OpenAI",major:true,category:"模型",summary:"",difference:"",access:"",homepage:"https://openai.com",sourceURL:"https://openai.com/model",aliases:["GPT-6 Astra"])
@@ -148,5 +177,25 @@ enum EventTests {
         if let jev = board.items.first(where:{ $0.id == "typesafe-jev" }) {
             print("PRODUCT SAMPLE without GitHub/HN: \(jev.name), hot=\(jev.isHot), \(jev.signals?.first?.label ?? "no signal"), \(jev.releaseKind ?? ""), released \(jev.releasedOn ?? "")")
         } else { print("PRODUCT SAMPLE: Jev has no current reporting signal") }
+    }
+
+    static func sampleModelPlans(cachePath:String) throws {
+        let cache = URL(fileURLWithPath:cachePath)
+        let snapshot = try JSONDecoder().decode(NewsData.self,from:Data(contentsOf:cache.appendingPathComponent("latest-24h.json")))
+        let saved = try JSONDecoder().decode([String:ReviewedEntry].self,from:Data(contentsOf:cache.appendingPathComponent("interest-ratings.json")))
+        let catalog = try JSONDecoder().decode(ProductBoard.self,from:Data(contentsOf:URL(fileURLWithPath:"data/products.json")))
+        let translations = try JSONDecoder().decode([String:String].self,from:Data(contentsOf:cache.appendingPathComponent("headline-translations.json")))
+        let now = Date()
+        let sample = snapshot.items.filter {
+            guard let date = $0.newsTime(now:now).date, date <= now, beijingCalendar.isDate(date,inSameDayAs:now) else { return false }
+            return Scoring.matches($0.title,"Anthropic") && Scoring.matches($0.title,"IPO|上市") && Scoring.matches($0.title,"模型|model")
+        }
+        let groups = NewsEvents.groups(sample,products:catalog.items,now:now)
+        print("MODEL PLAN SAMPLE: \(sample.count) today's articles → \(groups.count) events")
+        for group in groups {
+            let row = NewsEvents.present(group,ratings:saved.mapValues(\.rating),translations:translations,products:catalog.items,now:now)
+            print("\(row.title): \(row.event!.articleCount) links, \(row.event!.mediaCount) original media, \(group.kind), score \(row.rating!.displayScore)")
+            for report in row.event!.reports { print("  \(report.name) [\(report.kind)]: \(report.articles.count) entries") }
+        }
     }
 }

@@ -9,4 +9,4 @@ xcrun swiftc -swift-version 5 \
   macos/DirectFeedTests.swift macos/SourceTimeTests.swift macos/ProductTests.swift macos/PriorityTests.swift macos/InterestScoreTests.swift macos/TechnicalSignalsTests.swift macos/EventTests.swift macos/Tests.swift \
   -framework Cocoa -framework Security -framework CryptoKit \
   -o .build/scoring-tests
-.build/scoring-tests macos/assessments-v2.json
+.build/scoring-tests macos/assessments-v2.json "$@"

@@ -17,6 +17,9 @@ enum ScoringTests {
         if let index = CommandLine.arguments.firstIndex(of:"--event-sample"), CommandLine.arguments.count > index + 1 {
             try EventTests.sampleToday(cachePath:CommandLine.arguments[index+1])
         }
+        if let index = CommandLine.arguments.firstIndex(of:"--model-plan-sample"), CommandLine.arguments.count > index + 1 {
+            try EventTests.sampleModelPlans(cachePath:CommandLine.arguments[index+1])
+        }
         let now = timestamp()
         let item = NewsItem(id: "known", site_id: "rss", site_name: "RSS", source: "Official", title: "DeepSeek 发布开源 Agent Harness SDK，新增 plugin middleware tracing", url: "https://example.com/article", published_at: now, first_seen_at: now, last_seen_at: now)
         let pending = Scoring.rule(item)
