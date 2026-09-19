@@ -18,7 +18,7 @@ Screenshots are examples captured on September 17, 2026. The interface and edito
 
 - **One menu bar icon:** open ✦ for news previews, scores, expandable highlights, and manual refresh.
 - **One event, one card:** repeated coverage is merged in the menu and integrated dashboard. Distinct original media outlets earn a capped coverage bonus; expanded cards compare attributed angles, core implications and original links. Reading an event keeps later coverage read.
-- **Direct interest scores:** model upgrades, architecture changes, product popularity and your watchlist determine reading priority; evidence status is shown separately.
+- **Direct interest scores:** model upgrades, architecture changes, speed/cost gains, product popularity and your watchlist determine reading priority; evidence status is shown separately.
 - **Chinese reading for scores of 7+:** existing summaries are preserved; headline-only outlines are labeled. Up to five high-score public headlines per refresh are translated using the Google service already used by the upstream project.
 - **Major-vendor releases from the last 7 days:** specific model, version, feature, or architecture names; official publication dates; expired entries disappear. Generic brand mentions do not qualify.
 - **Recently trending tools:** GitHub weekly growth and recent Hacker News discussion provide visible popularity evidence.
@@ -27,7 +27,9 @@ Screenshots are examples captured on September 17, 2026. The interface and edito
 
 ## How interest is scored
 
-Today's news receives a numeric **interest score immediately**, without requiring a model API key, original-body verification, comparisons or evidence A/B. It uses model upgrades (weight 30), architecture changes (30), product popularity (25) and watchlist relevance (15). Only applicable dimensions enter the weighted average, normalized to 0–10; ordinary product/technical progress replaces the two technical dimensions when neither applies. Missing heat is explicitly marked as a neutral 2.5/5 estimate.
+Today's news receives a numeric **interest score immediately**, without requiring a model API key, original-body verification, comparisons or evidence A/B. It uses model upgrades (weight 30), architecture changes (30), speed gains (25), cost reductions (25), product popularity (25) and relevance (15). Only applicable dimensions enter the weighted average, normalized to 0–10; ordinary product/technical progress replaces the two technical dimensions when neither applies. Missing heat is explicitly marked as a neutral 2.5/5 estimate. Efficiency claims are binned by magnitude, using the lower endpoint of ranges. New products matching model/architecture/efficiency interests earn 3/5 relevance outside the watchlist, or 5/5 for a matched watchlist event.
+
+Scoring uses headlines, available article bodies and attributed context from the same recent official release. One of the three body-reading slots per refresh is reserved for a technical story below 7, so brief headlines do not permanently hide major gains. Jev's current launch context and recent HN popularity yield 9.2; the Chinese highlights retain the vendor's claimed scope and are distinguished from each outlet's own coverage.
 
 Evidence remains separate: **A 充分** means sufficient direct material, **B 待验** means partially unverified, and **C 不足** means limited material. C does not suppress the score. Plain brand mentions, rumors and old-model integrations are not new model releases. Expand a score to see its dimension values and weights. Read the [current policy](macos/SCORE_POLICY.md) for the formula and examples.
 

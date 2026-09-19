@@ -9,6 +9,10 @@ enum ScoringTests {
         try ProductTests.run()
         PriorityTests.run()
         InterestScoreTests.run()
+        try TechnicalSignalsTests.run()
+        if let index = CommandLine.arguments.firstIndex(of:"--technical-sample"), CommandLine.arguments.count > index + 1 {
+            try TechnicalSignalsTests.sample(cachePath:CommandLine.arguments[index+1])
+        }
         try EventTests.run()
         if let index = CommandLine.arguments.firstIndex(of:"--event-sample"), CommandLine.arguments.count > index + 1 {
             try EventTests.sampleToday(cachePath:CommandLine.arguments[index+1])

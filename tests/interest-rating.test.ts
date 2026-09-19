@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {evidenceFor,matchesScore,ratingFor,scoreOf} from '../web/src/lib/ratings';
+import {dimensionNames,evidenceFor,matchesScore,ratingFor,scoreOf} from '../web/src/lib/ratings';
 import type {NewsItem} from '../web/src/types';
 
 describe('interest scores in the dashboard',()=>{
@@ -14,5 +14,14 @@ describe('interest scores in the dashboard',()=>{
     expect(scoreOf({...item,rating:{...item.rating!,version:'importance-v2',score:8,evidenceLevel:'A'}})).toBe(8);
     expect(scoreOf({...item,rating:{...item.rating!,score:NaN}})).toBeNull();
     expect(scoreOf({...item,rating:{...item.rating!,score:11}})).toBeNull();
+  });
+  it('keeps old scores and accepts speed/cost scores without an evidence gate',()=>{
+    const upgraded={...item,rating:{...item.rating!,version:'interest-v2',score:9.2,tags:['推理加速','成本下降','架构创新'],briefBasis:'official-context'}};
+    expect(scoreOf(upgraded)).toBe(9.2);
+    expect(matchesScore(upgraded,7)).toBe(true);
+    expect(evidenceFor(upgraded).label).toBe('C 不足');
+    expect(dimensionNames.speed_gain).toBe('速度提升');
+    expect(dimensionNames.cost_gain).toBe('成本下降');
+    expect(scoreOf(item)).toBe(7.4);
   });
 });

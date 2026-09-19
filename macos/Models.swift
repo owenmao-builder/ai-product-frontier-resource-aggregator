@@ -132,7 +132,7 @@ struct NewsRating: Codable, Equatable {
     var chineseTitle: String? = nil
     var highlights: [String]? = nil
     var briefBasis: String? = nil
-    var isInterest: Bool { version == InterestScore.version }
+    var isInterest: Bool { ["interest-v1", InterestScore.version].contains(version ?? "") }
     var baseScore: Double? { dimensions.flatMap { Scoring.total($0) } }
     var releaseBonus: Double { Scoring.releaseBonus(for: self) }
     var hasChineseBrief: Bool {

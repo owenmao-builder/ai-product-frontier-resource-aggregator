@@ -81,15 +81,15 @@ enum Priority {
         rank(item, rating: rating, context: Context(products: products, pulse: pulse, watchlist: watchlist, now: now))
     }
 
-    static func rank(_ item: NewsItem, rating: NewsRating, context: Context) -> NewsPriority {
+    static func rank(_ item: NewsItem, rating: NewsRating, context: Context, signals: TechnicalSignals = TechnicalSignals()) -> NewsPriority {
         let text = item.title + " " + item.displayTitle
         func has(_ pattern: String) -> Bool { matches(expression(pattern), text) }
         let excluded = has("传闻|据传|疑似|或将|将于|即将|曝料|爆料|偷跑|rumou?r|coming soon|leaked|sneak.launched|融资|估值|收购|诉讼|卸任|董事|退款|会员.*(转让|出售)|账号.*(交易|出一个)|订阅.*强开")
         let integration = has("接入|搭载|集成|基于|整合|标配|预装|以.{0,40}模型为|integrat|powered by|built on|based on|combining")
-        let releaseAction = has(#"发布|上线|推出|升级|更新|新增|重构|开放|开源(?!模型|生态)|\b(introduc(?:e[sd]?|ing)|releas(?:e[sd]?|ing)|launch(?:es|ed|ing)?|unveil(?:s|ed|ing)?|upgrad(?:e[sd]?|ing))\b"#)
+        let releaseAction = has(#"发布|上线|推出|升级|更新|新增|新出(?:的)?|首发|重构|开放|开源(?!模型|生态)|\b(introduc(?:e[sd]?|ing)|releas(?:e[sd]?|ing)|launch(?:es|ed|ing)?|unveil(?:s|ed|ing)?|upgrad(?:e[sd]?|ing))\b"#)
         let modelSubject = has(#"新模型|模型|\bmodels?\b|GPT.?[0-9]|Qwen.?[0-9]|GLM.?[0-9]|Gemini.?[0-9]|Claude[ -]*(?:(?:Opus|Sonnet|Haiku)[ -]*)?[0-9]"#)
         let modelPolicy = has("认证|授权|条款|监管|评测|测评|跑分|排行榜|领跑.{0,30}榜|数据集|许可|综述|评估指标|报告|技术细节|语音助手|for Law|应.{0,20}发布|should.{0,30}releas|certification|licensing|terms of|benchmark")
-        let modelRelease = releaseAction && modelSubject && !modelPolicy && !integration && !excluded
+        let modelRelease = (signals.modelRelease || (releaseAction && modelSubject && !modelPolicy && !integration)) && !excluded
         let verified = Scoring.releaseBonus(for: rating) > 0
         var model = verified && rating.release?.kind == "model" ? 30 : modelRelease ? 18 : 0
         var architecture = 0
@@ -99,6 +99,7 @@ enum Priority {
             else if has("架构|框架|harness|orchestrat|agent runtime|framework|推理引擎") { architecture = 14 }
             else if has("SDK|插件|工具调用|tool.call|MCP") { architecture = 6 }
         }
+        architecture = max(architecture, signals.architecture)
         if excluded && !verified { model = 0; architecture = 0 }
         var reasons: [String] = []
         if model > 0 { reasons.append(verified && rating.release?.kind == "model" ? "官方模型升级" : "模型升级线索") }
@@ -106,12 +107,13 @@ enum Priority {
 
         let focused = context.watches.contains { matches($0, text) }
         let namedProduct = context.productAliases.contains { matches($0, text) }
-        let technicalEvent = model > 0 || architecture > 0 || (releaseAction && (namedProduct || has("产品|工具|功能|能力|API|推理|多模态|上下文|语音|视频|编程|agent|feature|product|inference")))
+        let technicalEvent = model > 0 || architecture > 0 || !signals.metrics.isEmpty || (releaseAction && (namedProduct || has("产品|工具|功能|能力|API|推理|多模态|上下文|语音|视频|编程|agent|feature|product|inference")))
         var heat = 0
         if !excluded {
             let articleURL = item.url.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+            let derivative = has("复刻|衍生|平替|替代品|open.source.version.of|alternative to|clone of|[- ]like model")
             let matchingProducts = context.products.filter { product in
-                articleURL == product.sourceURL || product.aliases.contains { matches($0, text) }
+                articleURL == product.sourceURL || (!derivative && product.aliases.contains { matches($0, text) })
             }
             if let count = matchingProducts.map(\.stars).max(), count >= 500 {
                 heat = min(25, 10 + Int(log2(Double(count) / 500) * 5))

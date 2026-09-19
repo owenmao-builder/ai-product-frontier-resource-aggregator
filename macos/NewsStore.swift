@@ -222,14 +222,16 @@ final class NewsStore: ObservableObject {
         // Publish the completed batch once; per-article @Published mutations stall the menu.
         var calculated = next
         priorities = [:]
-        let priorityContext = Priority.Context(products: productCatalog.items, pulse: productPulse, watchlist: preferences.watchedProducts ?? Priority.defaultWatchlist)
+        let products = productCatalog.items
+        let priorityContext = Priority.Context(products: products, pulse: productPulse, watchlist: preferences.watchedProducts ?? Priority.defaultWatchlist)
         for snapshot in snapshots.values {
             for item in snapshot.items where priorities[item.id] == nil {
                 let base = next[item.id] ?? Scoring.rule(item)
-                let priority = Priority.rank(item, rating: base, context: priorityContext)
+                let signals = Self.isToday(item) ? TechnicalSignals.analyze(item,document:documents[item.url],products:products) : TechnicalSignals()
+                let priority = Priority.rank(item, rating: base, context: priorityContext,signals:signals)
                 priorities[item.id] = priority
                 if Self.isToday(item) {
-                    let direct = InterestScore.rating(item,priority:priority,previous:base,translatedTitle:titleTranslations[item.title])
+                    let direct = InterestScore.rating(item,priority:priority,previous:base,signals:signals,translatedTitle:titleTranslations[item.title])
                     calculated[item.id] = direct
                     interestRatings[item.id] = ReviewedEntry(id:item.id,fingerprint:fingerprint(item),rating:direct)
                 }
@@ -240,11 +242,11 @@ final class NewsStore: ObservableObject {
         for range in ["24h","7d"] {
             for item in snapshots[range]?.items ?? [] where allByID[item.id] == nil { allByID[item.id] = item }
         }
-        let groups = NewsEvents.groups(Array(allByID.values),products:productCatalog.items,documents:documents)
+        let groups = NewsEvents.groups(Array(allByID.values),products:products,documents:documents)
         let rows = groups.flatMap { group -> [NewsItem] in
             // Only today's active events get new analysis; preserve older article assessments.
             guard group.members.contains(where:{ Self.isToday($0) }) else { return group.members }
-            return [NewsEvents.present(group,ratings:calculated,documents:documents,translations:titleTranslations)]
+            return [NewsEvents.present(group,ratings:calculated,documents:documents,translations:titleTranslations,products:products)]
         }
         var grouped: [String:[NewsItem]] = [:]
         for (range,snapshot) in snapshots {
@@ -338,8 +340,8 @@ final class NewsStore: ObservableObject {
         lastChecked = Date()
         UserDefaults.standard.set(lastChecked, forKey: "last-checked")
         recalculate()
-        await translateTodayHeadlines()
         await enrichTodayEvents()
+        await translateTodayHeadlines()
         if range == "24h" { startScoring() }
     }
 
@@ -350,20 +352,23 @@ final class NewsStore: ObservableObject {
             return Date().timeIntervalSince(fetched) >= 6 * 3600
         }
         func needsBody(_ row:NewsItem) -> Bool {
-            row.event?.reports.contains { $0.kind == "media" && $0.articles.first.map(needsReading) == true } == true
+            row.event?.reports.contains { $0.articles.first.map(needsReading) == true } == true
         }
-        let leaders = todayEvents.filter { row in
-            guard rating(for:row).sortScore >= 7 else { return false }
+        let candidatesForReading = todayEvents.filter { row in
+            guard rating(for:row).sortScore >= 7 || TechnicalSignals.shouldRead(row) else { return false }
             return row.event?.reports.contains { report in
-                (report.kind == "media" && report.articles.first.map(needsReading) == true) ||
+                (report.articles.first.map(needsReading) == true) ||
                 report.points.contains { !Scoring.matches($0,#"[\p{Han}]"#) && titleTranslations[$0] == nil }
             } == true
         }.sorted { a,b in
             if needsBody(a) != needsBody(b) { return needsBody(a) }
             return rating(for:a).sortScore > rating(for:b).sortScore
-        }.prefix(3)
+        }
+        // Reserve one of the same three slots for a technical article below the old cutoff.
+        let discovery = candidatesForReading.first { rating(for:$0).sortScore < 7 && needsBody($0) }
+        let leaders = Array(([discovery].compactMap { $0 } + candidatesForReading.filter { $0.id != discovery?.id }).prefix(3))
         let articles = leaders.flatMap { row in
-            (row.event?.reports ?? []).filter { $0.kind == "media" }.prefix(3).compactMap { $0.articles.first }
+            (row.event?.reports ?? []).prefix(3).compactMap { $0.articles.first }
         }
         let candidates = articles.filter(needsReading)
         if !candidates.isEmpty {

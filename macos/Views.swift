@@ -149,7 +149,7 @@ struct MenuContent: View {
                             .help(Priority.method + "\n本条：" + priority.reasons.joined(separator: "；") + (priority.provisional ? "。升级幅度尚待原文核验。" : ""))
                     }
                     Group {
-                        HStack(spacing: 6) { ForEach(Array(([rating.categoryLabel] + rating.tags).prefix(3)), id: \.self) { tag in
+                        HStack(spacing: 6) { ForEach(Array(([rating.categoryLabel] + rating.tags).prefix(4)), id: \.self) { tag in
                             Text(tag).font(.system(size: 10)).foregroundStyle(.indigo).padding(.horizontal, 5).padding(.vertical, 3).background(Color.indigo.opacity(0.07), in: RoundedRectangle(cornerRadius: 4))
                         } }
                     }
@@ -171,6 +171,15 @@ struct MenuContent: View {
             if expanded == key {
                 VStack(alignment: .leading, spacing: 6) {
                     if let event {
+                        if rating.briefBasis == "official-context", let points = rating.highlights {
+                            Text("官方发布重点 · 按官网宣称").font(.system(size:13,weight:.semibold))
+                            ForEach(Array(points.enumerated()),id:\.offset) { _,point in
+                                Text("• " + point).font(.system(size:12)).lineSpacing(3).fixedSize(horizontal:false,vertical:true)
+                            }
+                            if let source = rating.sources?.first(where: { $0.title.contains("官方发布说明") }), let url = publicArticleURL(source.url) {
+                                Link("官方发布说明 ↗",destination:url).font(.system(size:12))
+                            }
+                        }
                         EventBrief(event:event) { article in
                             guard let url = publicArticleURL(article.url) else { return }
                             store.markRead(item); NSWorkspace.shared.open(url)
@@ -179,7 +188,7 @@ struct MenuContent: View {
                             if showEvidence.contains(key) { showEvidence.remove(key) } else { showEvidence.insert(key) }
                         }.buttonStyle(.borderless).font(.system(size:12))
                     } else if rating.sortScore >= 7 {
-                        Text(rating.briefBasis == "headline" ? "标题要点" : "新闻重点").font(.system(size: 13, weight: .semibold))
+                        Text(rating.briefBasis == "headline" ? "标题要点" : rating.briefBasis == "official-context" ? "官方发布重点 · 按官网宣称" : "新闻重点").font(.system(size: 13, weight: .semibold))
                         if let points = rating.highlights, !points.isEmpty {
                             ForEach(Array(points.enumerated()), id: \.offset) { _, point in
                                 Text("• " + point).font(.system(size: 12)).lineSpacing(3).fixedSize(horizontal: false, vertical: true)

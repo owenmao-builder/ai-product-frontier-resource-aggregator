@@ -24,7 +24,7 @@ export function NewsCard({ item, index, isVisited = false, isFavorite = false, o
   const value = scoreOf(item)
   const displayTitle = item.event?.title || ((value ?? -1) >= 7 && score.chineseTitle) || item.title_zh || item.title_en || item.title_bilingual || item.title
   const evidence = evidenceFor(item)
-  const isInterest = score.version === 'interest-v1'
+  const isInterest = ['interest-v1','interest-v2'].includes(score.version || '')
   const time = newsTime(item)
   const event = item.event && item.event.articleCount > 1 ? item.event : undefined
   const toggle = () => { if (!expanded) onVisit?.(item.url,displayTitle); setExpanded(!expanded) }
@@ -44,7 +44,7 @@ export function NewsCard({ item, index, isVisited = false, isFavorite = false, o
             <span className="flex items-center gap-1" title={event ? '事件内最新报道时间，北京时间' : time.explanation}><Clock className="w-3.5 h-3.5"/>{event ? '最新报道 ' : time.isCollection ? '收录 ' : ''}{formatBeijingTime(event?.latestAt ? Date.parse(event.latestAt) : time.timestamp)}</span>
             {event && <span className="inline-flex items-center gap-1 rounded-md px-2 py-1 font-semibold bg-amber-50 text-amber-700 dark:bg-amber-900/25 dark:text-amber-300"><Flame className="w-3.5 h-3.5"/>{eventLabel(item)}</span>}
             {item.priority?.reasons.slice(0,2).map(reason => <span key={reason} title={`关注依据：${item.priority?.reasons.join('；')}；按当前信息估分，证据状态单独展示。`} className="rounded px-1.5 py-0.5 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">{reason}</span>)}
-            {[categories[score.category || "other"], ...score.tags].slice(0,3).map((tag,i) => <span key={`${tag}-${i}`} className="rounded px-1.5 py-0.5 bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-300">{tag}</span>)}
+            {[categories[score.category || "other"], ...score.tags].slice(0,4).map((tag,i) => <span key={`${tag}-${i}`} className="rounded px-1.5 py-0.5 bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-300">{tag}</span>)}
           </div>
           {((value ?? -1) >= 7 || event) && <button onClick={toggle} className="mt-3 text-xs font-medium text-primary-600 dark:text-primary-300">{expanded ? '收起重点 ↑' : event ? '展开重点分析 ↓' : '展开重点 ↓'}</button>}
         </div>
@@ -59,8 +59,13 @@ export function NewsCard({ item, index, isVisited = false, isFavorite = false, o
         </div>
       </div>
       {expanded && score && <div className="mt-4 border-t border-slate-100 dark:border-slate-700 pt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+        {event && score.briefBasis === 'official-context' && <div className="mb-4">
+          <strong className="text-slate-900 dark:text-white">官方发布重点 · 按官网宣称</strong>
+          <ul className="mt-2 space-y-1.5 list-disc pl-5">{score.highlights?.map((point,i)=><li key={i}>{point}</li>)}</ul>
+          {score.sources?.filter(source=>source.title.includes('官方发布说明') && publicSourceURL(source.url)).slice(0,1).map(source=><a key={source.url} href={source.url} target="_blank" rel="noopener noreferrer" className="mt-2 block text-primary-600 dark:text-primary-300">官方发布说明 ↗</a>)}
+        </div>}
         {event ? <EventCoverage event={event} onVisit={onVisit}/> : (value ?? -1) >= 7 && <div className="mb-4">
-          <strong className="text-slate-900 dark:text-white">{score.briefBasis === 'headline' ? '标题要点' : '新闻重点'}</strong>
+          <strong className="text-slate-900 dark:text-white">{score.briefBasis === 'headline' ? '标题要点' : score.briefBasis === 'official-context' ? '官方发布重点 · 按官网宣称' : '新闻重点'}</strong>
           {score.highlights?.length ? <ul className="mt-2 space-y-1.5 list-disc pl-5">{score.highlights.map((point,i) => <li key={i}>{point}</li>)}</ul> : <p className="mt-2">中文重点尚未补充，可先查看已有依据。</p>}
           {score.release && <p className="mt-3 text-primary-600 dark:text-primary-300">发布优先 +1.0 · {score.release.reason}</p>}
         </div>}

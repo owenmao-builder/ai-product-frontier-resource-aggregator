@@ -2,6 +2,32 @@
   "verifiedAt": "2026-09-17T09:11:17Z",
   "items": [
     {
+      "id": "typesafe-jev",
+      "name": "Jev",
+      "maker": "TypeSafe AI",
+      "major": false,
+      "category": "决策模型",
+      "summary": "System One 决策模型，输出结构化选项、概率和置信度，面向软件自动化。",
+      "difference": "采用新模型架构、并行采样与 RLCD 训练。官网的 System One 工作流测试宣称速度快 193.6 倍、成本约为对照的 1/444.6；这些比较不适用于所有生成任务。",
+      "access": "2026 年 9 月 15 日开放 early access，按候补名单逐步放行。",
+      "homepage": "https://typesafe.ai/",
+      "sourceURL": "https://typesafe.ai/blog/introducing-system-one-models-and-jev",
+      "aliases": [
+        "Jev",
+        "TypeSafe Jev"
+      ],
+      "releasedOn": "2026-09-15",
+      "releaseKind": "新模型",
+      "verifiedAt": "2026-09-19T03:19:00Z",
+      "dateBasis": "官方发布页显示 Sep 15, 2026；性能数字为厂商工作流测试宣称，非独立验证。",
+      "technicalHighlights": [
+        "官网介绍：Jev 是新的 System One 决策模型，采用新架构、并行采样和 RLCD（校准决策强化学习），返回结构化决策及置信概率。",
+        "官网工作流测试宣称：Jev 速度快 193.6 倍，成本降至对照模型的 1/444.6；这些倍数针对 System One 结构化决策任务。",
+        "应用重点：将分类、路由、审核等高频判断从通用 LLM 生成流程中拆出，与现有大模型协同。",
+        "适用范围：不能直接推导为长文本生成及所有任务同等提升；官网也说明，这组倍数处于实际收益较高的一端。"
+      ]
+    },
+    {
       "id": "astra-for-law",
       "name": "Astra for Law",
       "maker": "OpenAI",
@@ -12,7 +38,9 @@
       "access": "首批通过 Trusted Access 向选定律所开放；具体范围和接入方式以官方公告为准。",
       "homepage": "https://openai.com/index/astra-for-law",
       "sourceURL": "https://openai.com/index/astra-for-law",
-      "aliases": ["Astra for Law"],
+      "aliases": [
+        "Astra for Law"
+      ],
       "releasedOn": "2026-09-17",
       "releaseKind": "新工具",
       "verifiedAt": "2026-09-18T08:40:00Z",

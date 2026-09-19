@@ -21,6 +21,8 @@ struct AIProduct: Codable, Identifiable {
     var discoveredAutomatically: Bool? = nil
     var verifiedAt: String? = nil
     var dateBasis: String? = nil
+    // Attributed release context, used only for this recent product announcement.
+    var technicalHighlights: [String]? = nil
     var isHot: Bool { !(signals ?? []).isEmpty }
 }
 

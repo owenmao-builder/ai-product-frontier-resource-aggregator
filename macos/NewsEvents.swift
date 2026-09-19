@@ -104,7 +104,8 @@ enum NewsEvents {
         else if has("宕机|中断|故障|泄露|漏洞|事故|outage|breach|vulnerability|incident") { kind = "incident" }
         else if has("融资|收购|诉讼|估值|funding|acquisition|lawsuit") { kind = "business" }
         else if has("教程|如何使用|入门指南|how to|tutorial|step.by.step") { kind = "tutorial" }
-        else if has("复刻|平替|替代品|open.source.version.of|open.source.alternative|alternative to|clone of") { kind = "derivative" }
+        else if has("复刻|衍生|平替|替代品|open.source.version.of|open.source.alternative|alternative to|clone of") { kind = "derivative" }
+        else if has("用.{0,20}玩|语义空间|调用成功|优质案例|Show HN|demo") { kind = "demo" }
         else if has("降价|涨价|调整价格|price cut|price increase|pricing change") && !has("发布|推出|launch|releas|introduc") { kind = "pricing" }
         else if has(#"\bvs\.?\b|对比评测|横向对比|versus"#) { kind = "comparison" }
         var subject: String?
@@ -115,13 +116,15 @@ enum NewsEvents {
             (has("claude code") && has("重构|改版|redesign|relaunch") && Scoring.matches(context,#"\bProjects\b|项目功能"#))) { subject = "Claude Code Projects" }
         else if has("deepseek|深度求索") && has("harness") { subject = "DeepSeek Harness" }
         else {
-            let aliases = products.flatMap { [$0.name] + $0.aliases }.filter { $0.count >= 5 }
+            let aliases = products.flatMap { product in
+                ([product.name] + product.aliases).filter { $0.count >= 3 }.map { (name:$0,canonical:product.name) }
+            }
             var candidates: [(name:String,offset:Int,length:Int)] = []
             for alias in aliases {
-                let pattern = "(?<![a-z0-9])" + NSRegularExpression.escapedPattern(for:clean(alias)).replacingOccurrences(of:"-",with:"[- ]?") + "(?![a-z0-9.-])"
+                let pattern = "(?<![a-z0-9])" + NSRegularExpression.escapedPattern(for:clean(alias.name)).replacingOccurrences(of:"-",with:"[- ]?") + "(?![a-z0-9.-])"
                 if let regex = try? NSRegularExpression(pattern:pattern,options:.caseInsensitive),
                    let match = regex.firstMatch(in:text,range:NSRange(text.startIndex...,in:text)) {
-                    candidates.append((alias,match.range.location,match.range.length))
+                    candidates.append((alias.canonical,match.range.location,match.range.length))
                 }
             }
             let pattern = #"(?<![a-z])(?:qwen|glm|gpt|gemini|deepseek|claude(?:[- ](?:opus|sonnet|haiku))?)[- ]?[vr]?\d+(?:\.\d+)*(?:[- ](?:\d+(?:\.\d+)*(?:b|k|m)?|omni|flashx|flash|turbo|plus|pro|lite|thinking|instruct|astra|sonnet|opus|haiku|live|preview|fast|extended|coder|vl|vision|audio|embedding|reranker|distill))*"#
@@ -136,6 +139,12 @@ enum NewsEvents {
             }.first?.name
         }
         if let subject {
+            // A short product name is not enough to make SDK support or a named demo
+            // another report about its launch. Keep unrelated uses as separate events.
+            if kind == "release", let product = products.first(where: { $0.name == subject && $0.name.count <= 4 && $0.technicalHighlights != nil }),
+               TechnicalSignals.releaseContext(item,products:[product],now:item.date ?? Date()) == nil {
+                kind = "related"
+            }
             if kind == "release", has("评测|测评|排行榜|领跑.{0,24}榜|评估|benchmark|evaluation") {
                 let name = NSRegularExpression.escapedPattern(for:clean(subject)).replacingOccurrences(of:"-",with:"[- ]?")
                 let launch = "(?:发布|上线|推出|introduc(?:es|ing)?|releas(?:es|ed)?|launch(?:es|ed)?)"
@@ -143,7 +152,7 @@ enum NewsEvents {
                     has(name + "\\s*(?:模型)?\\s*" + launch)
                 if !directRelease { kind = "evaluation" }
             }
-            if kind == "release", Scoring.matches(compact(subject),#"^(qwen|glm|gpt|gemini|deepseek|claude).*?[0-9]"#),
+            if kind == "release",
                has("接入|搭载|集成|整合|powered by|built on|combining") { kind = "integration" }
             let suffix = ["release","pricing"].contains(kind) ? "" : "|" + compact(String(item.title.prefix(100)))
             return Identity(key:"subject|" + compact(subject) + "|" + kind + suffix,subject:subject,kind:kind)
@@ -178,7 +187,7 @@ enum NewsEvents {
         return groups
     }
 
-    static func publisher(_ item: NewsItem) -> Publisher {
+    static func publisher(_ item: NewsItem, products:[AIProduct] = []) -> Publisher {
         let url = URL(string:item.url)
         let host = url?.host?.lowercased().replacingOccurrences(of:"^www\\.",with:"",options:.regularExpression) ?? item.source
         if ["x.com","twitter.com"].contains(host) {
@@ -194,11 +203,18 @@ enum NewsEvents {
             return Publisher(id:entry.key,name:entry.value,kind:"media")
         }
         if let maker = Scoring.majorPublisher(at:item.url) { return Publisher(id:maker,name:maker + " 官方",kind:"official") }
+        let sharedHosts = ["github.com","huggingface.co","medium.com","mp.weixin.qq.com"]
+        if let product = products.first(where: {
+            URL(string:$0.sourceURL)?.host?.lowercased() == host &&
+            (!sharedHosts.contains(host) || canonicalURL($0.sourceURL) == canonicalURL(item.url))
+        }) {
+            return Publisher(id:host,name:product.maker + " 官方",kind:"official")
+        }
         if Scoring.matches(item.source,"Hacker News|Techmeme|Readhub|TopHub") {
             return Publisher(id:"aggregator:" + clean(item.source),name:item.source,kind:"aggregator")
         }
         // Distinguish authors on shared hosting without counting social posts as separate media.
-        if ["mp.weixin.qq.com","medium.com","zhihu.com","bilibili.com","youtube.com","reddit.com","v2ex.com","github.com","huggingface.co"].contains(host) {
+        if ["mp.weixin.qq.com","medium.com","zhihu.com","bilibili.com","youtube.com","reddit.com","v2ex.com","juejin.cn","github.com","huggingface.co"].contains(host) {
             return Publisher(id:host + ":" + item.source,name:item.source,kind:"community")
         }
         return Publisher(id:host,name:item.source,kind:"media")
@@ -240,7 +256,7 @@ enum NewsEvents {
     }
 
     static func present(_ group: Group, ratings: [String:NewsRating], documents: [String:ArticleDocument] = [:],
-                        translations: [String:String] = [:], now: Date = Date()) -> NewsItem {
+                        translations: [String:String] = [:], products:[AIProduct] = [], now: Date = Date()) -> NewsItem {
         let ranked = group.members.sorted { a,b in
             let ra = ratings[a.id]?.sortScore ?? -1, rb = ratings[b.id]?.sortScore ?? -1
             if ra != rb { return ra > rb }
@@ -251,14 +267,14 @@ enum NewsEvents {
         }
         var lead = ranked[0]
         var rating = ratings[lead.id] ?? Scoring.rule(lead)
-        let byPublisher = Dictionary(grouping:group.members,by:{ publisher($0).id })
+        let byPublisher = Dictionary(grouping:group.members,by:{ publisher($0,products:products).id })
         let reports = byPublisher.values.map { members -> EventReport in
             let ordered = members.sorted { $0.id < $1.id }
-            let publisher = publisher(ordered[0])
+            let publisher = publisher(ordered[0],products:products)
             var points: [String] = []
             var bases = Set<String>()
             for member in ordered {
-                if let saved = ratings[member.id], saved.briefBasis != "headline", saved.hasChineseBrief {
+                if let saved = ratings[member.id], !["headline","official-context"].contains(saved.briefBasis ?? ""), saved.hasChineseBrief {
                     points += saved.highlights ?? []; bases.insert("已有正文分析")
                 } else if let document = documents[member.url], !excerpts(document,item:member).isEmpty {
                     points += excerpts(document,item:member).map { translations[$0] ?? $0 }; bases.insert("正文摘录")

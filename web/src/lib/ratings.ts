@@ -1,10 +1,10 @@
 import type { NewsItem, NewsRating } from '../types'
 export const VERSION = 'importance-v2'
 export const categories: Record<string, string> = {model:'模型进展', research:'研究论文', product:'产品更新', developer:'开发与基础设施', business:'商业与行业', policy:'政策与治理', safety:'安全与事故', analysis:'分析与教程', other:'其他 / 待分类'}
-export const dimensionNames: Record<string, string> = {increment:'实质增量', impact:'实际影响', explanation:'解释价值', decision:'决策价值',model_change:'模型升级',architecture_change:'架构变化',product_change:'产品/技术进展',heat:'产品热度',focus:'关注匹配'}
+export const dimensionNames: Record<string, string> = {increment:'实质增量', impact:'实际影响', explanation:'解释价值', decision:'决策价值',model_change:'模型升级',architecture_change:'架构变化',product_change:'产品/技术进展',speed_gain:'速度提升',cost_gain:'成本下降',heat:'产品热度',focus:'关注匹配'}
 export function ratingFor(item: NewsItem): NewsRating {
   const r = item.rating
-  if (r?.version === VERSION || r?.version === 'interest-v1') return r
+  if (r?.version === VERSION || r?.version === 'interest-v1' || r?.version === 'interest-v2') return r
   return {score:null, reason:'当前只有标题、来源和时间，待补充正文与适用的对照材料后再评估。', tags:[], method:'pending', assessedAt:'', version:VERSION, category:'other', evidenceLevel:'C', dimensions:[], sources:[], gaps:['需要原文及适用的历史或同类对照。']}
 }
 export function scoreOf(item: NewsItem): number | null {
