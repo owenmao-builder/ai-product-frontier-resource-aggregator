@@ -73,6 +73,10 @@ enum NewsEvents {
         var subject: String?
         var kind: String
     }
+    struct AliasMatcher {
+        var canonical: String
+        var regex: NSRegularExpression
+    }
     struct Publisher {
         var id: String
         var name: String
@@ -114,8 +118,18 @@ enum NewsEvents {
         return (url.string ?? raw).trimmingCharacters(in:CharacterSet(charactersIn:"/"))
     }
 
+    static func aliasMatchers(products:[AIProduct]) -> [AliasMatcher] {
+        products.flatMap { product in
+            ([product.name] + product.aliases).filter { $0.count >= 3 }.compactMap { name in
+                let pattern = "(?<![a-z0-9])" + NSRegularExpression.escapedPattern(for:clean(name)).replacingOccurrences(of:"-",with:"[- ]?") + "(?![a-z0-9.-])"
+                guard let regex = try? NSRegularExpression(pattern:pattern,options:.caseInsensitive) else { return nil }
+                return AliasMatcher(canonical:product.name,regex:regex)
+            }
+        }
+    }
+
     // Version and action are part of the key: the same brand alone never merges articles.
-    static func identity(_ item: NewsItem, products: [AIProduct] = [], document:ArticleDocument? = nil) -> Identity {
+    static func identity(_ item: NewsItem, products: [AIProduct] = [], document:ArticleDocument? = nil, aliases:[AliasMatcher]? = nil) -> Identity {
         let text = clean(item.title + " " + item.displayTitle)
         func has(_ pattern: String) -> Bool { Scoring.matches(text,pattern) }
         var kind = "release"
@@ -135,14 +149,12 @@ enum NewsEvents {
             (has("claude code") && has("重构|改版|redesign|relaunch") && Scoring.matches(context,#"\bProjects\b|项目功能"#))) { subject = "Claude Code Projects" }
         else if has("deepseek|深度求索") && has("harness") { subject = "DeepSeek Harness" }
         else {
-            let aliases = products.flatMap { product in
-                ([product.name] + product.aliases).filter { $0.count >= 3 }.map { (name:$0,canonical:product.name) }
-            }
+            // groups supplies one immutable catalog snapshot for this pass; standalone callers still work.
+            let matchers = aliases ?? aliasMatchers(products:products)
+            let range = NSRange(text.startIndex...,in:text)
             var candidates: [(name:String,offset:Int,length:Int)] = []
-            for alias in aliases {
-                let pattern = "(?<![a-z0-9])" + NSRegularExpression.escapedPattern(for:clean(alias.name)).replacingOccurrences(of:"-",with:"[- ]?") + "(?![a-z0-9.-])"
-                if let regex = try? NSRegularExpression(pattern:pattern,options:.caseInsensitive),
-                   let match = regex.firstMatch(in:text,range:NSRange(text.startIndex...,in:text)) {
+            for alias in matchers {
+                if let match = alias.regex.firstMatch(in:text,range:range) {
                     candidates.append((alias.canonical,match.range.location,match.range.length))
                 }
             }
@@ -227,8 +239,9 @@ enum NewsEvents {
         var groups: [Group] = []
         var buckets: [String:[Int]] = [:]
         var urls: [String:Int] = [:]
+        let aliases = aliasMatchers(products:products)
         for item in items.sorted(by:{ ($0.date ?? .distantPast, $0.id) < ($1.date ?? .distantPast, $1.id) }) {
-            let identity = identity(item,products:products,document:documents[item.url])
+            let identity = identity(item,products:products,document:documents[item.url],aliases:aliases)
             let canonical = canonicalURL(item.url)
             let date = item.newsTime(now:now).date
             let index = urls[canonical] ?? buckets[identity.key]?.first { index in
@@ -254,7 +267,7 @@ enum NewsEvents {
         let host = url?.host?.lowercased().replacingOccurrences(of:"^www\\.",with:"",options:.regularExpression) ?? item.source
         if ["x.com","twitter.com"].contains(host) {
             let handle = url?.pathComponents.dropFirst().first?.lowercased() ?? item.source
-            let official = ["openai","anthropicai","claudeai","alibaba_qwen","deepseek_ai","googledeepmind","zai_org"].contains(handle)
+            let official = ["openai","anthropicai","claudeai","alibaba_qwen","deepseek_ai","googledeepmind","zai_org","aiatmeta","meta","metaai","muse","muse_ai"].contains(handle)
             return Publisher(id:"social:" + handle,name:item.source,kind:official ? "official" : "community")
         }
         if ["techmeme.com","news.ycombinator.com","readhub.cn","tophub.today","newsnow.busiyi.world"].contains(host) {
@@ -270,6 +283,7 @@ enum NewsEvents {
         if let maker = Scoring.majorPublisher(at:item.url) { return Publisher(id:maker,name:maker + " 官方",kind:"official") }
         let sharedHosts = ["github.com","huggingface.co","medium.com","mp.weixin.qq.com"]
         if let product = products.first(where: {
+            $0.discoveryBasis != "community" &&
             URL(string:$0.sourceURL)?.host?.lowercased() == host &&
             (!sharedHosts.contains(host) || canonicalURL($0.sourceURL) == canonicalURL(item.url))
         }) {

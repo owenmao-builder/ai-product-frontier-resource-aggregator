@@ -24,6 +24,10 @@ export interface ArchiveItem {
   title_en?: string | null;
   title_zh?: string | null;
   title_bilingual?: string;
+  /** Plain text provided by the feed; bounded separately from the original headline. */
+  content_text?: string;
+  /** Public HTTP(S) links actually present in the feed body. */
+  content_links?: string[];
 }
 
 export interface FetchStatus {

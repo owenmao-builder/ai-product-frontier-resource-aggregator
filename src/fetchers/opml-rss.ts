@@ -2,6 +2,7 @@ import { readFile } from 'fs/promises';
 import { XMLParser } from 'fast-xml-parser';
 import Parser from 'rss-parser';
 import pLimit from 'p-limit';
+import { load } from 'cheerio';
 import type { RawItem, RssFeedStatus, FetchStatus, OpmlFeed } from '../types.js';
 import { CONFIG } from '../config.js';
 import { parseDate } from '../utils/date.js';
@@ -10,6 +11,34 @@ import { getHost } from '../utils/url.js';
 import { hashString } from '../utils/hash.js';
 import { withDirectFeeds } from '../direct-feeds.js';
 import { fetchText } from '../utils/http.js';
+import { archiveContentContext } from '../collection.js';
+
+export function rssContentContext(entry: Record<string, unknown>, articleURL: string): Pick<import('../types.js').ArchiveItem, 'content_text' | 'content_links'> {
+  const ignoredText = new Set<string>();
+  const candidates = ['content', 'content:encoded', 'contentSnippet', 'summary'].flatMap(field => {
+    const value = entry[field];
+    if (typeof value !== 'string' || !value.trim()) return [];
+    const $ = load(value);
+    $('script,style,noscript,template').each((_, element) => {
+      const text = $(element).text().replace(/\s+/g, ' ').trim();
+      if (text) ignoredText.add(text);
+    });
+    $('script,style,noscript,template').remove();
+    $('p,div,li,section,h1,h2,h3,br').append(' ');
+    const text = $.root().text().replace(/\s+/g, ' ').trim();
+    const links = $('a[href]').toArray().flatMap(element => {
+      try { return [new URL($(element).attr('href')!, articleURL).href]; } catch { return []; }
+    });
+    return [{ text, links }];
+  });
+  // rss-parser can derive contentSnippet by stripping tags while retaining script/style bodies.
+  for (const candidate of candidates) {
+    for (const ignored of ignoredText) candidate.text = candidate.text.split(ignored).join(' ').replace(/\s+/g, ' ').trim();
+    for (const match of candidate.text.matchAll(/https?:\/\/[^\s<>"'，。！？）]+/g)) candidate.links.push(match[0].replace(/[.,!?;:)\]}]+$/, ''));
+  }
+  candidates.sort((a, b) => b.text.length - a.text.length);
+  return archiveContentContext({ content_text: candidates[0]?.text, content_links: candidates.flatMap(candidate => candidate.links) });
+}
 
 export function parseOpmlSubscriptions(opmlContent: string): OpmlFeed[] {
   const parser = new XMLParser({
@@ -128,6 +157,7 @@ export async function fetchSingleFeed(
         meta: {
           feed_url: feedUrl,
           feed_home: feed.htmlUrl || '',
+          ...rssContentContext(entry, url),
         },
       });
     }

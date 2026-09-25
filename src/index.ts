@@ -23,6 +23,9 @@ import { createAllFetchers, runFetcher, fetchOpmlRss, fetchWaytoagiRecent7d } fr
 import { isAiRelated, dedupeItemsByTitleUrl, normalizeAihubTodayRecords } from './filters/index.js';
 import { addBilingualFields, loadTitleZhCache, cacheToPojo } from './translate/index.js';
 import { writeJson } from './output/index.js';
+import { archiveContentContext } from './collection.js';
+import type { DiscoveryCache, DiscoveredProduct, ProductDiscovery } from './product-discovery.js';
+import { syncProducts } from './product-sync.js';
 
 function eventTime(record: ArchiveItem): Date | null {
   if (record.site_id === 'opmlrss') {
@@ -115,6 +118,7 @@ async function main(): Promise<number> {
   const statusPath = join(outputDir, 'source-status.json');
   const waytoagiPath = join(outputDir, 'waytoagi-7d.json');
   const titleCachePath = join(outputDir, 'title-zh-cache.json');
+  const productDiscoveryPath = join(outputDir, 'product-discovery.json');
 
   const archive = await loadArchive(archivePath);
 
@@ -195,6 +199,7 @@ async function main(): Promise<number> {
         published_at: toISOString(raw.publishedAt),
         first_seen_at: toISOString(now)!,
         last_seen_at: toISOString(now)!,
+        ...archiveContentContext(raw.meta),
       });
     } else {
       existing.site_id = raw.siteId;
@@ -206,6 +211,7 @@ async function main(): Promise<number> {
         existing.published_at = toISOString(raw.publishedAt);
       }
       existing.last_seen_at = toISOString(now)!;
+      Object.assign(existing, archiveContentContext(raw.meta, existing));
     }
   }
 
@@ -322,6 +328,24 @@ async function main(): Promise<number> {
   }
 
   const items7dAll = filterItemsByWindow(168);
+  let previousProducts: Partial<DiscoveryCache> = {};
+  let knownProducts: DiscoveredProduct[] = [];
+  try { previousProducts = JSON.parse(await readFile(productDiscoveryPath, 'utf8')); } catch { /* First collection has no cache. */ }
+  try {
+    const catalog = JSON.parse(await readFile(resolve('data/products.json'), 'utf8'));
+    knownProducts = Array.isArray(catalog.items) ? catalog.items : [];
+  } catch { /* News-driven discovery remains available without a bundled catalog. */ }
+  let products: DiscoveryCache;
+  try {
+    products = await syncProducts(items7dAll, previousProducts, now, knownProducts);
+  } catch (error) {
+    products = {
+      checkedAt: now.toISOString(), items: [], pending: [], checks: {}, linkChecks: {}, ...previousProducts,
+      errors: ['产品发现同步失败，保留上次资料：' + (error instanceof Error ? error.message : String(error))],
+    };
+  }
+  const { checks: _checks, linkChecks: _linkChecks, modelTrends: _modelTrends, ...publicProducts } = products;
+  const productDiscovery: ProductDiscovery = publicProducts;
   let items7dAi = items7dAll.filter(isAiRelated);
   console.log(`🤖 7d AI-related items: ${items7dAi.length} / ${items7dAll.length}`);
 
@@ -350,6 +374,8 @@ async function main(): Promise<number> {
 
   const latest24hPayload = buildPayload(items24hAll, items24hAi, windowHours);
   const latest7dPayload = buildPayload(items7dAllFinal, items7dAiFinal, 168);
+  latest24hPayload.product_discovery = productDiscovery;
+  latest7dPayload.product_discovery = productDiscovery;
 
   const archivePayload: ArchivePayload = {
     generated_at: toISOString(now)!,
@@ -407,6 +433,7 @@ async function main(): Promise<number> {
   await writeJson(statusPath, statusPayload);
   await writeJson(waytoagiPath, waytoagiPayload);
   await writeJson(titleCachePath, cacheToPojo(titleCache));
+  await writeJson(productDiscoveryPath, products);
 
   console.log(`  ✅ ${latest24hPath} (${latest24hPayload.total_items} items)`);
   console.log(`  ✅ ${latest7dPath} (${latest7dPayload.total_items} items)`);

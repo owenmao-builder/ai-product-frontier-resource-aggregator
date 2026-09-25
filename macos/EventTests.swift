@@ -149,6 +149,31 @@ enum EventTests {
         precondition(NewsEvents.coverage([future],now:now).sourceCount == 0)
         precondition(NewsEvents.groups([unknown[0],item("other-version","NebulaX2 模型发布","https://other.test/news")],now:now).count == 2)
         precondition(NewsEvents.coverageMinimum(sourceCount:2) == 7 && NewsEvents.coverageMinimum(sourceCount:5) == 8.5)
+        // A large product catalog must keep the same identity rules when reused across a grouping pass.
+        let catalogNames = ["Nebula 2.5","Nebula 25","Nebula 2.5 Pro","Orbit (Preview)","Nébula AI"] + (0..<260).map { "CatalogProduct\($0)" }
+        let largeCatalog = catalogNames.map { name -> AIProduct in
+            var product = law; product.id = name; product.name = name; product.aliases = [name]; return product
+        }
+        let preparedAliases = NewsEvents.aliasMatchers(products:largeCatalog)
+        let catalogArticles = [
+            item("large-a","Nebula 2.5 Pro 发布","https://catalog.test/a"),
+            item("large-b","Nebula 2.5 发布，快于 Nebula 25","https://catalog.test/b"),
+            item("large-c","Nebula 25 发布","https://catalog.test/c"),
+            item("large-d","Orbit (Preview) 发布","https://catalog.test/d"),
+            item("large-e","Nébula AI 发布","https://catalog.test/e"),
+            item("large-f","SuperCatalogProduct259 is unrelated","https://catalog.test/f")
+        ]
+        for article in catalogArticles {
+            let direct=NewsEvents.identity(article,products:largeCatalog)
+            let prepared=NewsEvents.identity(article,products:largeCatalog,aliases:preparedAliases)
+            precondition(direct.key == prepared.key && direct.subject == prepared.subject && direct.kind == prepared.kind,"Compiled aliases preserve offset, longest-name, Unicode, escaped punctuation and token boundary semantics")
+        }
+        let catalogGroups=NewsEvents.groups(catalogArticles,products:largeCatalog,now:now)
+        precondition(catalogGroups.count == catalogArticles.count && catalogGroups.first(where:{ $0.members[0].id == "large-a" })?.subject == "Nebula 2.5 Pro","A large catalog still keeps different numeric versions and product variants separate")
+        var changedCatalog=largeCatalog
+        changedCatalog[0].name = "Renamed Product"; changedCatalog[0].aliases = ["Renamed Product"]
+        let renamed=item("changed-catalog","Renamed Product launches","https://catalog.test/renamed")
+        precondition(NewsEvents.groups([renamed],products:changedCatalog,now:now)[0].subject == "Renamed Product","Each grouping pass recompiles its own catalog rather than retaining stale global aliases")
         print("PASS: coverage alone lifts unknown models, counts media/authors, deduplicates reposts, expires old attention and preserves historical scores")
         print("PASS: event deduplication, versions/actions, origin-based coverage bonus, cap/idempotence, read persistence, source attribution and body-vs-title labels")
     }

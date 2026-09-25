@@ -47,6 +47,32 @@ enum PriorityTests {
         precondition(Priority.rank(unrelated, rating:Scoring.rule(unrelated), context:context).heat == 0, "Unrelated HN popularity is not AI product heat")
         let expiredStory = HNProductStory(id:"101", title:story.title, url:story.url, points:1000, comments:10, publishedAt:timestamp(now.addingTimeInterval(-8 * 86400)))
         precondition(rank(article.title, pulse:ProductPulse(discussions:[expiredStory], hnFetchedAt:timestamp(now)), products:[product]).heat == 0)
+        let aliases = (0..<265).flatMap { ["CatalogProduct\($0)","Catalog Product \($0)"] } + ["星河","Orbit (Preview)","C++","Nébula","CatalogProduct264",""]
+        let largeCatalog=aliases.enumerated().map { index,alias -> AIProduct in
+            var value=product; value.id = "large-\(index)"; value.name = alias; value.aliases = [alias]; return value
+        }
+        let largeContext=Priority.Context(products:largeCatalog,pulse:ProductPulse(),watchlist:[],now:now)
+        let originalExpressions=aliases.filter { !$0.isEmpty }.map { alias -> NSRegularExpression in
+            let escaped=NSRegularExpression.escapedPattern(for:alias)
+            let chinese=alias.range(of:#"[\p{Han}]"#,options:.regularExpression) != nil
+            return try! NSRegularExpression(pattern:chinese ? escaped : "(?<![a-z0-9])" + escaped + "(?![a-z0-9])",options:.caseInsensitive)
+        }
+        let aliasCases:[(String,Bool)] = [
+            ("CatalogProduct264 发布",true),("catalog product 264 发布",true),("SuperCatalogProduct264",false),
+            ("CatalogProduct264Extra",false),("介绍最新星河工具",true),("Orbit (Preview) 发布",true),("Orbit Preview 发布",false),
+            ("C++ 发布",true),("C++Builder 发布",false),("NÉBULA 发布",true),("完全无关的消息",false)
+        ]
+        for (title,expected) in aliasCases {
+            let range=NSRange(title.startIndex...,in:title)
+            let original=originalExpressions.contains { $0.firstMatch(in:title,range:range) != nil }
+            let combined=largeContext.productAliases?.firstMatch(in:title,range:range) != nil
+            precondition(combined == original && combined == expected,"One compiled alternation preserves original alias boundaries, Unicode, Chinese substrings, escaped punctuation and case-insensitive matching")
+        }
+        precondition(Priority.Context(products:[],pulse:ProductPulse(),now:now).productAliases == nil,"An empty catalog must never match every headline")
+        let watched=Priority.Context(products:largeCatalog,pulse:ProductPulse(),watchlist:["CatalogProduct264"],now:now)
+        let namedArticle=item("CatalogProduct264 发布")
+        let namedRank=Priority.rank(namedArticle,rating:Scoring.rule(namedArticle),context:watched)
+        precondition(namedRank.focus == 15 && namedRank.modelChange == 0 && namedRank.architectureChange == 0,"The combined lookup changes performance, not scoring rules")
         print("PASS: interest ranking, model upgrades versus integrations, architecture magnitude, verified fresh heat, rumors and watchlist preferences")
     }
 }

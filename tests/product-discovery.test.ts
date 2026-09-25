@@ -31,6 +31,18 @@ describe('automatic products from collected news',()=>{
   it('uses the official Qwen article record instead of stale embedded template dates',()=>{
     expect(parseQwenArticle(JSON.parse(qwenAPI),qwen).releasedOn).toBe('2026-09-18');
   });
+  it('keeps separately owned repositories and decimal versions distinct across refreshes',async()=>{
+    const known=['alice/Nova','bob/Nova','alice/Nova-2.5','alice/Nova-25'].map((repository)=>({
+      id:repository,name:repository.split('/')[1],maker:repository.split('/')[0],major:false,category:'模型更新',
+      summary:'AI model',difference:'',access:'',homepage:'https://github.com/'+repository,sourceURL:'https://github.com/'+repository,
+      repository,aliases:[repository.split('/')[1]],discoveryBasis:'community' as const,
+    }));
+    const articles=known.map(p=>({...news('AI model '+p.name,p.homepage),source:'Hacker News'}));
+    const result=await discoverProducts(articles,{},now,async()=>{throw new Error('no official requests needed');},known);
+    expect(result.items.map(p=>p.id).sort()).toEqual(known.map(p=>p.id).sort());
+    const next=await discoverProducts(articles,result,new Date(+now+900_000),async()=>'',known);
+    expect(next.items.map(p=>p.id).sort()).toEqual(known.map(p=>p.id).sort());
+  });
   it('reads the article header date without borrowing related article dates',()=>{
     const html='<main><p>September 17, 2026</p><h1>Introducing Astra for Law</h1><p>Introducing our new offering.</p><article><time datetime="2026-09-09">September 9, 2026</time></article></main>';
     expect(parseOfficialPage(html,law).releasedOn).toBe('2026-09-17');

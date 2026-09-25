@@ -26,6 +26,28 @@ export interface CollectionStatus {
 
 type CollectedItem = ArchiveItem & { source_publication?: { publishedAt: string; verifiedAt: string; sourceURL: string } };
 
+/** Retain richer feed context without replacing reviewed article identity or translations. */
+export function archiveContentContext(meta: Record<string, unknown>, previous?: ArchiveItem): Pick<ArchiveItem, 'content_text' | 'content_links'> {
+  const texts = [previous?.content_text, meta.content_text].filter((value): value is string => typeof value === 'string')
+    .map(value => value.replace(/\s+/g, ' ').trim()).filter(Boolean).sort((a, b) => b.length - a.length);
+  const links = [...(Array.isArray(meta.content_links) ? meta.content_links : []), ...(previous?.content_links || [])];
+  const publicLinks = links.flatMap(value => {
+    if (typeof value !== 'string') return [];
+    try {
+      const url = new URL(value);
+      const host = url.hostname.toLowerCase();
+      // Product source links use public domains. Do not preserve credentials or local network addresses.
+      if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || !host.includes('.') ||
+        host.includes(':') || /^\d+(?:\.\d+){3}$/.test(host) || /(?:^|\.)(?:localhost|local|internal|invalid|test|onion)$/.test(host)) return [];
+      return [url.href];
+    } catch { return []; }
+  });
+  return {
+    ...(texts.length ? { content_text: Array.from(texts[0]).slice(0, 6000).join('') } : {}),
+    ...(publicLinks.length ? { content_links: [...new Set(publicLinks)].slice(0, 12) } : {}),
+  };
+}
+
 function articleKey(raw: string): string {
   const normalized = normalizeUrl(raw);
   try {
@@ -64,6 +86,7 @@ export function mergeCollected(previous: ArchiveItem[], incoming: RawItem[], now
     const key = articleKey(url);
     const old = byURL.get(key);
     if (old) {
+      Object.assign(old, archiveContentContext(raw.meta, old));
       old.last_seen_at = now.toISOString();
       if (published && raw.meta.time_basis === 'publisher_addtime') {
         old.source_publication = { publishedAt: published, verifiedAt: now.toISOString(), sourceURL: old.url };
@@ -71,7 +94,8 @@ export function mergeCollected(previous: ArchiveItem[], incoming: RawItem[], now
       // Preserve original IDs, headline fields, translations and rating fingerprints.
     } else {
       byURL.set(key, {id:makeItemId(raw.siteId,raw.source,title,url), site_id:raw.siteId, site_name:raw.siteName,
-        source:raw.source, title, url, published_at:published, first_seen_at:now.toISOString(), last_seen_at:now.toISOString()});
+        source:raw.source, title, url, published_at:published, first_seen_at:now.toISOString(), last_seen_at:now.toISOString(),
+        ...archiveContentContext(raw.meta)});
     }
   }
   const cutoff = +now - 7 * 86400_000;

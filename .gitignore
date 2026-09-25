@@ -45,3 +45,4 @@ coverage/
 !.env.example
 data/archive.json
 data/title-zh-cache.json
+data/product-discovery.json

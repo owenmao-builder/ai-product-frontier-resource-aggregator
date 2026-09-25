@@ -35,6 +35,13 @@ enum Priority {
         return expression(pattern)
     }
 
+    private static func combinedAliasExpression(_ aliases:[String]) -> NSRegularExpression? {
+        // These branches retain aliasExpression's individual boundaries, including unbounded Chinese aliases.
+        let patterns=Set(aliases.filter { !$0.isEmpty }.map { aliasExpression($0).pattern }).sorted()
+        guard !patterns.isEmpty else { return nil }
+        return expression("(?:" + patterns.joined(separator:"|") + ")")
+    }
+
     // Build once per refresh. Dates, product aliases and popularity are shared by every article.
     struct Context {
         struct ProductHeat {
@@ -46,10 +53,10 @@ enum Priority {
         var products: [ProductHeat]
         var pointsByURL: [String: Int]
         var watches: [NSRegularExpression]
-        var productAliases: [NSRegularExpression]
+        var productAliases: NSRegularExpression?
 
         init(products: [AIProduct], pulse: ProductPulse, watchlist: [String] = Priority.defaultWatchlist, now: Date = Date()) {
-            productAliases = products.flatMap(\.aliases).filter { !$0.isEmpty }.map { Priority.aliasExpression($0) }
+            productAliases = Priority.combinedAliasExpression(products.flatMap(\.aliases))
             func fresh(_ value: String?) -> Bool {
                 guard let date = parseDate(value) else { return false }
                 return (0...86400).contains(now.timeIntervalSince(date))
@@ -106,7 +113,7 @@ enum Priority {
         if architecture > 0 { reasons.append(verified && rating.release?.kind == "architecture" ? "已核实架构变更" : architecture >= 22 ? "架构大改线索" : architecture >= 14 ? "框架变更线索" : "接口/工具更新") }
 
         let focused = context.watches.contains { matches($0, text) }
-        let namedProduct = context.productAliases.contains { matches($0, text) }
+        let namedProduct = context.productAliases.map { matches($0, text) } ?? false
         let technicalEvent = model > 0 || architecture > 0 || !signals.metrics.isEmpty || (releaseAction && (namedProduct || has("产品|工具|功能|能力|API|推理|多模态|上下文|语音|视频|编程|agent|feature|product|inference")))
         var heat = 0
         if !excluded {

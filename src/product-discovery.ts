@@ -2,12 +2,17 @@ import * as cheerio from 'cheerio';
 import pLimit from 'p-limit';
 import { createHash } from 'node:crypto';
 import type { ArchiveItem } from './types.js';
+import { discoverCommunityProducts } from './community-products.js';
+import type { ModelTrendsCache } from './model-trends.js';
 
 export interface DiscoveredProduct {
   id: string; name: string; maker: string; major: boolean; category: string;
   summary: string; difference: string; access: string; homepage: string; sourceURL: string;
-  aliases: string[]; releasedOn: string; releaseKind: string; discoveredAutomatically: boolean;
-  verifiedAt: string; dateBasis: string;
+  aliases: string[]; releasedOn?: string; releaseKind?: string; discoveredAutomatically?: boolean;
+  verifiedAt?: string; dateBasis?: string; repository?: string;
+  discoveryBasis?: 'official' | 'community'; firstSeenAt?: string; lastSeenAt?: string;
+  signals?: {kind:string; label:string; title:string; url:string; observedAt:string; sourceCount?:number}[];
+  relatedNews?: {title:string; url:string; date:string}[];
 }
 export interface PendingProduct { name: string; maker: string; newsTitle: string; newsURL: string; reason: string; officialURL?:string }
 export interface ProductDiscovery {
@@ -16,6 +21,7 @@ export interface ProductDiscovery {
 export interface DiscoveryCache extends ProductDiscovery {
   checks: Record<string, {checkedAt: string; products: DiscoveredProduct[]; mentionedNames?:string[]; error?: string}>;
   linkChecks?: Record<string, {checkedAt:string; links:string[]}>;
+  modelTrends?: ModelTrendsCache;
 }
 interface Vendor { name: string; hosts: string[]; match: RegExp }
 const vendors: Vendor[] = [
@@ -25,11 +31,11 @@ const vendors: Vendor[] = [
   {name:'Anthropic',hosts:['anthropic.com','claude.com','code.claude.com'],match:/Anthropic|Claude/i},
   {name:'Google',hosts:['blog.google','deepmind.google','ai.google.dev'],match:/Google|Gemini|DeepMind/i},
   {name:'DeepSeek',hosts:['deepseek.com','api-docs.deepseek.com'],match:/DeepSeek|深度求索/i},
-  {name:'Meta',hosts:['ai.meta.com','about.fb.com'],match:/Meta|Llama/i},
+  {name:'Meta',hosts:['ai.meta.com','research.meta.ai','about.fb.com','meta.ai'],match:/Meta|Llama|\bMuse\b/i},
   {name:'Mistral',hosts:['mistral.ai'],match:/Mistral|Codestral|Ministral/i},
   {name:'NVIDIA',hosts:['nvidia.com','blogs.nvidia.com','developer.nvidia.com'],match:/NVIDIA|英伟达|Nemotron/i},
 ];
-const compact = (value: string) => value.toLowerCase().replace(/[^a-z0-9\p{Script=Han}]/gu,'');
+const compact = (value: string) => value.toLowerCase().replace(/[^a-z0-9.\p{Script=Han}]/gu,'');
 const clean = (value: string) => value.replace(/\s+/g,' ').trim();
 const short = (value: string) => {
   const text=clean(value);const excerpt=text.split(' ').slice(0,22).join(' ').slice(0,150);
@@ -72,7 +78,8 @@ export function releaseNames(title: string): {name:string;kind:string}[] {
   for(const name of names) {
     const position=text.toLowerCase().indexOf(name.name.toLowerCase());
     const prefix=position>=0?text.slice(Math.max(0,position-55),position):'';
-    const underlying=name.kind==='新模型'&&/基于|compress(?:es|ing)|\busing\b/.test(prefix);
+    const suffix=position>=0?text.slice(position+name.name.length,position+name.name.length+28):'';
+    const underlying=name.kind==='新模型'&&(/基于|compress(?:es|ing)|\busing\b|built (?:on|on top of)|based on/i.test(prefix)||/^\s*(?:底座|作为基座|base model|backbone)/i.test(suffix));
     if((!application||name.kind!=='新模型')&&!underlying)unique.set(compact(name.name),name);
   }
   return [...unique.values()];
@@ -87,7 +94,8 @@ export function releaseDay(raw: string): string | undefined {
   if(!Number.isFinite(+date))return;
   return new Date(+date+8*3600_000).toISOString().slice(0,10);
 }
-export function recentRelease(day: string, now: Date): boolean {
+export function recentRelease(day: string | undefined, now: Date): boolean {
+  if(!day)return false;
   const today=releaseDay(now.toISOString())!;
   const start=new Date(Date.parse(today+'T00:00:00Z')-6*86400_000).toISOString().slice(0,10);
   return releaseDay(day)===day&&day>=start&&day<=today;
@@ -134,11 +142,18 @@ export function parseQwenArticle(json: any, url: string): OfficialPage {
   return page;
 }
 
-export function productsFromPage(page: OfficialPage, url: string, now: Date): DiscoveredProduct[] {
+export function productsFromPage(page: OfficialPage, url: string, now: Date, knownProducts: DiscoveredProduct[] = []): DiscoveredProduct[] {
   const vendor=publisher(url);
   if(!vendor||!page.releasedOn||!recentRelease(page.releasedOn,now)||excluded.test(page.title))return [];
   if(!releaseAction.test(page.title+' '+page.description+' '+page.text.slice(0,1800)))return [];
   const names=releaseNames(page.title);
+  if(!names.length) {
+    const text=page.title+' '+page.description+' '+page.text.slice(0,1600);
+    const known=knownProducts.filter(p=>p.major&&p.maker===vendor.name&&[p.name,...p.aliases].some(alias=>
+      new RegExp('(?<![a-z0-9])'+alias.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?![a-z0-9.-])','i').test(text)))
+      .sort((a,b)=>b.name.length-a.name.length);
+    if(known[0])names.push({name:known[0].name,kind:known[0].releaseKind||'新工具'});
+  }
   if(!names.length&&vendor.name==='Anthropic'&&/projects/i.test(page.title)&&/Claude Code/i.test(page.text.slice(0,1800)))names.push({name:'Claude Code Projects',kind:'新功能'});
   return names.filter(n=>{const owner=vendors.find(v=>v.match.test(n.name));return !owner||owner.name===vendor.name;}).map(({name,kind})=>({
     id:'release-'+createHash('sha256').update(compact(vendor.name+name)).digest('hex').slice(0,16),name,maker:vendor.name,major:true,
@@ -146,7 +161,7 @@ export function productsFromPage(page: OfficialPage, url: string, now: Date): Di
     summary:`${vendor.name} 已正式公布 ${name}。`,
     difference:page.description?`官方摘要：${short(page.description)}`:'官方已确认这次发布；具体能力、相对旧版的变化与适用条件请查看公告。',
     access:'通过下方官方发布页查看试用入口、API 或使用说明。',homepage:url,sourceURL:url,aliases:[...new Set([name,name.replace(/-/g,' '),name.replace(/^Qwen(?=\d)/,'Qwen '),name.replace(/^Qwen(?=\d)/,'Qwen ').replace(/-/g,' ')])],releasedOn:page.releasedOn!,releaseKind:kind,
-    discoveredAutomatically:true,verifiedAt:now.toISOString(),dateBasis:page.dateBasis,
+    discoveredAutomatically:true,verifiedAt:now.toISOString(),dateBasis:page.dateBasis,discoveryBasis:'official',
   }));
 }
 
@@ -171,7 +186,7 @@ async function fetchOfficial(url: string): Promise<string> {
 }
 
 export async function discoverProducts(news: ArchiveItem[], previous: Partial<DiscoveryCache>, now: Date,
-  read: (url:string)=>Promise<string> = fetchOfficial): Promise<DiscoveryCache> {
+  read: (url:string)=>Promise<string> = fetchOfficial, knownProducts: DiscoveredProduct[] = []): Promise<DiscoveryCache> {
   const newsTime=(n:ArchiveItem)=>Date.parse((n as ArchiveItem & {source_publication?:{publishedAt:string}}).source_publication?.publishedAt||n.published_at||n.first_seen_at);
   const current = news.filter(n=>newsTime(n)>=+now-7*86400_000&&newsTime(n)<=+now).sort((a,b)=>newsTime(b)-newsTime(a));
   const candidates = new Map<string,PendingProduct>();
@@ -190,7 +205,9 @@ export async function discoverProducts(news: ArchiveItem[], previous: Partial<Di
   }
   const errors:string[]=[];
   // Primary URLs already found by the news collector are checked first, with a fixed per-refresh budget.
-  const primary = [...new Set(current.filter(n=>publisher(n.url)&&releaseNames(n.title).length>0&&!excluded.test(n.title)).map(n=>n.url))].slice(0,12);
+  const hasKnownOfficialProduct=(item:ArchiveItem)=>knownProducts.some(p=>p.major&&p.maker===publisher(item.url)?.name&&
+    [p.name,...p.aliases].some(alias=>new RegExp('(?<![a-z0-9])'+alias.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?![a-z0-9.-])','i').test(item.title+' '+(item.content_text||'').slice(0,1600))));
+  const primary = [...new Set(current.filter(n=>publisher(n.url)&&(releaseNames(n.title).length>0||hasKnownOfficialProduct(n))&&!excluded.test(n.title)).map(n=>n.url))].slice(0,12);
   for(const item of current.filter(n=>primary.includes(n.url)))for(const release of releaseNames(item.title))linkCandidate(release.name,item.url);
   const limit=pLimit(4);
   const unresolved=[...candidates.values()].filter(c=>!primary.some(url=>current.some(n=>n.url===url&&releaseNames(n.title).some(r=>compact(r.name)===compact(c.name)))));
@@ -245,7 +262,7 @@ export async function discoverProducts(news: ArchiveItem[], previous: Partial<Di
         endpoint.search=new URLSearchParams({language:'zh-CN',path:parsed.searchParams.get('id')!,type:'qwen_ai'}).toString();
         page=parseQwenArticle(JSON.parse(await read(endpoint.href)),url);
       } else page=parseOfficialPage(await read(url),url);
-      const products=productsFromPage(page,url,now);
+      const products=productsFromPage(page,url,now,knownProducts);
       const mentionedNames=[...candidates.values()].filter(c=>c.maker===publisher(url)?.name&&compact(page.title+' '+page.text).includes(compact(c.name))).map(c=>compact(c.name));
       const error=products.length?undefined:!page.releasedOn?'官方页面未提供可核验的首发日期':!recentRelease(page.releasedOn,now)?'官方发布日期不在最近 7 天内':'官方页未确认匹配的具体发布';
       checks[url]={checkedAt:now.toISOString(),products,mentionedNames,error};
@@ -256,7 +273,7 @@ export async function discoverProducts(news: ArchiveItem[], previous: Partial<Di
   })));
   const items=new Map<string,DiscoveredProduct>();
   for(const product of [...(previous.items||[]),...Object.values(checks).flatMap(c=>c.products)]) {
-    if(recentRelease(product.releasedOn,now))items.set(compact(product.maker+product.name),product);
+    if(product.discoveryBasis!=='community'&&recentRelease(product.releasedOn,now))items.set(compact(product.maker+product.name),product);
   }
   const pending=[...candidates.entries()].filter(([key])=>!items.has(key)).map(([,candidate])=>{
     const match=primary.find(url=>checks[url]?.mentionedNames?.includes(compact(candidate.name)))||[...(candidateLinks.get(compact(candidate.name))||[])].find(url=>checks[url]);
@@ -264,6 +281,21 @@ export async function discoverProducts(news: ArchiveItem[], previous: Partial<Di
     return {...candidate,reason:failure||candidate.reason,officialURL:match};
   }).slice(0,16);
   for(const url of primary)if(checks[url]?.error)errors.push(`${publisher(url)?.name}：${checks[url].error}`);
+  // Discovery and popularity do not depend on an official publication timestamp.
+  // The board keeps the separate, stricter seven-day official-release filter.
+  const currentKnown=[...knownProducts,...items.values(),...(previous.items||[])];
+  const uniqueKnown=new Map<string,DiscoveredProduct>();
+  for(const product of currentKnown) {
+    const key=compact(product.maker)+':'+compact(product.name);
+    // A prior unnamed-maker guess should not compete with a now-curated identity.
+    if(product.maker==='开发者 / 社区'&&[...uniqueKnown.values()].some(p=>compact(p.name)===compact(product.name)))continue;
+    if(!uniqueKnown.has(key))uniqueKnown.set(key,product);
+  }
+  for(const product of discoverCommunityProducts(current,[...uniqueKnown.values()],now)) {
+    const existing=[...items.entries()].find(([,p])=>p.name.toLowerCase()===product.name.toLowerCase()&&p.maker.toLowerCase()===product.maker.toLowerCase());
+    const value=existing?{...product,...existing[1],signals:product.signals,relatedNews:product.relatedNews,firstSeenAt:product.firstSeenAt,lastSeenAt:product.lastSeenAt}:product;
+    items.set(existing?.[0]||compact(product.maker+product.name),value);
+  }
   const retained=Object.fromEntries(Object.entries(checks).filter(([,v])=>+now-Date.parse(v.checkedAt)<8*86400_000));
   const retainedLinks=Object.fromEntries(Object.entries(linkChecks).filter(([,v])=>+now-Date.parse(v.checkedAt)<8*86400_000));
   return {checkedAt:now.toISOString(),items:[...items.values()],pending,errors:[...new Set(errors)],checks:retained,linkChecks:retainedLinks};

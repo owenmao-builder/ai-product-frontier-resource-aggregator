@@ -10,7 +10,7 @@ import { hashString } from './utils/hash.js';
 import { collectionSnapshot, mergeCollected } from './collection.js';
 import type { CollectionSource, CollectionStatus } from './collection.js';
 import type { ArchiveItem, RawItem } from './types.js';
-import { discoverProducts } from './product-discovery.js';
+import { syncProducts } from './product-sync.js';
 
 async function readJSON(path: string, fallback: any) { try { return JSON.parse(await readFile(path,'utf8')); } catch { return fallback; } }
 async function atomicJSON(path: string, value: unknown) { const tmp=path+'.tmp'; await writeFile(tmp,JSON.stringify(value)); await rename(tmp,path); }
@@ -21,7 +21,7 @@ async function bounded<T>(task: Promise<T>, ms: number): Promise<T> {
 }
 
 async function main() {
-  const options = new Command().requiredOption('--output-dir <path>').requiredOption('--catalog <path>').option('--seed <path>').parse().opts();
+  const options = new Command().requiredOption('--output-dir <path>').requiredOption('--catalog <path>').option('--seed <path>').option('--products <path>').parse().opts();
   CONFIG.http.timeout=15_000; CONFIG.http.retries=0; CONFIG.rss.feedTimeout=15_000;
   const directory=resolve(options.outputDir); await mkdir(directory,{recursive:true});
   const started=new Date();
@@ -29,6 +29,7 @@ async function main() {
   const seed=options.seed ? await readJSON(options.seed,{items:[]}) : {items:[]};
   const previousStatus=await readJSON(join(directory,'status.json'),{sources:[]});
   const previousProducts=await readJSON(join(directory,'product-discovery.json'),{});
+  const productCatalog=await readJSON(options.products || new URL('../seed/products.json',import.meta.url).pathname,{items:[]});
   const known=new Map<string,CollectionSource>((previousStatus.sources || []).map((s:CollectionSource)=>[s.id,s]));
   const catalog=await readJSON(options.catalog,[]);
   const feeds=withDirectFeeds(catalog.flatMap((group:any)=>(group.feeds || []).map((f:any)=>({title:f.name,xmlUrl:f.url,htmlUrl:''}))));
@@ -67,13 +68,13 @@ async function main() {
   await Promise.all([...platforms,...subscriptions]);
   const archive=mergeCollected([...(seed.items as ArchiveItem[]),...(previous.items as ArchiveItem[])],incoming,new Date());
   let products;
-  try { products=await discoverProducts(archive,previousProducts,new Date()); }
+  try { products=await syncProducts(archive,previousProducts,new Date(),productCatalog.items); }
   catch(error) {
     // Product verification must never discard a successful news collection.
     products={checkedAt:new Date().toISOString(),items:[],pending:[],checks:{},linkChecks:{},...previousProducts,
       errors:['产品发布同步失败，保留上次已核实资料：'+(error instanceof Error?error.message:String(error))]};
   }
-  const {checks,linkChecks,...productDiscovery}=products;
+  const {checks,linkChecks,modelTrends,...productDiscovery}=products;
   const finished=new Date();
   const state:CollectionStatus={mode:'local',started_at:started.toISOString(),finished_at:finished.toISOString(),sources:sources.sort((a,b)=>a.kind.localeCompare(b.kind)||a.name.localeCompare(b.name))};
   if(!sources.some(s=>s.ok))throw new Error('全部来源抓取失败，保留上次资讯');

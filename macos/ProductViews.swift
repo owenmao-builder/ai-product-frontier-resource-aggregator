@@ -11,8 +11,8 @@ struct ProductMenuContent: View {
 
     private var visible: [AIProduct] {
         store.productBoard.items.filter { product in
-            (!product.major || Products.isRecentRelease(product)) && (product.major || product.isHot) &&
-            (filter != "major" || product.major) && (filter != "hot" || product.isHot) &&
+            (Products.isRecentMajorRelease(product) || product.isHot) &&
+            (filter != "major" || Products.isRecentMajorRelease(product)) && (filter != "hot" || product.isHot) &&
             (query.isEmpty || [product.name, product.maker, product.category, product.summary].joined(separator: " ").localizedCaseInsensitiveContains(query))
         }
     }
@@ -57,7 +57,7 @@ struct ProductMenuContent: View {
                     if visible.isEmpty {
                         VStack(spacing: 10) {
                             Image(systemName: "square.grid.2x2").font(.system(size: 28)).foregroundStyle(.secondary)
-                            Text(filter == "hot" ? "暂无符合条件的近期热度" : "暂无符合条件的近 7 天上新").font(.system(size: 14))
+                            Text(filter == "hot" ? "暂无符合条件的近期热度" : "暂无符合条件的新发布或热门产品").font(.system(size: 14))
                             Button("查看全部产品") { filter = "all"; query = "" }.buttonStyle(.borderless)
                         }.frame(maxWidth: .infinity).padding(.vertical, 55)
                     }
@@ -70,7 +70,7 @@ struct ProductMenuContent: View {
             Divider()
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("官方发布日期 · 近 7 天（含今天）").foregroundStyle(.secondary)
+                    Text("新发布与近期热门 · X / 媒体 / Hugging Face / 开源社区").foregroundStyle(.secondary)
                     Spacer()
                     Button("入选依据") { showMethod.toggle() }.buttonStyle(.borderless)
                 }.font(.system(size: 11))
@@ -99,7 +99,7 @@ struct ProductMenuContent: View {
                 VStack(alignment: .leading, spacing: 5) {
                     Text(product.maker + " · " + product.category).font(.system(size: 11)).foregroundStyle(.secondary)
                     if let url = publicArticleURL(product.homepage) {
-                        Link(destination: url) { Text(product.name).font(.system(size: 15, weight: .semibold)).foregroundStyle(.primary) }.help("打开产品官网")
+                        Link(destination: url) { Text(product.name).font(.system(size: 15, weight: .semibold)).foregroundStyle(.primary).fixedSize(horizontal: false, vertical: true) }.help(product.discoveryBasis == "community" ? "打开来源与使用入口" : "打开产品官网")
                     }
                 }
                 Spacer()
@@ -108,11 +108,11 @@ struct ProductMenuContent: View {
                     Image(systemName: expanded == product.id ? "chevron.up" : "chevron.down").font(.system(size: 12)).frame(width: 25, height: 25)
                 }.buttonStyle(.plain).foregroundStyle(.secondary).accessibilityLabel("\(product.name)的产品重点")
             }
-            if let day = product.releasedOn {
+            if let day = product.releasedOn, product.discoveryBasis != "community" {
                 Text("官方发布 " + day).font(.system(size: 11, weight: .medium)).foregroundStyle(.indigo)
             }
             if product.discoveredAutomatically == true {
-                Text("新闻自动同步 · 官方发布已核对").font(.system(size: 10)).foregroundStyle(.green).help(product.dateBasis ?? "已读取官方发布页")
+                Text(product.discoveryBasis == "community" ? "社区热点发现 · 首发日期待确认" : "新闻自动同步 · 官方发布已核对").font(.system(size: 10)).foregroundStyle(.green).help(product.dateBasis ?? (product.discoveryBasis == "community" ? "按原始讨论时间收录" : "已读取官方发布页"))
             }
             Text(product.summary).font(.system(size: 13)).lineSpacing(3).fixedSize(horizontal: false, vertical: true)
             if let signal = product.signals?.first {
@@ -127,12 +127,12 @@ struct ProductMenuContent: View {
                         if let url = publicArticleURL(signal.url) {
                             Link("热度依据 · " + signal.label + " ↗", destination: url).font(.system(size: 11))
                         }
-                        if signal.kind == "coverage" { Text(signal.title).font(.system(size:11)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true) }
+                        if ["coverage","x","community","huggingface"].contains(signal.kind) { Text(signal.title).font(.system(size:11)).foregroundStyle(.secondary).fixedSize(horizontal:false,vertical:true) }
                     }
-                    if let news = product.relatedNews?.first, let url = publicArticleURL(news.url) {
-                        Link("今日相关 · " + news.title, destination: url).font(.system(size: 11)).lineLimit(3)
+                    ForEach(Array((product.relatedNews ?? []).prefix(8).enumerated()), id: \.offset) { _, news in
+                        if let url = publicArticleURL(news.url) { Link("相关讨论 · " + news.title, destination: url).font(.system(size: 11)).lineLimit(3) }
                     }
-                    if let url = publicArticleURL(product.sourceURL) { Link(product.major ? "官方发布公告 ↗" : "官方产品说明 ↗", destination: url).font(.system(size: 11)) }
+                    if let url = publicArticleURL(product.sourceURL) { Link(product.discoveryBasis == "community" ? "产品来源与入口 ↗" : product.major ? "官方发布公告 ↗" : "官方产品说明 ↗", destination: url).font(.system(size: 11)) }
                 }.padding(10).frame(maxWidth: .infinity, alignment: .leading).background(Color.indigo.opacity(0.05), in: RoundedRectangle(cornerRadius: 8))
             }
         }.padding(.horizontal, 17).padding(.vertical, 13)

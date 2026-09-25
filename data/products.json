@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-09-17T09:11:17Z",
+  "verifiedAt": "2026-09-25T03:06:34.091080+00:00",
   "items": [
     {
       "id": "typesafe-jev",
@@ -183,6 +183,199 @@
       "aliases": [
         "LibreChat"
       ]
+    },
+    {
+      "id": "meta-muse",
+      "name": "Muse",
+      "maker": "Meta",
+      "major": true,
+      "category": "个人 Agent",
+      "summary": "个人 AI Agent，可通过独立云端虚拟机和浏览器执行任务，并连接日常应用。",
+      "difference": "由 Muse Spark 驱动，使用 Muse Secure VM；是用户产品，不等同于 Muse Spark 模型版本。",
+      "access": "官网与移动应用；没有查到该 Agent 或其底层 Muse Spark 的开源仓库。",
+      "homepage": "https://muse.ai/",
+      "sourceURL": "https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/",
+      "aliases": [
+        "Muse",
+        "Muse personal AI agent",
+        "Muse AI agent",
+        "Meta Muse"
+      ],
+      "releaseKind": "新工具",
+      "verifiedAt": "2026-09-25T03:06:34.091080+00:00",
+      "dateBasis": "Meta Newsroom 首发公告的署名日期（日期精度，无精确时区）。不得改成最近媒体转载日。",
+      "discoveryBasis": "official",
+      "releasedOn": "2026-09-08"
+    },
+    {
+      "id": "meta-muse-realtime-avatar",
+      "name": "Muse Realtime Avatar",
+      "maker": "Meta",
+      "major": true,
+      "category": "实时交互化身",
+      "summary": "把 Muse Realtime Voice 的语音流转换为表情、口型和身体动作同步的实时交互化身。",
+      "difference": "使用音频驱动 Diffusion Transformer，分块因果生成及滚动视频上下文；官方报告蒸馏将每块模型计算由 120 次减为 2 次。",
+      "access": "Muse 产品能力公告与演示；未查到公开权重或开源仓库，官方明确演示不全代表已在应用提供的化身。",
+      "homepage": "https://muse.ai/",
+      "sourceURL": "https://research.meta.ai/blog/bringing-your-muse-to-life",
+      "aliases": [
+        "Muse Realtime Avatar"
+      ],
+      "releaseKind": "新架构",
+      "verifiedAt": "2026-09-25T03:06:34.091080+00:00",
+      "dateBasis": "Meta AI Research 官方首发文章署名日期。",
+      "discoveryBasis": "official",
+      "releasedOn": "2026-09-23"
+    },
+    {
+      "id": "jaredpalmer-kev",
+      "name": "Kev",
+      "maker": "Jared Palmer",
+      "major": false,
+      "category": "决策模型",
+      "summary": "可训练、自托管的 Jev-like 决策模型家族，返回 yes/no、选项或分数及校准概率。",
+      "difference": "基于 Qwen 底座、LoRA 和决策读出头；兼容 TypeSafe System One API；与 Jev 是不同作者、不同模型。",
+      "access": "Apache-2.0；GitHub 代码及 Hugging Face 权重和在线演示。",
+      "homepage": "https://huggingface.co/spaces/jaredpalmer/kev",
+      "sourceURL": "https://github.com/jaredpalmer/kev",
+      "aliases": [
+        "Kev",
+        "Jared Palmer Kev",
+        "Kev decision models"
+      ],
+      "releaseKind": "新模型",
+      "verifiedAt": "2026-09-25T03:06:34.091080+00:00",
+      "dateBasis": "作者 GitHub 仓库 created_at 转为北京时间 9/18；这是已验证首次公开仓库时间，不是发布公告日期。",
+      "discoveryBasis": "official",
+      "repository": "jaredpalmer/kev"
+    },
+    {
+      "id": "jaredpalmer-kev-27b",
+      "name": "Kev-27B",
+      "maker": "Jared Palmer",
+      "major": false,
+      "category": "决策模型",
+      "summary": "Kev 家族的 27B 决策模型，基于 Qwen3.8-27B。",
+      "difference": "与 Kev-0.8B/4B/9B 分开记录；作者将它定位为更大单卡场景，底座和权重不同。",
+      "access": "Hugging Face 权重，GitHub 模型卡；可自行部署。 家族仓库的星数不作为该型号单独热度。",
+      "homepage": "https://huggingface.co/jaredpalmer/kev-27b",
+      "sourceURL": "https://github.com/jaredpalmer/kev/blob/main/docs/model-cards/kev-27b.md",
+      "aliases": [
+        "Kev-27B",
+        "kev-27b"
+      ],
+      "releaseKind": "新模型",
+      "verifiedAt": "2026-09-25T03:06:34.091080+00:00",
+      "dateBasis": "作者 Hugging Face 模型仓库 createdAt，北京时间仍为 9/24；GitHub 当前 README 同时列出该型号及模型卡。无独立公告日期。",
+      "discoveryBasis": "official"
+    },
+    {
+      "id": "convai-laya",
+      "name": "Laya",
+      "maker": "ConvAI Innovations / Nandha Kishor",
+      "major": false,
+      "category": "决策模型",
+      "summary": "开源非自回归 System One 决策模型，单次前向计算输出结构化答案和概率。",
+      "difference": "基础英文版本为 ModernBERT-large 编码器加决策头，421M 参数；多语言与 typed-decisions 是独立检查点。",
+      "access": "Apache-2.0；可本地运行，提供 Jev-compatible HTTP server。",
+      "homepage": "https://nandhakishorm.github.io/laya/",
+      "sourceURL": "https://huggingface.co/convaiinnovations/laya",
+      "aliases": [
+        "Laya",
+        "convaiinnovations/laya",
+        "Laya decision model"
+      ],
+      "releaseKind": "新模型",
+      "verifiedAt": "2026-09-25T03:06:34.091080+00:00",
+      "dateBasis": "作者 Hugging Face 模型仓库 createdAt，北京时间 9/18；作者 GitHub 仓库同日创建。不是媒体转载日。",
+      "discoveryBasis": "official",
+      "repository": "NandhaKishorM/laya"
+    },
+    {
+      "id": "convai-laya-multilingual",
+      "name": "Laya Multilingual",
+      "maker": "ConvAI Innovations / Nandha Kishor",
+      "major": false,
+      "category": "决策模型",
+      "summary": "Laya 的多语言决策检查点，覆盖 100 多种语言。",
+      "difference": "mmBERT-base 编码器，322M 参数；与英文 Laya 检查点、训练覆盖及上下文上限不同。",
+      "access": "Apache-2.0；Hugging Face 权重，可由 Laya Router 选择。 家族仓库的星数不作为该型号单独热度。",
+      "homepage": "https://nandhakishorm.github.io/laya/",
+      "sourceURL": "https://huggingface.co/convaiinnovations/laya-multilingual",
+      "aliases": [
+        "Laya Multilingual",
+        "laya-multilingual",
+        "convaiinnovations/laya-multilingual"
+      ],
+      "releaseKind": "新模型",
+      "verifiedAt": "2026-09-25T03:06:34.091080+00:00",
+      "dateBasis": "作者 Hugging Face 模型仓库 createdAt，北京时间 9/19。",
+      "discoveryBasis": "official"
+    },
+    {
+      "id": "bespoke-nimble-9b",
+      "name": "Bespoke Nimble 9B",
+      "maker": "Bespoke Labs",
+      "major": false,
+      "category": "决策模型",
+      "summary": "受 Jev 启发的开源类型化决策模型，提供训练数据、配方、适配器与推理代码。",
+      "difference": "基于 Qwen3.5-9B；作者明确不是从 Jev 蒸馏。公开约 165 MiB 适配器，需另取 Qwen 基础权重。",
+      "access": "Apache-2.0；可在 Apple Silicon 或 NVIDIA GPU 运行。",
+      "homepage": "https://huggingface.co/bespokelabs/Bespoke-Nimble-9B",
+      "sourceURL": "https://github.com/bespokelabsai/nimble",
+      "aliases": [
+        "Bespoke Nimble 9B",
+        "Bespoke Nimble",
+        "Bespoke-Nimble-9B",
+        "Nimble 9B"
+      ],
+      "releaseKind": "新模型",
+      "verifiedAt": "2026-09-25T03:06:34.091080+00:00",
+      "dateBasis": "作者 Hugging Face 模型仓库 createdAt，北京时间 9/18；GitHub 仓库同日创建。",
+      "discoveryBasis": "official",
+      "repository": "bespokelabsai/nimble"
+    },
+    {
+      "id": "mapika-decider-2b",
+      "name": "Decider 2B",
+      "maker": "Mapika",
+      "major": false,
+      "category": "决策模型",
+      "summary": "Qwen3.5-2B 底座的开源决策模型，单次前向输出类型化答案与校准概率。",
+      "difference": "作者维护多个大小和视觉版本；当前模型卡为 v11，支持 Jev-compatible System One 请求格式。",
+      "access": "Apache-2.0；Hugging Face 权重和 GitHub 训练、推理配方。",
+      "homepage": "https://huggingface.co/Mapika/decider-2b",
+      "sourceURL": "https://huggingface.co/Mapika/decider-2b",
+      "aliases": [
+        "Decider 2B",
+        "decider-2b",
+        "Mapika/decider-2b"
+      ],
+      "releaseKind": "新模型",
+      "verifiedAt": "2026-09-25T03:06:34.091080+00:00",
+      "dateBasis": "作者 Hugging Face 模型仓库 createdAt，北京时间 9/16；确实是 Jev 9/15 发布的次日。",
+      "discoveryBasis": "official",
+      "repository": "Mapika/decider"
+    },
+    {
+      "id": "harshatheg-qwen-2-5-1b-rlcd",
+      "name": "Qwen-2.5-1B-RLCD",
+      "maker": "Harsha Gundala",
+      "major": false,
+      "category": "决策模型",
+      "summary": "基于 Qwen2.5-1.5B-Instruct 的类型化决策微调，提供并行约束解码和 MLX 使用说明。",
+      "difference": "仓库标题是 1B，但模型卡底座为 1.5B；与原 Qwen 基础模型、Jev、Kev 都不是同一产品。",
+      "access": "Apache-2.0；HF 权重。模型卡 GitHub clone URL 是占位地址，不应填入产品仓库字段。",
+      "homepage": "https://huggingface.co/harshatheg/Qwen-2.5-1B-RLCD",
+      "sourceURL": "https://huggingface.co/harshatheg/Qwen-2.5-1B-RLCD",
+      "aliases": [
+        "Qwen-2.5-1B-RLCD",
+        "harshatheg/Qwen-2.5-1B-RLCD"
+      ],
+      "releaseKind": "新模型",
+      "verifiedAt": "2026-09-25T03:06:34.091080+00:00",
+      "dateBasis": "作者 Hugging Face 模型仓库 createdAt，北京时间 9/16；确实是 Jev 9/15 发布的次日。",
+      "discoveryBasis": "official"
     }
   ]
 }

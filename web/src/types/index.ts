@@ -105,6 +105,9 @@ export interface CollectionStatus {
 }
 
 export interface AIProduct {
+  discoveryBasis?: 'official' | 'community'
+  firstSeenAt?: string
+  lastSeenAt?: string
   id: string
   name: string
   maker: string

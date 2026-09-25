@@ -43,6 +43,20 @@ describe('full local collection',()=>{
     expect(second[0]).toMatchObject({id:old.id,title:old.title,title_zh:old.title_zh,source:old.source,first_seen_at:old.first_seen_at});
     expect(second[0].source_publication?.publishedAt).toBe('2026-09-18T05:50:48.000Z');
   });
+  it('adds feed context to existing articles without replacing reviewed headline fields',()=>{
+    const updated=mergeCollected([old],[{...incoming,meta:{...incoming.meta,content_text:'Full social post introduces a new decision model.',content_links:['https://github.com/lab/decision-model']}}],now)[0];
+    expect(updated).toMatchObject({id:old.id,title:old.title,title_zh:old.title_zh,first_seen_at:old.first_seen_at,
+      content_text:'Full social post introduces a new decision model.',content_links:['https://github.com/lab/decision-model']});
+    const refreshed=mergeCollected([updated],[{...incoming,meta:{content_text:'Short summary',content_links:['https://model.example.org/demo','https://github.com/lab/decision-model']}}],new Date(+now+900_000))[0];
+    expect(refreshed.content_text).toBe(updated.content_text);
+    expect(refreshed.content_links).toEqual(['https://model.example.org/demo','https://github.com/lab/decision-model']);
+    expect(mergeCollected([refreshed],[incoming],new Date(+now+1800_000))[0].content_text).toBe(updated.content_text);
+  });
+  it('keeps new context in snapshots while old records remain compatible',()=>{
+    const merged=mergeCollected([],[{...incoming,meta:{content_text:'Complete product announcement',content_links:['https://github.com/lab/release']}}],now);
+    expect(collectionSnapshot(merged,state,24).items[0]).toMatchObject({content_text:'Complete product announcement',content_links:['https://github.com/lab/release']});
+    expect(mergeCollected([old],[],now)[0]).not.toHaveProperty('content_text');
+  });
   it('merges AIbase localized and legacy links without replacing the assessed identity',()=>{
     const legacy={...old,url:old.url.replace('/zh/news/','/news/')};
     const items=mergeCollected([legacy],[incoming],now);

@@ -36,4 +36,15 @@ describe('news coverage in the product board',()=>{
     const first=withProductReporting({verifiedAt:'',items:[product]},[eventNews],now)
     expect(withProductReporting(first,[eventNews,eventNews],now).items[0].signals).toEqual(first.items[0].signals)
   })
+  it('does not share heat between versions through a common announcement URL',()=>{
+    const first={...product,name:'Model2.5',aliases:['Model2.5'],sourceURL:'https://example.com/model-family'}
+    const second={...first,id:'model-25',name:'Model25',aliases:['Model25']}
+    const shared={...eventNews,event:{...eventNews.event!,subject:second.name,urls:[first.sourceURL]}}
+    expect(productReportingSignal(first,[shared],now,[first,second])).toBeUndefined()
+    expect(productReportingSignal(second,[shared],now,[first,second])?.sourceCount).toBe(5)
+    const unknown={...shared,event:{...shared.event,subject:undefined}}
+    expect(productReportingSignal(first,[unknown],now,[first,second])).toBeUndefined()
+    expect(productReportingSignal(second,[unknown],now,[first,second])).toBeUndefined()
+  })
+
 })
